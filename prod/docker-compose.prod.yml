@@ -1,0 +1,47 @@
+version: '3.4'
+
+services:
+
+  database:
+    build: ../database
+    command: postgres -c shared_preload_libraries=pgaudit -c config_file=/etc/postgresql.conf
+    container_name: prod-database-diary
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: diary
+      PGDATA: /var/lib/postgresql/pgdata
+    volumes:
+      - ./database:/var/lib/postgresql/pgdata
+      - ../database/postgresql.conf:/etc/postgresql.conf
+#    ports:
+#      - "5432:5432"
+#    restart: always
+
+  api:
+    container_name: prod-api-diary
+    build:
+      context: ../api
+      dockerfile: ./Dockerfile
+      target: prod
+    volumes:
+      - ./files:/home/prod/files
+      - ./logs:/home/prod/logs
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod"
+      - "DATASOURCES_DATABASE_HOST=database"
+#    restart: always
+
+  ui:
+    container_name: prod-ui-diary
+    build:
+      context: ../ui
+      dockerfile: ./Dockerfile
+      target: prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+#    restart: always

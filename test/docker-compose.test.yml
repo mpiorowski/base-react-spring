@@ -1,0 +1,41 @@
+version: '3.4'
+services:
+
+  database:
+    container_name: test-database-diary
+    build: ../database
+    command: postgres -c shared_preload_libraries=pgaudit -c config_file=/etc/postgresql.conf
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: diary
+      PGDATA: /var/lib/postgresql/pgdata
+    volumes:
+      - ./database:/var/lib/postgresql/pgdata
+      - ../database/postgresql.conf:/etc/postgresql.conf
+    ports:
+      - "5432:5432"
+
+  api:
+    container_name: test-api-diary
+    build:
+      context: ../api
+      dockerfile: ./Dockerfile
+      target: prod
+    environment:
+      - "SPRING_PROFILES_ACTIVE=test"
+      - "DATASOURCES_DATABASE_HOST=database"
+    volumes:
+      - ./files:/home/test/files
+      - ./logs:/home/test/logs
+
+  ui:
+    container_name: test-ui-diary
+    build:
+      context: ../ui
+      dockerfile: ./Dockerfile
+      target: prod
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
