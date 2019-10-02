@@ -8,7 +8,7 @@ process.env.BROWSER = "none";
 
 module.exports = {
   webpack: {
-    alias: { react: 'preact-compat', 'react-dom': 'preact-compat' },
+    // alias: { react: 'preact-compat', 'react-dom': 'preact-compat' },
     plugins: [
       new WebpackBar({ profile: true }),
       ...(process.env.NODE_ENV === "development"
@@ -23,7 +23,7 @@ module.exports = {
       options: {
         customizeThemeLessPath: path.join(
             __dirname,
-            "src/styles/antd.theme.less"
+            "src/styles/variables.less"
         )
       }
     }

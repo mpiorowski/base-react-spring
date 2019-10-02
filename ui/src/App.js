@@ -1,13 +1,16 @@
 import React, {Component} from 'react';
-import './App.less';
 import {Icon, Layout, Spin} from "antd";
 import {Redirect, Route, Switch, withRouter} from "react-router-dom";
-import {ACCESS_TOKEN} from "./config/AuthConfig";
-import AppHeader from "./main/AppHeader";
+import {ACCESS_TOKEN} from "./config/AppConfig";
 import {LoginComponent} from "./login/LoginComponent";
-import GlobalErrorBoundary from "./main/GlobalErrorBoundary";
 import {momentDateTimeLanguage, setUpMomentDateTimeLanguage} from "./config/DateTimeConfig";
 import {routes} from 'config/RoutesConfig';
+import AppHeader from "./main/AppHeader";
+import GlobalErrorBoundary from "./main/GlobalErrorBoundary";
+
+import './App.less';
+import './styles/global.less';
+import './styles/variables.less';
 
 const {Content} = Layout;
 const isMobile = window.innerWidth <= 576;
@@ -95,7 +98,7 @@ class App extends Component {
     if (this.state.loading) {
       const antIcon = <Icon type="loading-3-quarters" style={{fontSize: 30}} spin/>;
       return (
-          <div className={"app-loading"}>
+          <div className={"app-layout"}>
             <Spin indicator={antIcon} className={"loading"}/>
           </div>
       )
@@ -113,11 +116,11 @@ class App extends Component {
           </Switch>
       )
     }
-    const PrivateRoute = ({component: Component, ...rest}) => (
+    const PrivateRoute = ({component: RouteComponent, ...rest}) => (
         <div>
           <Route {...rest} render={(props) => (
               this.state.isAuth === true
-                  ? <Component {...rest} {...props}/>
+                  ? <RouteComponent {...rest} {...props}/>
                   : <Redirect to={{
                     pathname: '/login',
                     state: {from: props.location}
@@ -128,15 +131,13 @@ class App extends Component {
     );
 
     const currentUser = this.state.currentUser;
-
     let routerKey = 0;
     const router = [
       routes.main.paths.map(path => {
         return (
             <PrivateRoute path={path.url}
                           component={path.component}
-                          userRole={this.state.userRole}
-                          userName={this.state.userName}
+                          currentUser={this.state.currentUser}
                           key={routerKey++}/>
         )
       }),
@@ -144,8 +145,7 @@ class App extends Component {
         return (
             <PrivateRoute path={path.url}
                           component={path.component}
-                          userRole={this.state.userRole}
-                          userName={this.state.userName}
+                          currentUser={this.state.currentUser}
                           key={routerKey++}/>
         )
       }),
@@ -156,28 +156,21 @@ class App extends Component {
     return (
         <div>
           <GlobalErrorBoundary>
-            <Layout style={{minHeight: '100vh'}}>
-              <Layout class={'app-background'}>
-                <AppHeader
-                    toggle={this.headerToggle}
-                    logout={this.logout}
-                    collapsed={this.state.collapsed}
-                    currentUser={currentUser}
-                />
-
-                <Content class={'app-background'}>
-                  <div class={'app-content'}>
-                    <Switch>
-                      {router}
-                    </Switch>
-                  </div>
-                </Content>
-              </Layout>
+            <Layout className={'app-layout'}>
+              <AppHeader
+                  toggle={this.headerToggle}
+                  logout={this.logout}
+                  collapsed={this.state.collapsed}
+                  currentUser={currentUser}
+              />
+              <Content className={'app-content'}>
+                <Switch>
+                  {router}
+                </Switch>
+              </Content>
             </Layout>
           </GlobalErrorBoundary>
-
         </div>
-
     );
   }
 }

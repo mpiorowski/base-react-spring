@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Layout, Popover, Spin} from "antd";
 import './LoginComponent.less';
 import {serviceLogIn} from "../services/auth/AuthService";
-import {ACCESS_TOKEN} from "../config/AuthConfig";
+import {ACCESS_TOKEN} from "../config/AppConfig";
 import pbslogo from "../img/pbs-logo.png";
 import {openNotification} from "../common/notifications/DiaryNotifications";
 

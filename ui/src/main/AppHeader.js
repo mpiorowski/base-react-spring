@@ -1,29 +1,17 @@
 import React, {Component} from 'react';
 import {Dropdown, Icon, Layout, Menu} from "antd";
-import avatar from "../img/default-avatar.png";
-import './AppHeader.less';
-import Clock from "../common/Clock";
+import Clock from "common/Clock";
 import {Link, NavLink} from "react-router-dom";
+
+import avatar from "img/default-avatar.png";
+import './AppHeader.less';
 
 const {Header} = Layout;
 
 class AppHeader extends Component {
 
-  state = {
-    userRole: this.props.currentUser.userRole
-  };
-
-  // TODO - remove
-  changeTheme = (theme) => {
-    this.setState({
-      themeLoading: true,
-    });
-    this.props.changeTheme(theme);
-  };
-
   render() {
-
-    const userRole = this.state.userRole;
+    const userRole = this.props.currentUser.userRole;
 
     const loginMenu = (
         <Menu className={'header-dropdown-menu'}>
@@ -32,12 +20,6 @@ class AppHeader extends Component {
               <Icon type="phone"/> Kontakt
             </NavLink>
           </Menu.Item>
-          {/*//TODO - accont settings*/}
-          {/*<Menu.Item className={"header-dropdown-menu-item"}>*/}
-          {/*  <NavLink to="/account">*/}
-          {/*    <Icon type="setting"/> Ustawienia*/}
-          {/*  </NavLink>*/}
-          {/*</Menu.Item>*/}
           <Menu.Divider/>
           <Menu.Item onClick={this.props.logout}>
             <NavLink to={'/login'}>
@@ -65,29 +47,18 @@ class AppHeader extends Component {
                 </Link>
               </div>] : ''}
 
-            {(userRole === 'ADMIN' || userRole === 'ROLE_CLIENT')
-                ? [
-                  <div className="header-submenu" key={1}>
-                    <Link to={"/diary/newest"}>
-                      <Icon type="book" className={"icon"}/>
-                      <h2>Najnowsze</h2>
-                    </Link>
-                  </div>,
-                  <div className="header-submenu" key={2}>
-                    <Link to={"/diary/users"}>
-                      <Icon type="user" className={"icon"}/>
-                      <h2>Użytkownicy</h2>
-                    </Link>
-                  </div>
-                ] : ''}
-            {userRole === 'ADMIN'
-                ?
-                <div className="header-submenu" key={3}>
-                  <Link to={"/diary/excel"}>
-                    <Icon type="solution" className={"icon"}/>
-                    <h2>Excel</h2>
-                  </Link>
-                </div> : ''}
+            <div className="header-submenu" key={1}>
+              <Link to={"/test1"}>
+                <Icon type="book" className={"icon"}/>
+                <h2>Najnowsze</h2>
+              </Link>
+            </div>
+            <div className="header-submenu" key={2}>
+              <Link to={"/test2"}>
+                <Icon type="user" className={"icon"}/>
+                <h2>Użytkownicy</h2>
+              </Link>
+            </div>
           </div>
           <div className={'header-menu-right'}>
             <div className={'clock'}>

@@ -1,4 +1,4 @@
-import {ACCESS_TOKEN} from "../config/AuthConfig";
+import {ACCESS_TOKEN} from "../config/AppConfig";
 import {saveAs} from 'file-saver';
 
 export const fileRequest = (options) => {
