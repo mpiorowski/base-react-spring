@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-class Test extends Component {
+class TestComponent extends Component {
 
 
   render({ data }) {
@@ -13,4 +13,4 @@ class Test extends Component {
   }
 }
 
-export default Test;
+export default TestComponent;

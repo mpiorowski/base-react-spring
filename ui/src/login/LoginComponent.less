@@ -1,0 +1,86 @@
+@import "../styles/variables";
+
+.app-login {
+  height: 100vh;
+}
+
+
+
+.login-header {
+  text-align: center;
+  padding-top: 100px;
+  //color: @main;
+  font-size: 50px;
+}
+@media only screen and (max-width: 576px) {
+  .login-header {
+    padding-top: 50px;
+  }
+}
+
+.login-logo {
+  width: 170px;
+  margin-bottom: 20px;
+}
+
+.login-logo-text {
+  font-size: 60px;
+  vertical-align: bottom;
+  margin-bottom: 0;
+  //color: @primary-color !important;
+}
+
+
+.login-form {
+  padding-top: 30px;
+  width: 388px;
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 450px) {
+  .login-form {
+    width: 95%;
+  }
+}
+
+.login-form-forgot {
+  float: right;
+}
+
+.login-form-button {
+  width: 100%;
+  color: black;
+  font-size: 16px;
+  height: 35px;
+  margin-top: 10px;
+
+  &:hover {
+    color: black;
+  }
+
+  &:focus {
+    color: black;
+  }
+}
+
+.login-input {
+  & > .ant-input {
+    color: @text-color;
+    height: 40px;
+    font-size: 16px;
+    width: 100%;
+  }
+}
+
+.login-spin {
+  color: black;
+  padding-right: 10px;
+}
+
+.login-form-forgot {
+  color: @primary-color !important;
+  line-height: 10px;
+  margin-bottom: 10px;
+  float: right;
+  cursor: pointer;
+}

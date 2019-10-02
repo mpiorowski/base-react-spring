@@ -23,7 +23,7 @@ module.exports = {
       options: {
         customizeThemeLessPath: path.join(
             __dirname,
-            "src/style/AntDesign/customTheme.less"
+            "src/styles/antd.theme.less"
         )
       }
     }

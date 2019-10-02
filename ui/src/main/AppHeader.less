@@ -1,0 +1,95 @@
+@import '../styles/variables';
+
+.header-menu {
+  height: 50px;
+  padding: 0;
+  border-bottom: @light-border;
+  position: fixed;
+  width: 100%;
+  //margin-bottom: 100px;
+
+  .header-menu-left {
+    display: inline-block;
+    height: 50px;
+    float: left;
+
+    .header-submenu {
+      display: inline-block;
+      padding-right: 12px;
+      padding-left: 12px;
+      border-right: @light-border;
+      height: 50px !important;
+      :hover {
+        .icon, h2 {
+          color: @primary-color
+        }
+      }
+
+      .icon {
+        vertical-align: -5px;
+        color: @text-color;
+        font-size: 26px;
+        padding-top: 4px;
+      }
+    }
+
+    h2 {
+      color: @text-color;
+      display: inline-block;
+      margin: 0 0 0 0;
+      font-weight: 600;
+      font-size: 20px;
+      font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+    }
+  }
+
+
+  .header-menu-right {
+    float: right;
+    overflow: hidden;
+    padding-right: 3px;
+    line-height: 50px;
+    height: 50px;
+    vertical-align: bottom;
+
+    .avatar {
+      position: relative;
+      top: 6px;
+      margin-right: 8px;
+      width: 22px;
+      vertical-align: baseline;
+    }
+
+    .clock {
+      display: inline-block;
+      padding-right: 20px;
+      padding-left: 20px;
+    }
+
+    .header-dropdown {
+      cursor: pointer;
+      display: inline-block;
+      height: 100%;
+      padding: 0 20px;
+      transition: all .3s;
+      border-left: @light-border;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+    }
+  }
+}
+
+//TODO - check if it make problems
+.ant-dropdown-placement-bottomRight {
+  position: fixed !important;
+  z-index: 1;
+}
+
+.ant-popover {
+  z-index: 2;
+}
+
+
