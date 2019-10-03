@@ -1,38 +1,35 @@
 @import '../styles/global';
 
 .header-menu {
+
+  display: flex;
+  align-items: stretch;
+
   height: 50px;
   padding: 0;
   border-bottom: @light-border;
   position: fixed;
   width: 100%;
 
-  align-items: stretch;
-
   .header-menu-left {
-    height: 50px;
-    float: left;
+
+    display: flex;
+    flex-grow: 1;
+    justify-content: flex-start;
+
 
     .header-submenu-link {
-      :hover {
-        .icon, h2 {
-          color: @primary-color
-        }
-      }
-    }
+      display: flex;
+      align-items: center;
 
-    .header-submenu-div {
       padding-right: 12px;
       padding-left: 12px;
       border-right: @light-border;
-      height: 50px !important;
-
-      :hover {
+      &:hover {
         .icon, h2 {
-          color: @primary-color
+          color: @primary-color !important;
         }
       }
-
       .icon {
         color: @text-color;
         font-size: 26px;
@@ -51,15 +48,13 @@
 
 
   .header-menu-right {
-    float: right;
-    overflow: hidden;
-    padding-right: 3px;
-    line-height: 50px;
-    height: 50px;
 
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
+
+    overflow: hidden;
+    padding-right: 3px;
 
     .clock {
       padding-right: 20px;
@@ -68,15 +63,14 @@
 
 
     .header-dropdown {
-      cursor: pointer;
-      display: inline-flex;
-      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
       width: 50px;
+      cursor: pointer;
       transition: all .3s;
       border-left: @light-border;
-
-      justify-content: center;
-      align-items: center;
 
       &:hover {
         background: rgba(0, 0, 0, 0.1);

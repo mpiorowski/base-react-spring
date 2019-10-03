@@ -33,19 +33,15 @@ class AppHeader extends Component {
     return (
         <Header className={'header-menu'} style={{zIndex: "2"}}>
 
-          <div className={"header-menu-left flex"}>
-            <Link to={"/test1"} className={'header-submenu-link flex'}>
-              <div className="header-submenu-div flex-center" key={1}>
-                <Icon type="book" className={"icon"}/>
-                <h2>Najnowsze</h2>
-              </div>
+          <div className={"header-menu-left"}>
+            <Link to={"/test1"} className={'header-submenu-link'}>
+              <Icon type="book" className={"icon"}/>
+              <h2>Najnowsze</h2>
             </Link>
-              <Link to={"/test2"} className={'header-submenu-link flex'}>
-            <div className="header-submenu-div flex-center" key={2}>
-                <Icon type="user" className={"icon"}/>
-                <h2>Użytkownicy</h2>
-            </div>
-              </Link>
+            <Link to={"/test2"} className={'header-submenu-link'}>
+              <Icon type="user" className={"icon"}/>
+              <h2>Użytkownicy</h2>
+            </Link>
           </div>
           <div className={'header-menu-right'}>
             <div className={'clock'}>
