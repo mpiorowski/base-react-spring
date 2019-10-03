@@ -8,7 +8,7 @@ export const routes =
         'paths': [
           {
             url: '/contact',
-            component: ContactComponent
+            component: ContactComponent,
           },
         ]
       },
@@ -17,11 +17,15 @@ export const routes =
         'paths': [
           {
             url: '/test1',
-            component: TestComponent
+            component: TestComponent,
+            headerName: 'Ksiazka',
+            headerIcon: 'book'
           },
           {
             url: '/test2',
-            component: Test2Component
+            component: Test2Component,
+            headerName: 'Forum',
+            headerIcon: 'user'
           },
         ]
       }

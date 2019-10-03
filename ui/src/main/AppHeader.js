@@ -5,6 +5,7 @@ import {Link, NavLink} from "react-router-dom";
 
 import avatar from "img/default-avatar.png";
 import "./AppHeader.less";
+import {routes} from "../config/RoutesConfig";
 
 const {Header} = Layout;
 
@@ -29,19 +30,21 @@ class AppHeader extends Component {
         </Menu>
     );
 
+    const routeHeader = [
+      routes[userRole].paths.map(path =>
+          <Link to={path.url} className={'header-submenu-link'}>
+            {path.headerIcon !== '' ? <Icon type={path.headerIcon} className={'header-submenu-icon'}/> : ''}
+            <h2>{path.headerName}</h2>
+          </Link>
+      )
+    ];
+
 
     return (
         <Header className={'header-menu'} style={{zIndex: "2"}}>
 
           <div className={"header-menu-left"}>
-            <Link to={"/test1"} className={'header-submenu-link'}>
-              <Icon type="book" className={"icon"}/>
-              <h2>Najnowsze</h2>
-            </Link>
-            <Link to={"/test2"} className={'header-submenu-link'}>
-              <Icon type="user" className={"icon"}/>
-              <h2>Użytkownicy</h2>
-            </Link>
+            {routeHeader}
           </div>
           <div className={'header-menu-right'}>
             <div className={'clock'}>
