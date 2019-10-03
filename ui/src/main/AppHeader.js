@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, {Component} from "react";
 import {Dropdown, Icon, Layout, Menu} from "antd";
 import Clock from "common/Clock";
 import {Link, NavLink} from "react-router-dom";
 
 import avatar from "img/default-avatar.png";
-import './AppHeader.less';
+import "./AppHeader.less";
 
 const {Header} = Layout;
 
@@ -33,32 +33,19 @@ class AppHeader extends Component {
     return (
         <Header className={'header-menu'} style={{zIndex: "2"}}>
 
-          <div className={"header-menu-left"}>
-            {userRole === 'ROLE_USER' ? [
-              <div className="header-submenu" key={1}>
-                <Link to={"/diary/today"}>
-                  <Icon type="book" className={"icon"}/>
-                  <h2>Dzienniczek</h2>
-                </Link>
-              </div>,
-              <div className={"header-submenu"} key={2}>
-                <Link to={"/diary/history"}>
-                  <h2>Historia</h2>
-                </Link>
-              </div>] : ''}
-
-            <div className="header-submenu" key={1}>
-              <Link to={"/test1"}>
+          <div className={"header-menu-left flex"}>
+            <Link to={"/test1"} className={'header-submenu-link flex'}>
+              <div className="header-submenu-div flex-center" key={1}>
                 <Icon type="book" className={"icon"}/>
                 <h2>Najnowsze</h2>
-              </Link>
-            </div>
-            <div className="header-submenu" key={2}>
-              <Link to={"/test2"}>
+              </div>
+            </Link>
+              <Link to={"/test2"} className={'header-submenu-link flex'}>
+            <div className="header-submenu-div flex-center" key={2}>
                 <Icon type="user" className={"icon"}/>
                 <h2>Użytkownicy</h2>
-              </Link>
             </div>
+              </Link>
           </div>
           <div className={'header-menu-right'}>
             <div className={'clock'}>
@@ -71,7 +58,6 @@ class AppHeader extends Component {
             >
               <div className={"header-dropdown"}>
                 <img src={avatar} alt="" className={'avatar'}/>
-                {this.props.currentUser.userName}
               </div>
             </Dropdown>
           </div>

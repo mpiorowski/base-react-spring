@@ -6,19 +6,27 @@
   border-bottom: @light-border;
   position: fixed;
   width: 100%;
-  //margin-bottom: 100px;
+
+  align-items: stretch;
 
   .header-menu-left {
-    display: inline-block;
     height: 50px;
     float: left;
 
-    .header-submenu {
-      display: inline-block;
+    .header-submenu-link {
+      :hover {
+        .icon, h2 {
+          color: @primary-color
+        }
+      }
+    }
+
+    .header-submenu-div {
       padding-right: 12px;
       padding-left: 12px;
       border-right: @light-border;
       height: 50px !important;
+
       :hover {
         .icon, h2 {
           color: @primary-color
@@ -26,10 +34,8 @@
       }
 
       .icon {
-        vertical-align: -5px;
         color: @text-color;
         font-size: 26px;
-        padding-top: 4px;
       }
     }
 
@@ -50,32 +56,35 @@
     padding-right: 3px;
     line-height: 50px;
     height: 50px;
-    vertical-align: bottom;
 
-    .avatar {
-      position: relative;
-      top: 6px;
-      margin-right: 8px;
-      width: 22px;
-      vertical-align: baseline;
-    }
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     .clock {
-      display: inline-block;
       padding-right: 20px;
       padding-left: 20px;
     }
 
+
     .header-dropdown {
       cursor: pointer;
-      display: inline-block;
+      display: inline-flex;
       height: 100%;
-      padding: 0 20px;
+      width: 50px;
       transition: all .3s;
       border-left: @light-border;
 
+      justify-content: center;
+      align-items: center;
+
       &:hover {
         background: rgba(0, 0, 0, 0.1);
+      }
+
+      .avatar {
+        width: 22px;
+        height: 22px;
       }
 
     }

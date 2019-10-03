@@ -49,7 +49,7 @@ class App extends Component {
         userName: 'admin',
         userRole: 'ADMIN'
       },
-      isAuth: false,
+      isAuth: true,
       loading: false,
     });
 
