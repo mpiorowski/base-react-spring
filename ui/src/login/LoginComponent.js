@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Form, Icon, Input, Layout, Popover, Spin} from "antd";
+import {Button, Form, Icon, Input, Layout, Popover} from "antd";
 import './LoginComponent.less';
 import {serviceLogIn} from "../services/auth/AuthService";
 import {ACCESS_TOKEN, devUser, PROFILE} from "../config/AppConfig";
@@ -7,7 +7,6 @@ import loginLogo from "../img/bear-logo-grey.png";
 import {openNotification} from "../common/notifications/DiaryNotifications";
 
 const {Content} = Layout;
-const antIcon = <Icon type="loading" style={{fontSize: 18}} spin/>;
 
 class LoginForm extends Component {
 
@@ -98,9 +97,9 @@ class LoginForm extends Component {
                       Nie pamiętasz hasła?
                     </span>
                 </Popover>
-                <Button type="primary" htmlType="submit" className="login-form-button">
-                  {this.state.checkingLogin ? <Spin indicator={antIcon} className={"login-spin"}/> : ""}
-                  Zaloguj się
+                <Button type="primary" htmlType="submit" className="login-form-button"
+                        loading={this.state.checkingLogin}>
+                  <span className={'login-form-button-text'}>Zaloguj się</span>
                 </Button>
               </Form.Item>
             </Form>
