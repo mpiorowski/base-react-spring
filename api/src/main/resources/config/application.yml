@@ -1,0 +1,29 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: base-app
+  profiles:
+    active: dev
+  datasource:
+    initialization-mode: always
+  flyway:
+    locations: "classpath:/db/migration"
+  jackson:
+    time-zone: "Europe/Warsaw"
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    use-actual-param-name: false
+    aggressive-lazy-loading: false
+    lazy-loading-enabled: true
+    lazy-load-trigger-methods: ""
+  type-handlers-package: base.api.config.mybatis

@@ -1,0 +1,21 @@
+# ===================================================================
+# Spring Boot configuration for the "test" profile.
+# ===================================================================
+logging:
+  level:
+    ROOT: WARN
+    pbs.api: DEBUG
+    pbs.api.mappers:
+      AuthMapper: INFO
+
+datasources:
+  database:
+    username: admin
+    password: admin
+    port: 5432
+    schema: diary
+#    host: test-api-diary
+
+spring:
+  flyway:
+    locations: "classpath:/db/migration, classpath:/db/test"

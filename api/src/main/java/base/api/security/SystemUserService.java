@@ -1,27 +1,27 @@
 package base.api.security;
 
+import base.api.domain.user.UserEntity;
+import base.api.services.AuthService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pbs.api.domain.sys.AuthDao;
-import pbs.api.domain.user.UserEntity;
 
 @Service
 public class SystemUserService implements UserDetailsService {
 
-  private final AuthDao authDao;
+  private final AuthService service;
 
-  public SystemUserService(AuthDao authDao) {
-    this.authDao = authDao;
+  public SystemUserService(AuthService service) {
+    this.service = service;
   }
 
   @Override
   @Transactional
   public UserDetails loadUserByUsername(String userNameOrEmail) {
 
-    UserEntity user = authDao.authUserByNameOrEmail(userNameOrEmail);
+    UserEntity user = service.authUserByNameOrEmail(userNameOrEmail);
 
     if (user.getUserName().equals("")) {
       throw new UsernameNotFoundException(
@@ -33,7 +33,7 @@ public class SystemUserService implements UserDetailsService {
   @Transactional
   public UserDetails loadUserByUserId(Long userId) {
 
-    UserEntity user = authDao.authUserById(userId);
+    UserEntity user = service.authUserById(userId);
 
     if (user.getUserName().equals("")) {
       throw new UsernameNotFoundException("UserEntity not found with user id: " + userId);

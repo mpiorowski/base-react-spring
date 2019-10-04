@@ -1,10 +1,10 @@
 package base.api.security;
 
+import base.api.domain.user.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pbs.api.domain.user.UserEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,8 +19,7 @@ public class SystemUser implements UserDetails {
 
   private String userEmail;
 
-  @JsonIgnore
-  private String userPassword;
+  @JsonIgnore private String userPassword;
 
   private Collection<? extends GrantedAuthority> authorities;
 

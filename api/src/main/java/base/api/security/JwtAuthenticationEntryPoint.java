@@ -22,7 +22,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
       HttpServletRequest request,
       HttpServletResponse response,
       AuthenticationException authException)
-      throws IOException, ServletException {
+      throws IOException {
     authLogger.error(
         "Responding with unauthorized error. Message - {}", authException.getMessage());
     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());

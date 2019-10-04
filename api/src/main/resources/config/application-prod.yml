@@ -1,0 +1,24 @@
+# ===================================================================
+# Spring Boot configuration for the "prod" profile.
+# ===================================================================
+logging:
+  level:
+    ROOT: WARN
+    pbs.api: DEBUG
+    pbs.api.mappers:
+      AuthMapper: INFO
+    pbs.api.domain.diaries.DiaryDao.selectUser: INFO
+
+datasources:
+  database:
+    username: admin
+    password: admin
+    port: 5432
+    schema: diary
+#    host: prod-database-diary
+
+
+spring:
+  flyway:
+    locations: "classpath:/db/migration, classpath:/db/prod"
+    clean-disabled: true
