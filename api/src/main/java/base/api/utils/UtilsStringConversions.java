@@ -1,12 +1,9 @@
 package base.api.utils;
 
-import lombok.Getter;
-
 import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.UUID;
 
-@Getter
 public class UtilsStringConversions {
 
   private UtilsStringConversions() {}

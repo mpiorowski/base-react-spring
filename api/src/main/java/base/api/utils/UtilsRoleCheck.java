@@ -7,6 +7,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class UtilsRoleCheck {
 
+  private UtilsRoleCheck() {}
+
   public static boolean isRole(AppConstants.RoleName role) {
     SystemUser user =
         (SystemUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
