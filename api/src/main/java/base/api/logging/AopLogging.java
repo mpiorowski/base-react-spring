@@ -1,5 +1,6 @@
 package base.api.logging;
 
+import base.api.config.AppConstants;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -10,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
-import pbs.api.config.AppConstants;
 
 import java.util.Arrays;
 
@@ -34,7 +34,7 @@ public class AopLogging {
   }
 
   /** Pointcut that matches all Spring beans in the application's main packages. */
-  @Pointcut("within(pbs.api.rest.diaries.*)")
+  @Pointcut("within(base.api.rest.diaries.*)")
   public void applicationPackagePointcut() {
     // Method is empty as this is just a Pointcut, the implementations are in the advices.
   }
@@ -107,7 +107,7 @@ public class AopLogging {
    * @return result
    * @throws Throwable throws IllegalArgumentException
    */
-  @Around("@annotation(pbs.api.logging.LogExecutionTime)")
+  @Around("@annotation(base.api.logging.LogExecutionTime)")
   public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
     long start = System.currentTimeMillis();
     Object proceed = joinPoint.proceed();

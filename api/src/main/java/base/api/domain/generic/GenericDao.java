@@ -1,10 +1,10 @@
 package base.api.domain.generic;
 
+import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
-import pbs.api.domain.user.UserEntity;
 
 import java.util.List;
 import java.util.Optional;
