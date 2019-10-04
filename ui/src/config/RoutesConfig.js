@@ -1,4 +1,4 @@
-import ContactComponent from "../pages/main/ContactComponent";
+import ContactComponent from "../pages/header/ContactComponent";
 import TestComponent from "../pages/test/TestComponent";
 import Test2Component from "../pages/test/Test2Component";
 
