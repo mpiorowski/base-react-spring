@@ -4,7 +4,7 @@ create table sys_users
     user_name     varchar(60) not null unique,
     user_email    varchar(60) not null unique,
     user_password varchar(60) not null,
-    user_role     varchar(60) not null,
+    user_roles    text[]      not null,
 
     id            serial primary key unique,
     uid           uuid                 default uuid_generate_v4() unique,

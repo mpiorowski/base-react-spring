@@ -17,6 +17,7 @@ public class JwtAuthenticationTokenProvider {
 
   private static final Logger authLogger =
       LoggerFactory.getLogger(JwtAuthenticationTokenProvider.class);
+
   private final AppConfig appConfig;
   private Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 

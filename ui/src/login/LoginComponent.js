@@ -62,7 +62,7 @@ class LoginForm extends Component {
             </div>
             <Form onSubmit={this.validateAndSubmit} className={"login-form"}>
               <Form.Item>
-                {getFieldDecorator('userName', {
+                {getFieldDecorator('userNameOrEmail', {
                   initialValue: PROFILE === 'dev' ? devUser.user : '',
                   rules: [{required: true, message: 'Podaj nazwę użytkownika.'}],
                 })(

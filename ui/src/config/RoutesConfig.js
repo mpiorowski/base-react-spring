@@ -1,6 +1,7 @@
 import ContactComponent from "../pages/header/ContactComponent";
-import TestComponent from "../pages/test/TestComponent";
+import Test1Component from "../pages/test/Test1Component";
 import Test2Component from "../pages/test/Test2Component";
+import AdminHomeComponent from "../pages/admin/AdminHomeComponent";
 
 export const routes =
     {
@@ -12,12 +13,16 @@ export const routes =
           },
         ]
       },
-      'ADMIN': {
-        'redirect': '/test1',
+      'ROLE_ADMIN': {
         'paths': [
           {
+            url: '/home',
+            component: AdminHomeComponent,
+            headerName: 'Strona Główna',
+            headerIcon: 'book'
+          },{
             url: '/test1',
-            component: TestComponent,
+            component: Test1Component,
             headerName: 'Ksiazka',
             headerIcon: 'book'
           },

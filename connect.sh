@@ -1,1 +1,1 @@
-pgcli postgresql://admin:admin@localhost:5432/diary
+pgcli postgresql://admin:zaqwsx@localhost:5444/base

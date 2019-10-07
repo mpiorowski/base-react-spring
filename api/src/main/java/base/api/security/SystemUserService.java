@@ -2,6 +2,8 @@ package base.api.security;
 
 import base.api.domain.user.UserEntity;
 import base.api.services.AuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SystemUserService implements UserDetailsService {
 
+  private static final Logger authLogger = LoggerFactory.getLogger(SystemUserService.class);
   private final AuthService service;
 
   public SystemUserService(AuthService service) {
@@ -22,6 +25,7 @@ public class SystemUserService implements UserDetailsService {
   public UserDetails loadUserByUsername(String userNameOrEmail) {
 
     UserEntity user = service.authUserByNameOrEmail(userNameOrEmail);
+    authLogger.debug(user.toString());
 
     if (user.getUserName().equals("")) {
       throw new UsernameNotFoundException(

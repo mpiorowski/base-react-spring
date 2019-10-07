@@ -3,16 +3,17 @@
 # ===================================================================
 logging:
   level:
-    ROOT: WARN
-    pbs.api: DEBUG
-    pbs.api.mappers:
+    ROOT: INFO
+    web: DEBUG
+    base.api: DEBUG
+    base.api.mappers:
       AuthMapper: INFO
-    pbs.api.domain.diaries.DiaryDao.selectUser: INFO
+    base.api.domain.diaries.DiaryDao.selectUser: INFO
 
 datasources:
   database:
     username: admin
-    password: zaq1@WSX
+    password: zaqwsx
     port: 5444
     schema: base
     host: localhost

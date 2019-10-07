@@ -37,6 +37,7 @@
   "devDependencies": {
     "react-router-dom": "^5.1.2",
     "webpack-bundle-analyzer": "^3.5.2",
-    "webpackbar": "^4.0.0"
+    "webpackbar": "^4.0.0",
+    "http-proxy-middleware": "latest"
   }
 }

@@ -6,10 +6,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class SystemUser implements UserDetails {
 
@@ -37,8 +37,10 @@ public class SystemUser implements UserDetails {
   }
 
   public static SystemUser createUser(UserEntity user) {
-    List<GrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(new SimpleGrantedAuthority(user.getUserRole().toString()));
+    List<GrantedAuthority> authorities =
+        user.getUserRoles().stream()
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
 
     return new SystemUser(
         user.getId(), user.getUserName(), user.getUserEmail(), user.getUserPassword(), authorities);
@@ -98,24 +100,5 @@ public class SystemUser implements UserDetails {
   @Override
   public int hashCode() {
     return Objects.hash(userId);
-  }
-
-  @Override
-  public String toString() {
-    return "CustomUserDetails{"
-        + "userId="
-        + userId
-        + ", userName='"
-        + userName
-        + '\''
-        + ", userEmail='"
-        + userEmail
-        + '\''
-        + ", userPassword='"
-        + userPassword
-        + '\''
-        + ", authorities="
-        + authorities
-        + '}';
   }
 }

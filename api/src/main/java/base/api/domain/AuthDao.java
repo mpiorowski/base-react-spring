@@ -11,10 +11,11 @@ public interface AuthDao {
   @Select({
     "select * from sys_users",
     "where ( user_name = #{userNameOrEmail} or user_email = #{userNameOrEmail} )",
-    "and deleted is false"
+    "and is_deleted is false",
+    "and is_active is true",
   })
   UserEntity authUserByNameOrEmail(String userNameOrEmail);
 
-  @Select({"select * from sys_users where id = #{userId} and deleted is false"})
+  @Select({"select * from sys_users where id = #{userId} and is_deleted is false and is_active is true"})
   UserEntity authUserById(Long userId);
 }

@@ -11,14 +11,14 @@ import GlobalErrorBoundary from "./main/GlobalErrorBoundary";
 import './App.less';
 import './styles/global.less';
 import './styles/variables.less';
+import {serviceGetUser} from "./services/auth/AuthService";
 
 const {Content} = Layout;
 const isMobile = window.innerWidth <= 576;
 
 class App extends Component {
-  authorities;
-  authority;
   userName;
+  userRoles;
 
   constructor(props) {
     super(props);
@@ -45,33 +45,25 @@ class App extends Component {
   checkAuth = () => {
 
     this.setState({
-      currentUser: {
-        userName: 'admin',
-        userRole: 'ADMIN'
-      },
-      isAuth: true,
-      loading: false,
+      loading: true,
+      isAuth: false,
     });
-
-    // this.setState({
-    //   loading: true,
-    //   isAuth: false,
-    // });
-    // serviceGetUser().then(response => {
-    //   if (response.userName && response.authorities[0].authority) {
-    //     this.loadInitData();
-    //     this.setState({
-    //       currentUser: response,
-    //       isAuth: true,
-    //       loading: false,
-    //     });
-    //   }
-    // }).catch(error => {
-    //   console.log(error);
-    //   this.setState({
-    //     loading: false
-    //   });
-    // })
+    serviceGetUser().then(response => {
+      console.log(response);
+      if (response.userName && response.userRoles) {
+        this.loadInitData();
+        this.setState({
+          currentUser: response,
+          isAuth: true,
+          loading: false,
+        });
+      }
+    }).catch(error => {
+      console.log(error);
+      this.setState({
+        loading: false
+      });
+    })
   };
 
   loadInitData = () => {
@@ -141,15 +133,15 @@ class App extends Component {
                           key={routerKey++}/>
         )
       }),
-      routes[currentUser.userRole].paths.map(path => {
-        return (
-            <PrivateRoute path={path.url}
-                          component={path.component}
-                          currentUser={this.state.currentUser}
-                          key={routerKey++}/>
-        )
-      }),
-      <Route path='*' render={() => <Redirect to={routes[currentUser.userRole].redirect}/>}
+      currentUser.userRoles.map(role =>
+          routes[role].paths.map(path =>
+              <PrivateRoute path={path.url}
+                            component={path.component}
+                            currentUser={this.state.currentUser}
+                            key={routerKey++}/>
+          )
+      ),
+      <Route path='*' render={() => <Redirect to={'/home'}/>}
              key={routerKey++}/>
     ];
 

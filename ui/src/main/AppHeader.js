@@ -8,11 +8,11 @@ import {routes} from "../config/RoutesConfig";
 
 const {Header} = Layout;
 
+let i = 0;
 class AppHeader extends Component {
 
   render() {
-    const userRole = this.props.currentUser.userRole;
-
+    const userRoles = this.props.currentUser.userRoles;
     const loginMenu = (
         <Menu className={'header-dropdown-menu'}>
           <Menu.Item>
@@ -30,14 +30,15 @@ class AppHeader extends Component {
     );
 
     const routeHeader = [
-      routes[userRole].paths.map(path =>
-          <Link to={path.url} className={'header-submenu-link'}>
-            {path.headerIcon !== '' ? <Icon type={path.headerIcon} className={'header-submenu-icon'}/> : ''}
-            <h2>{path.headerName}</h2>
-          </Link>
+      userRoles.map(role =>
+          routes[role].paths.map(path =>
+              <Link to={path.url} className={'header-submenu-link'} key={i++}>
+                {path.headerIcon !== '' ? <Icon type={path.headerIcon} className={'header-submenu-icon'}/> : ''}
+                <h2>{path.headerName}</h2>
+              </Link>
+          )
       )
     ];
-
 
     return (
         <Header className={'header-menu'} style={{zIndex: "2"}}>

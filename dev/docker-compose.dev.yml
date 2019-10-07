@@ -5,12 +5,12 @@ services:
     command: postgres -c shared_preload_libraries=pgaudit -c config_file=/etc/postgresql.conf
     container_name: dev-database-diary
     environment:
-      POSTGRES_PASSWORD: admin
+      POSTGRES_PASSWORD: zaqwsx
       POSTGRES_USER: admin
       POSTGRES_DB: diary
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./database:/var/lib/postgresql/data/pgdata
-      - ../database/postgresql.conf:/etc/postgresql.conf
+      - ./database/postgresql.conf:/etc/postgresql.conf
     ports:
       - "5444:5432"
