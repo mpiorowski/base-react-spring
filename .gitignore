@@ -2,7 +2,7 @@
 logs/*
 files/*
 dump
-database/dev-database
+database/pgdata
 
 # prod files
 prod/database
