@@ -1,16 +1,16 @@
 version: '3'
 services:
   database:
-    build: ../database
+    build: ./database
     command: postgres -c shared_preload_libraries=pgaudit -c config_file=/etc/postgresql.conf
-    container_name: dev-database-diary
+    container_name: base-database
     environment:
-      POSTGRES_PASSWORD: zaqwsx
       POSTGRES_USER: admin
-      POSTGRES_DB: diary
+      POSTGRES_PASSWORD: zaqwsx
+      POSTGRES_DB: app
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./database:/var/lib/postgresql/data/pgdata
+      - ./database/pgdata:/var/lib/postgresql/data/pgdata
       - ./database/postgresql.conf:/etc/postgresql.conf
     ports:
       - "5444:5432"

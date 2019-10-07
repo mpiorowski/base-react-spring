@@ -12,10 +12,9 @@ logging:
 datasources:
   database:
     username: admin
-    password: admin
+    password: cderfv
     port: 5432
-    schema: diary
-#    host: prod-database-diary
+    schema: app
 
 
 spring:

@@ -4,7 +4,7 @@ import {Redirect, Route, Switch, withRouter} from "react-router-dom";
 import {ACCESS_TOKEN} from "./config/AppConfig";
 import {LoginComponent} from "./login/LoginComponent";
 import {momentDateTimeLanguage, setUpMomentDateTimeLanguage} from "./config/DateTimeConfig";
-import {routes} from 'config/RoutesConfig';
+import {routes} from './config/RoutesConfig';
 import AppHeader from "./main/AppHeader";
 import GlobalErrorBoundary from "./main/GlobalErrorBoundary";
 

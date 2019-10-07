@@ -1,24 +1,8 @@
 .idea
 logs/*
 files/*
-dump
+dump/*
 database/pgdata
-
-# prod files
-prod/database
-prod/logs
-prod/files
-prod/dump
-
-# test files
-test/database
-test/logs
-test/files
-
-# dev files
-dev/database
-dev/logs
-dev/files
 
 # Compiled class file
 *.class

@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 import {Dropdown, Icon, Layout, Menu} from "antd";
-import Clock from "common/Clock";
+import Clock from "../common/Clock";
 import {Link, NavLink} from "react-router-dom";
-import avatar from "img/default-avatar.png";
+import avatar from "../img/default-avatar.png";
 import "./AppHeader.less";
 import {routes} from "../config/RoutesConfig";
 

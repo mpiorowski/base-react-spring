@@ -4,17 +4,17 @@
 logging:
   level:
     ROOT: WARN
-    pbs.api: DEBUG
-    pbs.api.mappers:
+    base.api: DEBUG
+    base.api.mappers:
       AuthMapper: INFO
 
 datasources:
   database:
     username: admin
-    password: admin
+    password: xswedc
     port: 5432
-    schema: diary
-#    host: test-api-diary
+    schema: app
+    host: database
 
 spring:
   flyway:

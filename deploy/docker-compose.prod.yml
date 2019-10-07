@@ -7,15 +7,13 @@ services:
     command: postgres -c shared_preload_libraries=pgaudit -c config_file=/etc/postgresql.conf
     container_name: prod-database-diary
     environment:
-      POSTGRES_PASSWORD: admin
       POSTGRES_USER: admin
-      POSTGRES_DB: diary
+      POSTGRES_PASSWORD: cderfv
+      POSTGRES_DB: app
       PGDATA: /var/lib/postgresql/pgdata
     volumes:
-      - ./database:/var/lib/postgresql/pgdata
+      - ../database:/var/lib/postgresql/pgdata
       - ../database/postgresql.conf:/etc/postgresql.conf
-#    ports:
-#      - "5432:5432"
 #    restart: always
 
   api:
