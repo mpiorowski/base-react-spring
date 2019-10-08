@@ -2,12 +2,12 @@ version: '3.4'
 services:
 
   database:
-    container_name: test-database-base
+    container_name: prod-database-app
     build: ../database
     command: postgres -c shared_preload_libraries=pgaudit -c config_file=/etc/postgresql.conf
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: xswedc
+      POSTGRES_PASSWORD: cderfv
       POSTGRES_DB: app
       PGDATA: /var/lib/postgresql/pgdata
     volumes:
@@ -16,26 +16,29 @@ services:
     restart: on-failure
 
   api:
-    container_name: test-api-base
+    container_name: prod-api-app
     build:
       context: ../api
       dockerfile: ./Dockerfile
       target: deploy
-    environment:
-      - "SPRING_PROFILES_ACTIVE=test"
     volumes:
       - ../files:/home/app/files
       - ../logs:/home/app/logs
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod"
+      - "DATASOURCES_DATABASE_HOST=database"
     restart: on-failure
 
   ui:
-    container_name: test-ui-base
+    container_name: prod-ui-app
     build:
       context: ../ui
       dockerfile: ./Dockerfile
       target: deploy
     volumes:
-      - ./nginx-test.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx-prod.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt
     ports:
       - "80:80"
+      - "443:443"
     restart: on-failure
