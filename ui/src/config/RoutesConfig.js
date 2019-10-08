@@ -33,5 +33,26 @@ export const routes =
           headerIcon: 'user'
         },
       ]
+    },
+    'ROLE_USER': {
+      'paths': [
+        {
+          url: '/home',
+          component: AdminHomeComponent,
+          headerName: 'Strona Główna',
+          headerIcon: 'book'
+        }, {
+          url: '/test1',
+          component: Test1Component,
+          headerName: 'Ksiazka',
+          headerIcon: 'book'
+        },
+        {
+          url: '/test2',
+          component: Test2Component,
+          headerName: 'Forum',
+          headerIcon: 'user'
+        },
+      ]
     }
   };

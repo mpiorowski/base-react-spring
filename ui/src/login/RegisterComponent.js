@@ -25,6 +25,7 @@ class RegisterForm extends Component {
       if (!error) {
         serviceRegister(credentials).then(response => {
           if (response) {
+            console.log(response);
             openNotification('registerSuccess');
             this.props.history.push('/login');
           }

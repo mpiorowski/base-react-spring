@@ -20,4 +20,8 @@ public class AuthService {
   public UserEntity authUserById(Long userId) {
     return authDao.authUserById(userId);
   }
+
+  public boolean registerUser(UserEntity userEntity) {
+    return authDao.registerUser(userEntity);
+  }
 }

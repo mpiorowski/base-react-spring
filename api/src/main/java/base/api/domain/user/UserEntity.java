@@ -1,6 +1,5 @@
 package base.api.domain.user;
 
-import base.api.config.AppConstants;
 import base.api.domain.generic.GenericEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
