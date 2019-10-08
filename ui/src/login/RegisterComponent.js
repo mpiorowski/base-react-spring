@@ -16,6 +16,7 @@ class RegisterForm extends Component {
     checkingRegister: false,
   };
 
+  //TODO - WALIDACJA
   validateAndSubmit = (e) => {
     this.setState({
       checkingRegister: true,
@@ -132,6 +133,7 @@ class RegisterForm extends Component {
                   {required: true, message: 'Powtórz hasło.'},
                   {validator: this.compareToFirstPassword},
                 ],
+                validateTrigger: 'onBlur'
               })(
                 <Input.Password
                   prefix={<Icon type={"lock"}/>}

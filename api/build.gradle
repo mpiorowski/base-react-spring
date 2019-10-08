@@ -31,6 +31,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'org.springframework.boot:spring-boot-starter-aop'
+  implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.0'
 	implementation 'org.flywaydb:flyway-core'
 
@@ -61,9 +63,9 @@ test {
 	useJUnitPlatform()
 }
 
-//flyway {
-//  url = 'jdbc:postgresql://localhost:5444/base'
-//  user = 'admin'
-//  password = 'xw'
-//  locations = ['classpath:db/migration', 'classpath:db/test']
-//}
+flyway {
+  url = 'jdbc:postgresql://localhost:5444/app'
+  user = 'admin'
+  password = 'zaqwsx'
+  locations = ['classpath:db/migration', 'classpath:db/test']
+}
