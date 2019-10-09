@@ -1,4 +1,4 @@
-package base.api.config;
+package base.api.config.mail;
 
 import lombok.Data;
 import lombok.Getter;
@@ -19,6 +19,9 @@ public class MailConfig {
   private Integer port;
   private String username;
   private String password;
+  private String from;
+
+  private String defaultEncoding = "UTF-8";
 
   private String smtpStarttlsEnable = "true";
   private String transportProtocol = "smtp";
@@ -36,6 +39,8 @@ public class MailConfig {
     mailSender.setPort(port);
     mailSender.setUsername(username);
     mailSender.setPassword(password);
+
+    mailSender.setDefaultEncoding(defaultEncoding);
 
     Properties props = mailSender.getJavaMailProperties();
     props.put("mail.transport.protocol", transportProtocol);

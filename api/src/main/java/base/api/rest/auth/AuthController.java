@@ -9,7 +9,7 @@ import base.api.rest.auth.dto.RegisterRequestDto;
 import base.api.rest.auth.dto.UserSummaryDto;
 import base.api.security.JwtAuthenticationTokenProvider;
 import base.api.security.SystemUser;
-import base.api.services.AuthService;
+import base.api.services.auth.AuthService;
 import org.mapstruct.factory.Mappers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,9 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController
@@ -59,7 +61,7 @@ public class AuthController {
 
   @PostMapping("/register")
   public ResponseEntity<Boolean> registerUser(
-      @RequestBody @Valid RegisterRequestDto registerRequestDto) {
+      @RequestBody @Valid RegisterRequestDto registerRequestDto) throws MessagingException, UnsupportedEncodingException {
 
     UserEntity userEntity = authMapper.registerUserToUserEntity(registerRequestDto);
     userEntity.setUserRoles(List.of(AppConstants.RoleName.ROLE_USER.name()));
@@ -72,12 +74,14 @@ public class AuthController {
   @GetMapping("/user")
   public ResponseEntity<UserSummaryDto> getUser(@CurrentUser SystemUser userDetails) {
 
-    UserSummaryDto userSummaryDto =
-        new UserSummaryDto(
-            userDetails.getUsername(),
-            userDetails.getUserEmail(),
-            AuthorityUtils.authorityListToSet(userDetails.getAuthorities()));
-
-    return ResponseEntity.ok(userSummaryDto);
+    if (userDetails != null) {
+      UserSummaryDto userSummaryDto =
+          new UserSummaryDto(
+              userDetails.getUsername(),
+              userDetails.getUserEmail(),
+              AuthorityUtils.authorityListToSet(userDetails.getAuthorities()));
+      return ResponseEntity.ok(userSummaryDto);
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 }

@@ -18,7 +18,7 @@ public class UUIDTypeHandler implements TypeHandler<UUID> {
   private static final Logger logger = LoggerFactory.getLogger(UUIDTypeHandler.class);
 
   private static UUID toUUID(String val) {
-    if (UtilsString.isBlankString(val)) {
+    if (UtilsString.isBlank(val)) {
       return null;
     }
     try {
