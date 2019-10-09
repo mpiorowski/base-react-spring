@@ -61,7 +61,8 @@ public class AuthController {
 
   @PostMapping("/register")
   public ResponseEntity<Boolean> registerUser(
-      @RequestBody @Valid RegisterRequestDto registerRequestDto) throws MessagingException, UnsupportedEncodingException {
+      @RequestBody @Valid RegisterRequestDto registerRequestDto)
+      throws MessagingException, UnsupportedEncodingException {
 
     UserEntity userEntity = authMapper.registerUserToUserEntity(registerRequestDto);
     userEntity.setUserRoles(List.of(AppConstants.RoleName.ROLE_USER.name()));
@@ -69,6 +70,12 @@ public class AuthController {
     return authService.registerUser(userEntity)
         ? new ResponseEntity<>(true, HttpStatus.OK)
         : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+  }
+
+  @PostMapping("/register/username")
+  public ResponseEntity<Boolean> checkUserName(@RequestBody String userName) {
+
+    return new ResponseEntity<>(authService.checkUserName(userName), HttpStatus.OK);
   }
 
   @GetMapping("/user")

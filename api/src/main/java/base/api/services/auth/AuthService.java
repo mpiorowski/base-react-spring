@@ -41,9 +41,13 @@ public class AuthService {
       String userEmail = userEntity.getUserEmail();
       String message = MessagesConfig.WelcomeMessage.message(userName, userEmail);
       mailService.sendHtmlMail(
-          userEntity.getUserEmail(), MessagesConfig.WelcomeMessage.header, message);
+          userEntity.getUserEmail(), MessagesConfig.WelcomeMessage.HEADER, message);
       return true;
     }
     return false;
+  }
+
+  public boolean checkUserName(String userName) {
+    return authDao.checkUserName(userName);
   }
 }

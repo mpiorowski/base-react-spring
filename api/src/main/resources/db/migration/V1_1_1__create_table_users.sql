@@ -1,8 +1,8 @@
 -- users table
 create table sys_users
 (
-    user_name     varchar(50) not null unique,
-    user_email    varchar(50) not null unique,
+    user_name     varchar(100) not null unique,
+    user_email    varchar(100) not null unique,
     user_password varchar(100) not null,
     user_roles    text[]      not null,
 

@@ -2,8 +2,13 @@ package base.api.config.mail;
 
 public class MessagesConfig {
 
+  private MessagesConfig() {}
+
   public static class WelcomeMessage {
-    public static String header = "Witamy!";
+    public static final String HEADER = "Witamy!";
+
+    private WelcomeMessage() {}
+
     public static String message(String userName, String userEmail) {
       return String.format(
           "<p>Witamy Ciebie w naszej cudownej, najlepszej, najwspanialszej aplikacji na świecie!</p>"

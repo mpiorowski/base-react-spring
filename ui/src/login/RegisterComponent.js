@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Layout} from "antd";
 import './RegisterComponent.less';
-import {serviceRegister} from "../services/auth/AuthService";
+import {serviceCheckUserName, serviceRegister} from "../services/auth/AuthService";
 import loginLogo from "../img/bear-logo-grey.png";
 import {openNotification} from "../common/notifications/AuthNotifications";
 import {NavLink} from "react-router-dom";
@@ -13,6 +13,8 @@ class RegisterForm extends Component {
 
   authToken;
   state = {
+    checkingUserName: '',
+    checkingUserEmail: false,
     checkingRegister: false,
   };
 
@@ -59,6 +61,25 @@ class RegisterForm extends Component {
     }
   };
 
+  checkUserName = (rule, value, callback) => {
+    this.setState({
+      checkingUserName: 'validating',
+    });
+    console.log(value);
+    serviceCheckUserName(value).then(response => {
+      console.log(response);
+      if (response) {
+        callback('Ta nazwa jest już zajęta');
+      } else {
+        callback();
+      }
+      this.setState({
+        checkingUserName: 'success',
+      });
+    });
+
+  };
+
   render() {
 
     const {getFieldDecorator} = this.props.form;
@@ -74,11 +95,16 @@ class RegisterForm extends Component {
             onSubmit={this.validateAndSubmit}
             className={"register-form"}
           >
-            <Form.Item>
+            <Form.Item
+              hasFeedback
+              validateStatus={this.state.checkingUserName}
+              help={this.state.checkingUserName === '' ? "" : "Sprawdzam nazwę użytkownika"}
+            >
               {getFieldDecorator('userName', {
                 rules: [
                   {required: true, message: 'Podaj nazwę użytkownika.'},
                   {pattern: new RegExp("^\\S+$"), message: 'Podaj nazwę bez spacji.'},
+                  {validator: this.checkUserName}
                 ],
                 validateTrigger: 'onBlur'
               })(

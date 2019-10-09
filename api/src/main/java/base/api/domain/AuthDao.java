@@ -29,4 +29,7 @@ public interface AuthDao {
     "(#{userName}, #{userEmail}, crypt(#{userPassword}, gen_salt('bf', 8)), #{userRoles})"
   })
   boolean registerUser(UserEntity userEntity);
+
+  @Select({"select exists(select 1 from sys_users where user_name = #{userName})"})
+  boolean checkUserName(String userName);
 }
