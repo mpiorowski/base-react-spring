@@ -24,7 +24,7 @@ public class TestMail {
   @GetMapping("/mail1")
   public void sendSimpleMail() {
     SimpleMailMessage msg = new SimpleMailMessage();
-    msg.setTo("mateuszpiorowski@gmail");
+    msg.setTo("mateuszpiorowski@gmail.com");
 
     msg.setSubject("Testing from Spring Boot");
     msg.setText("Hello World \n Spring Boot Email");
@@ -39,7 +39,7 @@ public class TestMail {
     // true = multipart message
     MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 
-    helper.setTo("mateuszpiorowski@gmail");
+    helper.setTo("mateuszpiorowski@gmail.com");
 
     helper.setSubject("Testing from Spring Boot");
 
