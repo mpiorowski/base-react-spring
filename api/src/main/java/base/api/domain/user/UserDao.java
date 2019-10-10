@@ -16,12 +16,8 @@ import java.util.UUID;
 @Repository
 public interface UserDao {
 
-
-
   @Select("select * from sys_users where deleted is false and uid = #{uid}")
   Optional<UserEntity> findByUid(UUID uid);
-
-
 
   @Select("select * from sys_users where user_role = 'ROLE_USER' and deleted is false")
   List<UserEntity> findAllUser();

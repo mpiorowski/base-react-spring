@@ -18,6 +18,28 @@ spring:
       file-size-threshold: 2KB
       max-file-size: 200MB
       max-request-size: 215MB
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: "piorowskiapp"
+#    password: "matpioapp"
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          connectiontimeoute: 5000
+#          timeout: 5000
+#          writetimeout: 5000
+#          starttls:
+#            enable: true
+
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: "piorowskiapp@gmail.com"
+  password: "matpioapp"
+  from: "Aplikacja Codeito"
+  debug: false
 
 mybatis:
   configuration:

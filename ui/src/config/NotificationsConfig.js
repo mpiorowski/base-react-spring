@@ -31,5 +31,11 @@ export const notificationConfig = {
     message: "Niepoprawny login lub hasło",
     description: "Proszę sprawdź dane logowania"
   },
+
+  registerSuccess: {
+    type: 'success',
+    message: "Pozytywnie dodano konto!",
+    description: "Zaloguj się do systemu"
+  },
 };
 

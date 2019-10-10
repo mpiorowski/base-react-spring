@@ -12,9 +12,12 @@ import './App.less';
 import './styles/global.less';
 import './styles/variables.less';
 import {serviceGetUser} from "./services/auth/AuthService";
+import {RegisterComponent} from "./login/RegisterComponent";
 
 const {Content} = Layout;
-const isMobile = window.innerWidth <= 576;
+
+// TODO - use or deletes
+// const isMobile = window.innerWidth <= 576;
 
 class App extends Component {
   userName;
@@ -30,15 +33,12 @@ class App extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.setState({
       loading: true,
       isAuth: false,
     });
     console.log('APP');
-  }
-
-  componentDidMount() {
     this.checkAuth();
   }
 
@@ -103,6 +103,11 @@ class App extends Component {
                    render={(props) => <LoginComponent
                        {...props}
                        checkAuth={this.checkAuth}
+                   />}/>
+            <Route exact path="/register"
+                   render={(props) => <RegisterComponent
+                     {...props}
+                     checkAuth={this.checkAuth}
                    />}/>
             <Route path='*' render={() => <Redirect to={'/login'}/>}/>
           </Switch>

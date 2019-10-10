@@ -16,6 +16,22 @@ public class DataSourcesConfig {
 
   private final Database database = new Database();
 
+  @Bean
+  public DataSource getDataSource() {
+    DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+    dataSourceBuilder.driverClassName("org.postgresql.Driver");
+    dataSourceBuilder.url(
+        "jdbc:postgresql://"
+            + database.getHost()
+            + ":"
+            + database.getPort()
+            + "/"
+            + database.getSchema());
+    dataSourceBuilder.username(database.getUsername());
+    dataSourceBuilder.password(database.getPassword());
+    return dataSourceBuilder.build();
+  }
+
   @Data
   private static class Database {
     private String username;
@@ -23,17 +39,6 @@ public class DataSourcesConfig {
     private int port;
     private String schema;
     private String host;
-  }
-
-  @Bean
-  public DataSource getDataSource() {
-    DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-    dataSourceBuilder.driverClassName("org.postgresql.Driver");
-    dataSourceBuilder.url(
-        "jdbc:postgresql://" +  database.getHost() + ":" + database.getPort() + "/" + database.getSchema());
-    dataSourceBuilder.username(database.getUsername());
-    dataSourceBuilder.password(database.getPassword());
-    return dataSourceBuilder.build();
   }
 
   //  @Autowired

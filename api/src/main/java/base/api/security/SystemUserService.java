@@ -1,7 +1,7 @@
 package base.api.security;
 
 import base.api.domain.user.UserEntity;
-import base.api.services.AuthService;
+import base.api.services.auth.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;

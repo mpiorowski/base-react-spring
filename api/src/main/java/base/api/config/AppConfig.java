@@ -35,4 +35,5 @@ public class AppConfig {
     int corePoolSize = 2;
     String threadNamePrefix = "Scheduler-";
   }
+
 }
