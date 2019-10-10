@@ -33,15 +33,12 @@ class App extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.setState({
       loading: true,
       isAuth: false,
     });
     console.log('APP');
-  }
-
-  componentDidMount() {
     this.checkAuth();
   }
 
