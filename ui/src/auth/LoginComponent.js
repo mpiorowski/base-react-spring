@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Form, Icon, Input, Layout, Popover} from "antd";
+import {Button, Form, Icon, Input, Layout} from "antd";
 import './LoginComponent.less';
 import {serviceLogIn} from "../services/auth/AuthService";
 import {ACCESS_TOKEN, devUser, PROFILE} from "../config/AppConfig";
@@ -13,12 +13,12 @@ class LoginForm extends Component {
 
   authToken;
   state = {
-    checkingLogin: false,
+    checking: false,
   };
 
   validateAndSubmit = (e) => {
     this.setState({
-      checkingLogin: true,
+      checking: true,
     });
     e.preventDefault();
     this.props.form.validateFields((error, credentials) => {
@@ -36,13 +36,13 @@ class LoginForm extends Component {
             openNotification('serverAccess');
           }
           this.setState({
-            checkingLogin: false,
+            checking: false,
           });
         })
       } else {
         console.log(error);
         this.setState({
-          checkingLogin: false,
+          checking: false,
         });
       }
     })
@@ -57,12 +57,12 @@ class LoginForm extends Component {
         <Content className={"login-content"}>
           <div className={"login-header"}>
             <img src={loginLogo} alt="" className={"login-logo-icon"}/>
-            Aplikacja
+            Codeito
           </div>
           <Form onSubmit={this.validateAndSubmit} className={"login-form"}>
             <Form.Item>
               {getFieldDecorator('userNameOrEmail', {
-                initialValue: PROFILE === 'dev' ? devUser.user : '',
+                // initialValue: PROFILE === 'dev' ? devUser.user : '',
                 rules: [{required: true, message: 'Podaj nazwę użytkownika lub email.'}],
               })(
                 <Input prefix={<Icon type={"user"}/>} className={'login-input'}
@@ -71,7 +71,7 @@ class LoginForm extends Component {
             </Form.Item>
             <Form.Item>
               {getFieldDecorator('userPassword', {
-                initialValue: PROFILE === 'dev' ? devUser.pass : '',
+                // initialValue: PROFILE === 'dev' ? devUser.pass : '',
                 rules: [{required: true, message: 'Podaj hasło.'}],
               })(
                 <Input prefix={<Icon type={"lock"}/>} className={"login-input"} type={"password"}
@@ -79,25 +79,11 @@ class LoginForm extends Component {
               )}
             </Form.Item>
             <Form.Item>
-              <Popover
-                content={
-                  <div>
-                    Zapomniałeś hasła? Zadzwoń do nas:
-                    <br/><b>696 042 610</b>
-                    <br/>lub napisz do nas na maila:
-                    <br/><b><a href="mailto:agata.rakowska@pbs.pl">agata.rakowska@pbs.pl</a></b>
-                    <br/>
-                    W treści podaj swój login oraz numer telefonu.
-                  </div>
-                }
-                trigger="click"
-              >
-                    <span className="login-form-forgot">
-                      Nie pamiętasz hasła?
-                    </span>
-              </Popover>
+              <div className="login-form-forgot">
+                <NavLink to={'/forget'}>Nie pamiętasz hasła?</NavLink>
+              </div>
               <Button type="primary" htmlType="submit" className="login-form-button"
-                      loading={this.state.checkingLogin}>
+                      loading={this.state.checking}>
                 <span className={'login-form-button-text'}>Zaloguj się</span>
               </Button>
               Lub <NavLink to="/register"><b>załóż nowe konto.</b></NavLink>

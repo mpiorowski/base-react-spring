@@ -13,12 +13,12 @@ class RegisterForm extends Component {
 
   authToken;
   state = {
-    checkingRegister: false,
+    checking: false,
   };
 
   validateAndSubmit = (e) => {
     this.setState({
-      checkingRegister: true,
+      checking: true,
     });
     e.preventDefault();
     this.props.form.validateFields((error, credentials) => {
@@ -37,13 +37,13 @@ class RegisterForm extends Component {
             openNotification('serverAccess');
           }
           this.setState({
-            checkingRegister: false,
+            checking: false,
           });
         })
       } else {
         console.log(error);
         this.setState({
-          checkingRegister: false,
+          checking: false,
         });
       }
     })
@@ -99,7 +99,7 @@ class RegisterForm extends Component {
         <Content className={"register-content"}>
           <div className={"register-header"}>
             <img src={loginLogo} alt="" className={"register-logo-icon"}/>
-            Aplikacja
+            Codeito
           </div>
           <Form
             onSubmit={this.validateAndSubmit}
@@ -181,7 +181,7 @@ class RegisterForm extends Component {
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit" className="register-form-button"
-                      loading={this.state.checkingRegister}>
+                      loading={this.state.checking}>
                 <span className={'register-form-button-text'}>Zarejestruj się</span>
               </Button>
               Masz już konto?<NavLink to="/login"> <b>Zaloguj się.</b></NavLink>

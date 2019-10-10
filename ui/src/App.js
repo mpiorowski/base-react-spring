@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Icon, Layout, Spin} from "antd";
 import {Redirect, Route, Switch, withRouter} from "react-router-dom";
 import {ACCESS_TOKEN} from "./config/AppConfig";
-import {LoginComponent} from "./login/LoginComponent";
+import {LoginComponent} from "./auth/LoginComponent";
 import {momentDateTimeLanguage, setUpMomentDateTimeLanguage} from "./config/DateTimeConfig";
 import {routes} from './config/RoutesConfig';
 import AppHeader from "./main/AppHeader";
@@ -12,7 +12,8 @@ import './App.less';
 import './styles/global.less';
 import './styles/variables.less';
 import {serviceGetUser} from "./services/auth/AuthService";
-import {RegisterComponent} from "./login/RegisterComponent";
+import {RegisterComponent} from "./auth/RegisterComponent";
+import {ForgetComponent} from "./auth/ForgetComponent";
 
 const {Content} = Layout;
 
@@ -106,6 +107,11 @@ class App extends Component {
                    />}/>
             <Route exact path="/register"
                    render={(props) => <RegisterComponent
+                     {...props}
+                     checkAuth={this.checkAuth}
+                   />}/>
+            <Route exact path="/forget"
+                   render={(props) => <ForgetComponent
                      {...props}
                      checkAuth={this.checkAuth}
                    />}/>
