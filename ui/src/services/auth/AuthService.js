@@ -25,8 +25,16 @@ export function serviceRegister(credentials) {
 
 export function serviceCheckUserName(userName) {
   return apiRequest({
-    url: "/api/auth/register/username",
+    url: "/api/auth/register/user-name",
     method: "POST",
-    body: JSON.stringify(userName)
+    body: userName
+  });
+}
+
+export function serviceCheckUserEmail(userEmail) {
+  return apiRequest({
+    url: "/api/auth/register/user-email",
+    method: "POST",
+    body: userEmail
   });
 }

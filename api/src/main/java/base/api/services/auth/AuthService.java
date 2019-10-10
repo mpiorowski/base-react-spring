@@ -50,4 +50,8 @@ public class AuthService {
   public boolean checkUserName(String userName) {
     return authDao.checkUserName(userName);
   }
+
+  public boolean checkUserEmail(String userEmail) {
+    return authDao.checkUserEmail(userEmail);
+  }
 }

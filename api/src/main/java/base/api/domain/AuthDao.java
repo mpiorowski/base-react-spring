@@ -3,6 +3,7 @@ package base.api.domain;
 import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
@@ -30,6 +31,9 @@ public interface AuthDao {
   })
   boolean registerUser(UserEntity userEntity);
 
-  @Select({"select exists(select 1 from sys_users where user_name = #{userName})"})
-  boolean checkUserName(String userName);
+  @Select("select exists(select 1 from sys_users where user_name = #{userName})")
+  boolean checkUserName(@Param("userName") String userName);
+
+  @Select("select exists(select 1 from sys_users where user_email = #{userEmail})")
+  boolean checkUserEmail(@Param("userEmail") String userEmail);
 }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Layout} from "antd";
 import './RegisterComponent.less';
-import {serviceCheckUserName, serviceRegister} from "../services/auth/AuthService";
+import {serviceCheckUserEmail, serviceCheckUserName, serviceRegister} from "../services/auth/AuthService";
 import loginLogo from "../img/bear-logo-grey.png";
 import {openNotification} from "../common/notifications/AuthNotifications";
 import {NavLink} from "react-router-dom";
@@ -13,12 +13,9 @@ class RegisterForm extends Component {
 
   authToken;
   state = {
-    checkingUserName: '',
-    checkingUserEmail: false,
     checkingRegister: false,
   };
 
-  //TODO - WALIDACJA
   validateAndSubmit = (e) => {
     this.setState({
       checkingRegister: true,
@@ -62,22 +59,35 @@ class RegisterForm extends Component {
   };
 
   checkUserName = (rule, value, callback) => {
-    this.setState({
-      checkingUserName: 'validating',
-    });
-    console.log(value);
-    serviceCheckUserName(value).then(response => {
-      console.log(response);
-      if (response) {
-        callback('Ta nazwa jest już zajęta');
-      } else {
-        callback();
-      }
-      this.setState({
-        checkingUserName: 'success',
+    if (value === '') {
+      callback('Podaj nazwę użytkownika.');
+    } else if (/\s/.test(value)) {
+      callback('Podaj nazwę użytkownika bez spacji.');
+    } else {
+      serviceCheckUserName(value).then(response => {
+        if (response) {
+          callback('Ta nazwa jest już zajęta');
+        } else {
+          callback();
+        }
       });
-    });
+    }
+  };
 
+  checkUserEmail = (rule, value, callback) => {
+    if (value === '') {
+      callback('Podaj poprawny email.');
+    } else if (/\s/.test(value)) {
+      callback('Podaj poprawny email bez spacji.');
+    } else {
+      serviceCheckUserEmail(value).then(response => {
+        if (response) {
+          callback('Ten email jest już zajęty');
+        } else {
+          callback();
+        }
+      });
+    }
   };
 
   render() {
@@ -96,14 +106,13 @@ class RegisterForm extends Component {
             className={"register-form"}
           >
             <Form.Item
-              hasFeedback
-              validateStatus={this.state.checkingUserName}
-              help={this.state.checkingUserName === '' ? "" : "Sprawdzam nazwę użytkownika"}
+              // validateStatus={this.state.userNameStatus = ''}
+              // help={this.state.userNameValidation}
             >
               {getFieldDecorator('userName', {
                 rules: [
-                  {required: true, message: 'Podaj nazwę użytkownika.'},
-                  {pattern: new RegExp("^\\S+$"), message: 'Podaj nazwę bez spacji.'},
+                  // {required: true, message: 'Podaj nazwę użytkownika.'},
+                  // {pattern: new RegExp("^\\S+$"), message: 'Podaj nazwę bez spacji.'},
                   {validator: this.checkUserName}
                 ],
                 validateTrigger: 'onBlur'
@@ -115,7 +124,7 @@ class RegisterForm extends Component {
             <Form.Item>
               {getFieldDecorator('userEmail', {
                 rules: [
-                  {required: true, message: 'Podaj email.'},
+                  {validator: this.checkUserEmail},
                   {type: 'email', message: 'Niepoprawny format email.'}
                 ],
                 validateTrigger: 'onBlur'

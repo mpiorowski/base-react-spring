@@ -72,10 +72,13 @@ public class AuthController {
         : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
   }
 
-  @PostMapping("/register/username")
+  @PostMapping("/register/user-name")
   public ResponseEntity<Boolean> checkUserName(@RequestBody String userName) {
-
     return new ResponseEntity<>(authService.checkUserName(userName), HttpStatus.OK);
+  }
+  @PostMapping("/register/user-email")
+  public ResponseEntity<Boolean> checkUserEmail(@RequestBody String userEmail) {
+    return new ResponseEntity<>(authService.checkUserEmail(userEmail), HttpStatus.OK);
   }
 
   @GetMapping("/user")
