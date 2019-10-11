@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.Getter;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -17,7 +19,10 @@ import javax.sql.DataSource;
 @Getter
 public class DataSourcesConfig {
 
+  private static final Logger logger = LoggerFactory.getLogger(DataSourcesConfig.class);
+
   private final Database database = new Database();
+  private final Migration migration = new Migration();
 
   @Bean
   public DataSource getDataSource() {
@@ -35,17 +40,19 @@ public class DataSourcesConfig {
     return dataSourceBuilder.build();
   }
 
-//  TODO - check if config is set properly in properties
+  //  TODO - check if config is set properly in properties
   @Bean(name = "flyway")
   @Autowired
   public Flyway getFlywayBean(DataSource dataSource, AppConfig appConfig) {
-        FluentConfiguration configuration =
-            Flyway.configure()
-    //            .table("schema_version")
-    //            .outOfOrder(true)
-    //            .schemas("public")
-                .dataSource(dataSource);
-    //            .locations("db/migration")
+
+    logger.info(migration.getLocations());
+    FluentConfiguration configuration =
+        Flyway.configure()
+            //            .table("schema_version")
+            //            .outOfOrder(true)
+            //            .schemas("public")
+            .dataSource(dataSource)
+            .locations(migration.getLocations());
     //            .baselineOnMigrate(true)
     //            .ignoreMissingMigrations(true);
 
@@ -53,6 +60,11 @@ public class DataSourcesConfig {
     flyway.clean();
     flyway.migrate();
     return flyway;
+  }
+
+  @Data
+  private static class Migration {
+    private String locations;
   }
 
   @Data

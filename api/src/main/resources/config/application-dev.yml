@@ -17,6 +17,8 @@ datasources:
     port: 5444
     schema: app
     host: localhost
+  migration:
+    locations: "db/migration, db/test"
 
 spring:
   profiles:
@@ -28,8 +30,9 @@ spring:
       additional-paths: src/main/java
     livereload:
       enabled: true
-  flyway:
-    locations: "classpath:/db/migration, classpath:/db/test"
+#  flyway:
+#    locations: "classpath:/db/migration, classpath:/db/test"
+
 
 storage:
   location: "./dev/files/"
