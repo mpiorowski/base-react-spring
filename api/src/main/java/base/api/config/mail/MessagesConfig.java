@@ -20,4 +20,14 @@ public class MessagesConfig {
           userName, userEmail);
     }
   }
+
+  public static class RegisterTokenMessage {
+    public static final String HEADER = "Twój kod autoryzacyjny";
+
+    private RegisterTokenMessage() {}
+
+    public static String message(String code) {
+      return String.format("<p>Poniżej przesyłamy Twój kod do autoryzacji:</p><h1>%s</h1>", code);
+    }
+  }
 }

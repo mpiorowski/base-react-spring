@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Layout} from "antd";
 import './RegisterComponent.less';
-import {serviceCheckUserEmail, serviceCheckUserName, serviceRegister} from "../services/auth/AuthService";
+import {serviceCheckUserEmail, serviceCheckUserName, serviceRegisterCode} from "../services/auth/AuthService";
 import loginLogo from "../img/bear-logo-grey.png";
 import {openNotification} from "../common/notifications/AuthNotifications";
 import {NavLink} from "react-router-dom";
@@ -23,11 +23,16 @@ class RegisterForm extends Component {
     e.preventDefault();
     this.props.form.validateFields((error, credentials) => {
       if (!error) {
-        serviceRegister(credentials).then(response => {
+        serviceRegisterCode(credentials.userEmail).then(response => {
           if (response) {
             console.log(response);
-            openNotification('registerSuccess');
-            this.props.history.push('/login');
+            openNotification('validationCode');
+            this.props.history.push({
+              pathname: '/register/code',
+              state: {
+                credentials: credentials,
+              }
+            });
           }
         }).catch(authError => {
           console.log(authError);
@@ -182,7 +187,7 @@ class RegisterForm extends Component {
             <Form.Item>
               <Button type="primary" htmlType="submit" className="register-form-button"
                       loading={this.state.checking}>
-                <span className={'register-form-button-text'}>Zarejestruj się</span>
+                <span className={'register-form-button-text'}>Dalej</span>
               </Button>
               Masz już konto?<NavLink to="/login"> <b>Zaloguj się.</b></NavLink>
             </Form.Item>
@@ -194,4 +199,4 @@ class RegisterForm extends Component {
   }
 }
 
-export const RegisterComponent = Form.create({name: 'loginForm'})(RegisterForm);
+export const RegisterComponent = Form.create({name: 'registerForm'})(RegisterForm);

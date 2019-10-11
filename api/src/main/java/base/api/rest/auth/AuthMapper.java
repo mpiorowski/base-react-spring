@@ -10,5 +10,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AuthMapper {
 
-  UserEntity registerUserToUserEntity(RegisterRequestDto registerRequestDto);
+  UserEntity registerRequestToUserEntity(RegisterRequestDto registerRequestDto);
 }

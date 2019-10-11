@@ -6,6 +6,6 @@ export const openNotification = (type) => {
   notification[notificationConfig[type].type]({
     message: notificationConfig[type].message,
     description: notificationConfig[type].description,
-    duration: 2
+    duration: notificationConfig[type].duration,
   });
 };

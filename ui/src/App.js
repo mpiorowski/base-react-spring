@@ -13,7 +13,8 @@ import './styles/global.less';
 import './styles/variables.less';
 import {serviceGetUser} from "./services/auth/AuthService";
 import {RegisterComponent} from "./auth/RegisterComponent";
-import {ForgetComponent} from "./auth/ForgetComponent";
+import {RecoverComponent} from "./auth/RecoverComponent";
+import {RegisterCodeComponent} from "./auth/RegisterCodeComponent";
 
 const {Content} = Layout;
 
@@ -91,46 +92,51 @@ class App extends Component {
     if (this.state.loading) {
       const antIcon = <Icon type="loading-3-quarters" style={{fontSize: 30}} spin/>;
       return (
-          <div className={"app-layout"}>
-            <Spin indicator={antIcon} className={"loading"}/>
-          </div>
+        <div className={"app-layout"}>
+          <Spin indicator={antIcon} className={"loading"}/>
+        </div>
       )
     }
 
     if (!this.state.isAuth) {
       return (
-          <Switch>
-            <Route exact path="/login"
-                   render={(props) => <LoginComponent
-                       {...props}
-                       checkAuth={this.checkAuth}
-                   />}/>
-            <Route exact path="/register"
-                   render={(props) => <RegisterComponent
-                     {...props}
-                     checkAuth={this.checkAuth}
-                   />}/>
-            <Route exact path="/forget"
-                   render={(props) => <ForgetComponent
-                     {...props}
-                     checkAuth={this.checkAuth}
-                   />}/>
-            <Route path='*' render={() => <Redirect to={'/login'}/>}/>
-          </Switch>
+        <Switch>
+          <Route exact path="/login"
+                 render={(props) => <LoginComponent
+                   {...props}
+                   checkAuth={this.checkAuth}
+                 />}/>
+          <Route exact path="/register"
+                 render={(props) => <RegisterComponent
+                   {...props}
+                   checkAuth={this.checkAuth}
+                 />}/>
+          <Route exact path="/register/code"
+                 render={(props) => <RegisterCodeComponent
+                   {...props}
+                   checkAuth={this.checkAuth}
+                 />}/>
+          <Route exact path="/recover"
+                 render={(props) => <RecoverComponent
+                   {...props}
+                   checkAuth={this.checkAuth}
+                 />}/>
+          <Route path='*' render={() => <Redirect to={'/login'}/>}/>
+        </Switch>
       )
     }
     const PrivateRoute = ({component: RouteComponent, ...rest}) => (
-        <div>
-          <Route {...rest} render={(props) => (
-              this.state.isAuth === true
-                  ? <RouteComponent {...rest} {...props}/>
-                  : <Redirect to={{
-                    pathname: '/login',
-                    state: {from: props.location}
-                  }}
-                  />
-          )}/>
-        </div>
+      <div>
+        <Route {...rest} render={(props) => (
+          this.state.isAuth === true
+            ? <RouteComponent {...rest} {...props}/>
+            : <Redirect to={{
+              pathname: '/login',
+              state: {from: props.location}
+            }}
+            />
+        )}/>
+      </div>
     );
 
     const currentUser = this.state.currentUser;
@@ -138,42 +144,42 @@ class App extends Component {
     const router = [
       routes.main.paths.map(path => {
         return (
-            <PrivateRoute path={path.url}
-                          component={path.component}
-                          currentUser={this.state.currentUser}
-                          key={routerKey++}/>
+          <PrivateRoute path={path.url}
+                        component={path.component}
+                        currentUser={this.state.currentUser}
+                        key={routerKey++}/>
         )
       }),
       currentUser.userRoles.map(role =>
-          routes[role].paths.map(path =>
-              <PrivateRoute path={path.url}
-                            component={path.component}
-                            currentUser={this.state.currentUser}
-                            key={routerKey++}/>
-          )
+        routes[role].paths.map(path =>
+          <PrivateRoute path={path.url}
+                        component={path.component}
+                        currentUser={this.state.currentUser}
+                        key={routerKey++}/>
+        )
       ),
       <Route path='*' render={() => <Redirect to={'/home'}/>}
              key={routerKey++}/>
     ];
 
     return (
-        <div>
-          <GlobalErrorBoundary>
-            <Layout className={'app-layout'}>
-              <AppHeader
-                  toggle={this.headerToggle}
-                  logout={this.logout}
-                  collapsed={this.state.collapsed}
-                  currentUser={currentUser}
-              />
-              <Content className={'app-content'}>
-                <Switch>
-                  {router}
-                </Switch>
-              </Content>
-            </Layout>
-          </GlobalErrorBoundary>
-        </div>
+      <div>
+        <GlobalErrorBoundary>
+          <Layout className={'app-layout'}>
+            <AppHeader
+              toggle={this.headerToggle}
+              logout={this.logout}
+              collapsed={this.state.collapsed}
+              currentUser={currentUser}
+            />
+            <Content className={'app-content'}>
+              <Switch>
+                {router}
+              </Switch>
+            </Content>
+          </Layout>
+        </GlobalErrorBoundary>
+      </div>
     );
   }
 }

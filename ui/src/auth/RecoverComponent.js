@@ -9,7 +9,7 @@ import {NavLink} from "react-router-dom";
 
 const {Content} = Layout;
 
-class ForgetForm extends Component {
+class RecoverForm extends Component {
 
   authToken;
   state = {
@@ -87,4 +87,4 @@ class ForgetForm extends Component {
   }
 }
 
-export const ForgetComponent = Form.create({name: 'loginForm'})(ForgetForm);
+export const RecoverComponent = Form.create({name: 'recoverForm'})(RecoverForm);

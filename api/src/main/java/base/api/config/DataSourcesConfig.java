@@ -2,6 +2,9 @@ package base.api.config;
 
 import lombok.Data;
 import lombok.Getter;
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +35,26 @@ public class DataSourcesConfig {
     return dataSourceBuilder.build();
   }
 
+//  TODO - check if config is set properly in properties
+  @Bean(name = "flyway")
+  @Autowired
+  public Flyway getFlywayBean(DataSource dataSource, AppConfig appConfig) {
+        FluentConfiguration configuration =
+            Flyway.configure()
+    //            .table("schema_version")
+    //            .outOfOrder(true)
+    //            .schemas("public")
+                .dataSource(dataSource);
+    //            .locations("db/migration")
+    //            .baselineOnMigrate(true)
+    //            .ignoreMissingMigrations(true);
+
+    Flyway flyway = new Flyway(configuration);
+    flyway.clean();
+    flyway.migrate();
+    return flyway;
+  }
+
   @Data
   private static class Database {
     private String username;
@@ -40,25 +63,4 @@ public class DataSourcesConfig {
     private String schema;
     private String host;
   }
-
-  //  @Autowired
-  //  @Bean(name = "flyway")
-  //  public Flyway getFlywayBean(@Qualifier("dataSource") DataSource dataSource, AppConfig
-  // appConfig) {
-  //    FluentConfiguration configuration = Flyway.configure()
-  //        .table("schema_version")
-  //        .outOfOrder(true)
-  //        .schemas("public")
-  //        .dataSource(dataSource)
-  //        .locations("db/migration")
-  //        .baselineOnMigrate(true)
-  //        .ignoreMissingMigrations(true);
-  //
-  //    Flyway bean = new Flyway(configuration);
-  //    bean.repair();
-  //    if (true){
-  //      bean.migrate();
-  //    }
-  //    return bean;
-  //  }
 }

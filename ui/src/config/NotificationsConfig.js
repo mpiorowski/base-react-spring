@@ -37,5 +37,12 @@ export const notificationConfig = {
     message: "Pozytywnie dodano konto!",
     description: "Zaloguj się do systemu"
   },
+
+  validationCode: {
+    type: "warning",
+    message: "Wysłano kod",
+    description: "Na podany email został wysłany kod weryfikacyjny.",
+    duration: 4
+  },
 };
 
