@@ -45,7 +45,6 @@ public class DataSourcesConfig {
   @Autowired
   public Flyway getFlywayBean(DataSource dataSource, AppConfig appConfig) {
 
-    logger.info(migration.getLocations());
     FluentConfiguration configuration =
         Flyway.configure()
             //            .table("schema_version")
@@ -53,6 +52,7 @@ public class DataSourcesConfig {
             //            .schemas("public")
             .dataSource(dataSource)
             .locations(migration.getLocations());
+//            .locations(migration.getLocations());
     //            .baselineOnMigrate(true)
     //            .ignoreMissingMigrations(true);
 
@@ -64,7 +64,7 @@ public class DataSourcesConfig {
 
   @Data
   private static class Migration {
-    private String locations;
+    private String[] locations;
   }
 
   @Data
