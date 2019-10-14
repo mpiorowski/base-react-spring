@@ -21,11 +21,6 @@ public interface AuthDao {
   })
   UserEntity authUserById(Long userId);
 
-  @Update({
-    "update sys_tokens set is_active = false where email = #{email} and type = 'register-token'",
-  })
-  void clearRegisterToken(String email);
-
   @Insert({
     "insert into sys_tokens",
     "(token, type, email)",
@@ -36,10 +31,10 @@ public interface AuthDao {
 
   @Select({
     "select * from sys_tokens",
-    "where email = #{userEmail} and created_at > ( NOW() - INTERVAL '10 min' )",
+    "where email = #{email} and type = #{type} and created_at > ( NOW() - INTERVAL '10 min' )",
     "and is_active is true and is_deleted is false limit 1"
   })
-  TokenEntity findRegisterToken(String userEmail);
+  TokenEntity findTokenByType(@Param("email") String email, @Param("type") String type);
 
   @Insert({
     "insert into sys_users",
@@ -48,6 +43,19 @@ public interface AuthDao {
     "(#{userName}, #{userEmail}, #{userPassword}, #{userRoles})"
   })
   boolean registerUser(UserEntity userEntity);
+
+  @Update({
+    "update sys_users set",
+    "user_password = #{userPassword}",
+    "where user_email = #{userEmail}",
+    "and is_active is true and is_deleted is false"
+  })
+  boolean recoverUser(UserEntity userEntity);
+
+  @Update({
+    "update sys_tokens set is_active = false where email = #{email} and type = #{type}",
+  })
+  void clearTokens(@Param("email") String email, @Param("type") String type);
 
   @Select("select exists(select 1 from sys_users where user_name = #{userName})")
   boolean checkUserName(@Param("userName") String userName);

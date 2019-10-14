@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Layout} from "antd";
 import './LoginComponent.less';
 import {serviceLogIn} from "../services/auth/AuthService";
-import {ACCESS_TOKEN, devUser, PROFILE} from "../config/AppConfig";
+import {ACCESS_TOKEN} from "../config/AppConfig";
 import loginLogo from "../img/bear-logo-grey.png";
-import {openNotification} from "../common/notifications/DiaryNotifications";
+import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
 
 const {Content} = Layout;
@@ -80,7 +80,7 @@ class LoginForm extends Component {
             </Form.Item>
             <Form.Item>
               <div className="login-form-forgot">
-                <NavLink to={'/forget'}>Nie pamiętasz hasła?</NavLink>
+                <NavLink to={'/recover'}>Nie pamiętasz hasła?</NavLink>
               </div>
               <Button type="primary" htmlType="submit" className="login-form-button"
                       loading={this.state.checking}>

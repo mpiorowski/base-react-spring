@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import {Button, Form, Input, Layout} from "antd";
 import './RegisterCodeComponent.less';
-import {serviceRegister, serviceRegisterCode} from "../services/auth/AuthService";
+import {serviceRegister} from "../services/auth/AuthService";
 import loginLogo from "../img/bear-logo-grey.png";
-import {openNotification} from "../common/notifications/AuthNotifications";
+import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
 
 const {Content} = Layout;
 
-class CodeForm extends Component {
+class RegisterCodeForm extends Component {
 
   authToken;
   state = {
@@ -115,4 +115,4 @@ class CodeForm extends Component {
   }
 }
 
-export const RegisterCodeComponent = Form.create({name: 'codeForm'})(CodeForm);
+export const RegisterCodeComponent = Form.create({name: 'registerCodeForm'})(RegisterCodeForm);

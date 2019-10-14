@@ -3,7 +3,7 @@ import {Button, Form, Icon, Input, Layout} from "antd";
 import './RegisterComponent.less';
 import {serviceCheckUserEmail, serviceCheckUserName, serviceRegisterCode} from "../services/auth/AuthService";
 import loginLogo from "../img/bear-logo-grey.png";
-import {openNotification} from "../common/notifications/AuthNotifications";
+import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
 import {PasswordInput} from "antd-password-input-strength";
 

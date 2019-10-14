@@ -40,7 +40,7 @@ public class DataSourcesConfig {
     return dataSourceBuilder.build();
   }
 
-  //  TODO - check if config is set properly in properties
+  //  TODO - config flyway
   @Bean(name = "flyway")
   @Autowired
   public Flyway getFlywayBean(DataSource dataSource, AppConfig appConfig) {
@@ -52,7 +52,7 @@ public class DataSourcesConfig {
             //            .schemas("public")
             .dataSource(dataSource)
             .locations(migration.getLocations());
-//            .locations(migration.getLocations());
+    //            .locations(migration.getLocations());
     //            .baselineOnMigrate(true)
     //            .ignoreMissingMigrations(true);
 

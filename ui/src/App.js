@@ -15,6 +15,7 @@ import {serviceGetUser} from "./services/auth/AuthService";
 import {RegisterComponent} from "./auth/RegisterComponent";
 import {RecoverComponent} from "./auth/RecoverComponent";
 import {RegisterCodeComponent} from "./auth/RegisterCodeComponent";
+import {RecoverCodeComponent} from "./auth/RecoverCodeComponent";
 
 const {Content} = Layout;
 
@@ -118,6 +119,11 @@ class App extends Component {
                  />}/>
           <Route exact path="/recover"
                  render={(props) => <RecoverComponent
+                   {...props}
+                   checkAuth={this.checkAuth}
+                 />}/>
+          <Route exact path="/recover/code"
+                 render={(props) => <RecoverCodeComponent
                    {...props}
                    checkAuth={this.checkAuth}
                  />}/>

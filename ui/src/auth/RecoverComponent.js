@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Layout} from "antd";
 import './LoginComponent.less';
-import {serviceLogIn} from "../services/auth/AuthService";
-import {ACCESS_TOKEN} from "../config/AppConfig";
+import {serviceRecoverCode} from "../services/auth/AuthService";
 import loginLogo from "../img/bear-logo-grey.png";
-import {openNotification} from "../common/notifications/DiaryNotifications";
+import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
 
 const {Content} = Layout;
@@ -21,20 +20,21 @@ class RecoverForm extends Component {
       checking: true,
     });
     e.preventDefault();
-    this.props.form.validateFields((error, credentials) => {
+    this.props.form.validateFields((error, data) => {
       if (!error) {
-        serviceLogIn(credentials).then(response => {
-          if (response.authToken) {
-            localStorage.setItem(ACCESS_TOKEN, response.authToken);
-            this.props.checkAuth();
+        serviceRecoverCode(data.userEmail).then(response => {
+          if (response) {
+            console.log(data.userEmail);
+            this.props.history.push({
+              pathname: '/recover/code',
+              state: {
+                userEmail: data.userEmail,
+              }
+            });
           }
         }).catch(authError => {
           console.log(authError);
-          if (authError.status === 401) {
-            openNotification('authError');
-          } else {
-            openNotification('serverAccess');
-          }
+          openNotification('serverAccess');
           this.setState({
             checking: false,
           });
@@ -65,17 +65,23 @@ class RecoverForm extends Component {
               labelCol={{span: 24}}
               colon={false}
             >
-              {getFieldDecorator('userNameOrEmail', {
-                rules: [{required: true, message: 'Podaj swój email lub nazwę użytkownika.'}],
+              {getFieldDecorator('userEmail', {
+                rules: [
+                  {required: true, message: 'Pole nie może być puste'},
+                  {
+                    type: 'email',
+                    message: 'Niepoprawny format email.'
+                  }],
+                validateTrigger: 'onBlur'
               })(
                 <Input prefix={<Icon type={"user"}/>} className={'login-input'}
-                       placeholder={"Podaj swój email lub nazwę użytkownika"} onFocus={this.handleFocus}/>
+                       placeholder={"Podaj swój email"} onFocus={this.handleFocus}/>
               )}
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit" className="login-form-button"
                       loading={this.state.checking}>
-                <span className={'login-form-button-text'}>Wyślij link do zresetowania hasła</span>
+                <span className={'login-form-button-text'}>Dalej</span>
               </Button>
               Wróć do <NavLink to="/login"><b>okna logowania.</b></NavLink>
             </Form.Item>

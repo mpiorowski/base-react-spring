@@ -31,6 +31,22 @@ export function serviceRegister(credentials) {
   });
 }
 
+export function serviceRecoverCode(userNameOrEmail) {
+  return apiRequest({
+    url: "/api/auth/recover-code",
+    method: "POST",
+    body: userNameOrEmail
+  });
+}
+
+export function serviceRecover(credentials) {
+  return apiRequest({
+    url: "/api/auth/recover",
+    method: "POST",
+    body: JSON.stringify(credentials)
+  });
+}
+
 export function serviceCheckUserName(userName) {
   return apiRequest({
     url: "/api/auth/register/user-name",

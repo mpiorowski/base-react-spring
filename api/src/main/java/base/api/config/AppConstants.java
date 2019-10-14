@@ -12,12 +12,11 @@ public final class AppConstants {
     public static final String SPRING_PROFILE_ACTIVE = "spring.profiles.active";
   }
 
-  public static final class RolesString {
-    private RolesString() {}
-    public static final String ROLE_SUPER = "ROLE_SUPER";
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_USER = "ROLE_USER";
-    public static final String ROLE_CLIENT = "ROLE_CLIENT";
+  public static final class TokenTypes {
+
+    public static final String REGISTER_TOKEN = "register-token";
+    public static final String RECOVER_TOKEN = "recover-token";
+
   }
 
   public enum RoleName {
