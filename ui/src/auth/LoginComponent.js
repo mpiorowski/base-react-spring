@@ -6,6 +6,7 @@ import {ACCESS_TOKEN} from "../config/AppConfig";
 import loginLogo from "../img/bear-logo-grey.png";
 import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
+import {WelcomeMessages} from "../common/RandomMessages";
 
 const {Content} = Layout;
 
@@ -51,6 +52,7 @@ class LoginForm extends Component {
   render() {
 
     const {getFieldDecorator} = this.props.form;
+    const rn = Math.floor(Math.random() * WelcomeMessages.length);
 
     return (
       <Layout>
@@ -59,7 +61,8 @@ class LoginForm extends Component {
             <img src={loginLogo} alt="" className={"login-logo-icon"}/>
             Codeito
           </div>
-          <Form onSubmit={this.validateAndSubmit} className={"login-form"}>
+          <div className={"login-message"}>{WelcomeMessages[rn]}</div>
+          <Form onSubmit={this.validateAndSubmit} className={"login-form"} hideRequiredMark={true}>
             <Form.Item>
               {getFieldDecorator('userNameOrEmail', {
                 // initialValue: PROFILE === 'dev' ? devUser.user : '',

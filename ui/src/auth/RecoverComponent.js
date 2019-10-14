@@ -62,7 +62,6 @@ class RecoverForm extends Component {
           <Form onSubmit={this.validateAndSubmit} className={"login-form"} hideRequiredMark={true}>
             <Form.Item
               label={'Nie martw się, zdarza się każdemu z nas'}
-              labelCol={{span: 24}}
               colon={false}
             >
               {getFieldDecorator('userEmail', {
