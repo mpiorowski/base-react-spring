@@ -3,10 +3,7 @@ package base.api.rest.auth;
 import base.api.annotations.CurrentUser;
 import base.api.config.AppConstants;
 import base.api.domain.user.UserEntity;
-import base.api.rest.auth.dto.LoginRequestDto;
-import base.api.rest.auth.dto.LoginResponseDto;
-import base.api.rest.auth.dto.RegisterRequestDto;
-import base.api.rest.auth.dto.UserSummaryDto;
+import base.api.rest.auth.dto.*;
 import base.api.security.JwtAuthenticationTokenProvider;
 import base.api.security.SystemUser;
 import base.api.services.auth.AuthService;
@@ -20,9 +17,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
 import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController
@@ -59,15 +54,41 @@ public class AuthController {
     return ResponseEntity.ok(new LoginResponseDto(authToken));
   }
 
+  @PostMapping("/register-code")
+  public ResponseEntity<Boolean> sendRegisterCode(@RequestBody String userEmail) {
+
+    return authService.sendRegisterCode(userEmail)
+        ? new ResponseEntity<>(true, HttpStatus.OK)
+        : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+  }
+
   @PostMapping("/register")
   public ResponseEntity<Boolean> registerUser(
-      @RequestBody @Valid RegisterRequestDto registerRequestDto)
-      throws MessagingException, UnsupportedEncodingException {
+      @RequestBody @Valid RegisterRequestDto registerRequestDto) {
 
-    UserEntity userEntity = authMapper.registerUserToUserEntity(registerRequestDto);
+    UserEntity userEntity = authMapper.registerRequestToUserEntity(registerRequestDto);
     userEntity.setUserRoles(List.of(AppConstants.RoleName.ROLE_USER.name()));
 
-    return authService.registerUser(userEntity)
+    return authService.registerUser(registerRequestDto.getVerificationCode(), userEntity)
+        ? new ResponseEntity<>(true, HttpStatus.OK)
+        : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+  }
+
+  @PostMapping("/recover-code")
+  public ResponseEntity<Boolean> sendRecoverCode(@RequestBody String userEmail) {
+
+    return authService.sendRecoverCode(userEmail)
+        ? new ResponseEntity<>(true, HttpStatus.OK)
+        : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+  }
+
+  @PostMapping("/recover")
+  public ResponseEntity<Boolean> recoverPassword(
+      @RequestBody @Valid RecoverRequestDto recoverRequestDto) {
+
+    UserEntity userEntity = authMapper.recoverRequestToUserEntity(recoverRequestDto);
+
+    return authService.recoverUser(recoverRequestDto.getVerificationCode(), userEntity)
         ? new ResponseEntity<>(true, HttpStatus.OK)
         : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
   }
@@ -76,6 +97,7 @@ public class AuthController {
   public ResponseEntity<Boolean> checkUserName(@RequestBody String userName) {
     return new ResponseEntity<>(authService.checkUserName(userName), HttpStatus.OK);
   }
+
   @PostMapping("/register/user-email")
   public ResponseEntity<Boolean> checkUserEmail(@RequestBody String userEmail) {
     return new ResponseEntity<>(authService.checkUserEmail(userEmail), HttpStatus.OK);

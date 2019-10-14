@@ -1,20 +1,21 @@
 package base.api.services.mail;
 
 import base.api.config.mail.MailConfig;
-import base.api.utils.UtilsString;
-import org.springframework.core.io.ClassPathResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 
 @Service
 public class MailService {
 
+  private static final Logger logger = LoggerFactory.getLogger(MailService.class);
   private JavaMailSender javaMailSender;
   private MailConfig mailConfig;
 
@@ -23,18 +24,21 @@ public class MailService {
     this.mailConfig = mailConfig;
   }
 
-  public void sendHtmlMail(String to, String header, String message) throws MessagingException, UnsupportedEncodingException {
-
-    MimeMessage msg = javaMailSender.createMimeMessage();
-    MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-    helper.setFrom(mailConfig.getUsername(), mailConfig.getFrom());
-    helper.setTo(to);
-
-    helper.setSubject(header);
-    helper.setText(message, true);
-
-    helper.addAttachment("my_photo.png", new ClassPathResource("pbs-logo.png"));
-
-    javaMailSender.send(msg);
+  @Async
+  public void sendHtmlMail(String to, String header, String message) {
+    logger.info("Execute method asynchronously - {}", Thread.currentThread().getName());
+    try {
+      MimeMessage msg = javaMailSender.createMimeMessage();
+      MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+      helper.setFrom(mailConfig.getUsername(), mailConfig.getFrom());
+      helper.setTo(to);
+      helper.setSubject(header);
+      helper.setText(message, true);
+      //    helper.addAttachment("my_photo.png", new ClassPathResource("pbs-logo.png"));
+      javaMailSender.send(msg);
+      logger.info("Finished method asynchronously - {}", Thread.currentThread().getName());
+    } catch (UnsupportedEncodingException | MessagingException e) {
+      logger.error("Async method error - {}", e.getMessage());
+    }
   }
 }

@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Layout} from "antd";
 import './RegisterComponent.less';
-import {serviceCheckUserEmail, serviceCheckUserName, serviceRegister} from "../services/auth/AuthService";
+import {serviceCheckUserEmail, serviceCheckUserName, serviceRegisterCode} from "../services/auth/AuthService";
 import loginLogo from "../img/bear-logo-grey.png";
-import {openNotification} from "../common/notifications/AuthNotifications";
+import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
 import {PasswordInput} from "antd-password-input-strength";
 
@@ -13,21 +13,26 @@ class RegisterForm extends Component {
 
   authToken;
   state = {
-    checkingRegister: false,
+    checking: false,
   };
 
   validateAndSubmit = (e) => {
     this.setState({
-      checkingRegister: true,
+      checking: true,
     });
     e.preventDefault();
     this.props.form.validateFields((error, credentials) => {
       if (!error) {
-        serviceRegister(credentials).then(response => {
+        serviceRegisterCode(credentials.userEmail).then(response => {
           if (response) {
             console.log(response);
-            openNotification('registerSuccess');
-            this.props.history.push('/login');
+            openNotification('validationCode');
+            this.props.history.push({
+              pathname: '/register/code',
+              state: {
+                credentials: credentials,
+              }
+            });
           }
         }).catch(authError => {
           console.log(authError);
@@ -37,13 +42,13 @@ class RegisterForm extends Component {
             openNotification('serverAccess');
           }
           this.setState({
-            checkingRegister: false,
+            checking: false,
           });
         })
       } else {
         console.log(error);
         this.setState({
-          checkingRegister: false,
+          checking: false,
         });
       }
     })
@@ -99,7 +104,7 @@ class RegisterForm extends Component {
         <Content className={"register-content"}>
           <div className={"register-header"}>
             <img src={loginLogo} alt="" className={"register-logo-icon"}/>
-            Aplikacja
+            Codeito
           </div>
           <Form
             onSubmit={this.validateAndSubmit}
@@ -181,8 +186,8 @@ class RegisterForm extends Component {
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit" className="register-form-button"
-                      loading={this.state.checkingRegister}>
-                <span className={'register-form-button-text'}>Zarejestruj się</span>
+                      loading={this.state.checking}>
+                <span className={'register-form-button-text'}>Dalej</span>
               </Button>
               Masz już konto?<NavLink to="/login"> <b>Zaloguj się.</b></NavLink>
             </Form.Item>
@@ -194,4 +199,4 @@ class RegisterForm extends Component {
   }
 }
 
-export const RegisterComponent = Form.create({name: 'loginForm'})(RegisterForm);
+export const RegisterComponent = Form.create({name: 'registerForm'})(RegisterForm);

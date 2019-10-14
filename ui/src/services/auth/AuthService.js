@@ -15,9 +15,33 @@ export function serviceLogIn(credentials) {
   });
 }
 
+export function serviceRegisterCode(email) {
+  return apiRequest({
+    url: "/api/auth/register-code",
+    method: "POST",
+    body: email
+  });
+}
+
 export function serviceRegister(credentials) {
   return apiRequest({
     url: "/api/auth/register",
+    method: "POST",
+    body: JSON.stringify(credentials)
+  });
+}
+
+export function serviceRecoverCode(userNameOrEmail) {
+  return apiRequest({
+    url: "/api/auth/recover-code",
+    method: "POST",
+    body: userNameOrEmail
+  });
+}
+
+export function serviceRecover(credentials) {
+  return apiRequest({
+    url: "/api/auth/recover",
     method: "POST",
     body: JSON.stringify(credentials)
   });

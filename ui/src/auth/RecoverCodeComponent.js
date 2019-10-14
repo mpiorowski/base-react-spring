@@ -1,0 +1,166 @@
+import React, {Component} from 'react';
+import {Button, Form, Icon, Input, Layout} from "antd";
+import './RegisterCodeComponent.less';
+import {serviceRecover} from "../services/auth/AuthService";
+import loginLogo from "../img/bear-logo-grey.png";
+import {openNotification} from "../common/Notifications";
+import {NavLink} from "react-router-dom";
+import {PasswordInput} from "antd-password-input-strength";
+
+const {Content} = Layout;
+
+class RecoverCodeForm extends Component {
+
+  authToken;
+  state = {
+    checking: false,
+  };
+
+
+  componentDidMount() {
+    if (this.props.location.state === undefined || this.props.location.state.userEmail === undefined) {
+      this.props.history.push('/recover');
+    }
+  }
+
+
+  validateAndSubmit = (e) => {
+    this.setState({
+      checking: true,
+    });
+    e.preventDefault();
+    this.props.form.validateFields((error, data) => {
+      if (!error) {
+
+        const credentials = {
+          verificationCode: data.verificationCode,
+          userPassword: data.userPassword,
+          userEmail: this.props.location.state.userEmail
+        };
+
+        serviceRecover(credentials).then(response => {
+          if (response) {
+            console.log(response);
+            openNotification('recoverSuccess');
+            this.props.history.push('/login');
+          }
+        }).catch(authError => {
+          console.log(authError);
+          if (authError.status === 401) {
+            openNotification('authError');
+          } else {
+            openNotification('serverAccess');
+          }
+          this.setState({
+            checking: false,
+          });
+        })
+      } else {
+        console.log(error);
+        this.setState({
+          checking: false,
+        });
+      }
+    })
+  };
+
+  render() {
+
+    const {getFieldDecorator} = this.props.form;
+
+
+    console.log(this.props.location.state);
+
+    return (
+      <Layout>
+        <Content className={"register-content"}>
+          <div className={"register-header"}>
+            <img src={loginLogo} alt="" className={"register-logo-icon"}/>
+            Codeito
+          </div>
+          <Form
+            onSubmit={this.validateAndSubmit}
+            className={"register-form"}
+            hideRequiredMark={true}
+          >
+            <Form.Item>
+              {getFieldDecorator('userPassword', {
+                rules: [
+                  {required: true, message: 'Pole nie może być puste'},
+                  {pattern: new RegExp("^\\S+$"), message: 'Podaj hasło bez spacji.'},
+                ],
+                validateTrigger: 'onBlur',
+                settings: {
+                  height: 4
+                }
+              })(
+                <PasswordInput
+                  settings={{
+                    colorScheme: {
+                      levels: ["#ff4033", "#fe940d", "#ffd908", "#cbe11d", "#6ecc3a"],
+                      noLevel: "lightgrey"
+                    },
+                    height: 4,
+                    alwaysVisible: false
+                  }}
+                  inputProps={{}}
+                  prefix={<Icon type={"lock"}/>}
+                  className={"register-input"}
+                  type={"password"}
+                  placeholder={"Nowe hasło"}
+                  onFocus={this.handleFocus}
+                />
+              )}
+            </Form.Item>
+            <Form.Item>
+              {getFieldDecorator('userRepeatPassword', {
+                rules: [
+                  {required: true, message: 'Pole nie może być puste'},
+                  {validator: this.compareToFirstPassword},
+                ],
+                validateTrigger: 'onBlur'
+              })(
+                <Input.Password
+                  prefix={<Icon type={"lock"}/>}
+                  className={"register-input"}
+                  type={"password"}
+                  placeholder={"Powtórz nowe hasło"}
+                  onFocus={this.handleFocus}
+                />
+              )}
+            </Form.Item>
+            <Form.Item
+              label={
+                <div className={'register-code-label'}>Na podany email został wysłany kod weryfikacyjny.
+                  Proszę o wpisanie go, aby ukończyć proces zmiany hasła.</div>
+              }
+              labelCol={{span: 24}}
+            >
+              {getFieldDecorator('verificationCode', {
+                rules: [
+                  {required: true, message: 'Pole nie może być puste'}
+                ],
+                validateTrigger: 'onBlur'
+              })(
+                <Input className={'register-code-input'}
+                       placeholder={"Podaj kod weryfikacyjny"}
+                       size={'large'}
+                />
+              )}
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" className="register-form-button"
+                      loading={this.state.checking}>
+                <span className={'register-form-button-text'}>Zmień hasło</span>
+              </Button>
+              Wróć do <NavLink to="/login"> <b>okna logowania.</b></NavLink>
+            </Form.Item>
+          </Form>
+        </Content>
+      </Layout>
+
+    );
+  }
+}
+
+export const RecoverCodeComponent = Form.create({name: 'recoverCodeForm'})(RecoverCodeForm);

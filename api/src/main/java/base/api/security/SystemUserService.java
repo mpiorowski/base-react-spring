@@ -25,7 +25,6 @@ public class SystemUserService implements UserDetailsService {
   public UserDetails loadUserByUsername(String userNameOrEmail) {
 
     UserEntity user = service.authUserByNameOrEmail(userNameOrEmail);
-    authLogger.debug(user.toString());
 
     if (user.getUserName().equals("")) {
       throw new UsernameNotFoundException(

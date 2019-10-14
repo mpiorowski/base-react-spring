@@ -8,15 +8,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
-public class RegisterRequestDto {
+public class RecoverRequestDto {
 
   @NotNull
   @Size(min = 4, max = 4)
   private String verificationCode;
-
-  @NotBlank
-  @Size(max = 100)
-  private String userName;
 
   @NotBlank
   @Email

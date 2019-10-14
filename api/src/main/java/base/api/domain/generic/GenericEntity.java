@@ -18,6 +18,6 @@ public class GenericEntity {
   //  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
   protected Date updatedAt;
   protected Long version;
-  protected Boolean active;
-  protected Boolean deleted;
+  protected Boolean isActive;
+  protected Boolean isDeleted;
 }
