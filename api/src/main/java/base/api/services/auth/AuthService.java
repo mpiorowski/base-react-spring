@@ -14,11 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AuthService {
 
-  //  TODO - token active times
+  //  TODO - token active times dynamic (now 10 min)
 
   private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
   private AuthDao authDao;
@@ -29,80 +31,73 @@ public class AuthService {
     this.mailService = mailService;
   }
 
-  public UserEntity authUserByNameOrEmail(String userNameOrEmail) {
+  public Optional<UserEntity> authUserByNameOrEmail(String userNameOrEmail) {
     return authDao.authUserByNameOrEmail(userNameOrEmail);
   }
 
-  public UserEntity authUserById(Long userId) {
+  public Optional<UserEntity> authUserById(Long userId) {
     return authDao.authUserById(userId);
   }
 
   @Transactional(rollbackFor = {MessagingException.class, UnsupportedEncodingException.class})
   public boolean sendRegisterCode(String userEmail) {
 
-    String token = UtilsString.generateSecureNumber(9999);
-    String encodedToken = UtilsString.encodeString(token);
+    String code = UtilsString.generateSecureNumber(9999);
+    String encodedToken = UtilsString.encodeString(code);
     String tokenType = AppConstants.TokenTypes.REGISTER_TOKEN;
 
-    var tokenEntity = new TokenEntity();
-    tokenEntity.setToken(encodedToken);
-    tokenEntity.setType("register-token");
-    tokenEntity.setEmail(userEmail);
+    var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail);
 
     authDao.clearTokens(userEmail, tokenType);
+    authDao.saveRegisterToken(tokenEntity);
 
-    if (authDao.saveRegisterToken(tokenEntity)) {
-      String message = MessagesConfig.RegisterTokenMessage.message(token);
-      String header = MessagesConfig.RegisterTokenMessage.HEADER;
-      mailService.sendHtmlMail(userEmail, header, message);
-      return true;
-    }
-    return false;
+    String message = MessagesConfig.RegisterTokenMessage.message(code);
+    String header = MessagesConfig.RegisterTokenMessage.HEADER;
+    mailService.sendHtmlMail(userEmail, header, message);
+
+    return true;
   }
 
-  @Transactional(rollbackFor = {MessagingException.class, UnsupportedEncodingException.class})
+  @Transactional
   public boolean registerUser(String verificationCode, UserEntity userEntity) {
 
     String userEmail = userEntity.getUserEmail();
     String tokenType = AppConstants.TokenTypes.REGISTER_TOKEN;
 
-    String token = authDao.findTokenByType(userEmail, tokenType).getToken();
-    if (!UtilsString.isBlank(token) && UtilsString.compareEncodedStrings(verificationCode, token)) {
+    Optional<TokenEntity> token = authDao.findTokenByType(userEmail, tokenType);
+    if (token.isPresent()
+        && !token.get().getToken().isBlank()
+        && UtilsString.compareEncodedStrings(verificationCode, token.get().getToken())) {
       String encodedPassword = UtilsString.encodeString(userEntity.getUserPassword());
       userEntity.setUserPassword(encodedPassword);
+      userEntity.setUserRoles(List.of(AppConstants.RoleName.ROLE_USER.name()));
 
-      if (authDao.registerUser(userEntity)) {
-        String userName = userEntity.getUserName();
-        String message = MessagesConfig.WelcomeMessage.message(userName, userEmail);
-        mailService.sendHtmlMail(
-            userEntity.getUserEmail(), MessagesConfig.WelcomeMessage.HEADER, message);
-        return true;
-      }
+      authDao.registerUser(userEntity);
+      String userName = userEntity.getUserName();
+      String message = MessagesConfig.WelcomeMessage.message(userName, userEmail);
+      mailService.sendHtmlMail(
+          userEntity.getUserEmail(), MessagesConfig.WelcomeMessage.HEADER, message);
+      return true;
     }
     return false;
   }
 
-  @Transactional(rollbackFor = {MessagingException.class, UnsupportedEncodingException.class})
+  @Transactional
   public boolean sendRecoverCode(String userEmail) {
 
     String token = UtilsString.generateSecureNumber(9999);
     String encodedToken = UtilsString.encodeString(token);
     String tokenType = AppConstants.TokenTypes.RECOVER_TOKEN;
 
-    var tokenEntity = new TokenEntity();
-    tokenEntity.setToken(encodedToken);
-    tokenEntity.setType(tokenType);
-    tokenEntity.setEmail(userEmail);
+    var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail);
 
     authDao.clearTokens(userEmail, tokenType);
 
-    if (authDao.saveRegisterToken(tokenEntity)) {
-      String message = MessagesConfig.RecoverMessage.messageCode(token);
-      String header = MessagesConfig.RecoverMessage.HEADER_CODE;
-      mailService.sendHtmlMail(userEmail, header, message);
-      return true;
-    }
-    return false;
+    authDao.saveRegisterToken(tokenEntity);
+    String message = MessagesConfig.RecoverMessage.messageCode(token);
+    String header = MessagesConfig.RecoverMessage.HEADER_CODE;
+    mailService.sendHtmlMail(userEmail, header, message);
+    return true;
   }
 
   @Transactional(rollbackFor = {MessagingException.class, UnsupportedEncodingException.class})
@@ -111,8 +106,10 @@ public class AuthService {
     String userEmail = userEntity.getUserEmail();
     String tokenType = AppConstants.TokenTypes.RECOVER_TOKEN;
 
-    String token = authDao.findTokenByType(userEmail, tokenType).getToken();
-    if (!UtilsString.isBlank(token) && UtilsString.compareEncodedStrings(verificationCode, token)) {
+    Optional<TokenEntity> token = authDao.findTokenByType(userEmail, tokenType);
+    if (token.isPresent()
+      && !token.get().getToken().isBlank()
+      && UtilsString.compareEncodedStrings(verificationCode, token.get().getToken())) {
       String encodedPassword = UtilsString.encodeString(userEntity.getUserPassword());
       userEntity.setUserPassword(encodedPassword);
 

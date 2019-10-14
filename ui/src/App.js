@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {Icon, Layout, Spin} from "antd";
 import {Redirect, Route, Switch, withRouter} from "react-router-dom";
 import {ACCESS_TOKEN} from "./config/AppConfig";
-import {LoginComponent} from "./auth/LoginComponent";
 import {momentDateTimeLanguage, setUpMomentDateTimeLanguage} from "./config/DateTimeConfig";
 import {routes} from './config/RoutesConfig';
 import AppHeader from "./main/AppHeader";
@@ -12,10 +11,7 @@ import './App.less';
 import './styles/global.less';
 import './styles/variables.less';
 import {serviceGetUser} from "./services/auth/AuthService";
-import {RegisterComponent} from "./auth/RegisterComponent";
-import {RecoverComponent} from "./auth/RecoverComponent";
-import {RegisterCodeComponent} from "./auth/RegisterCodeComponent";
-import {RecoverCodeComponent} from "./auth/RecoverCodeComponent";
+import AuthComponent from "./auth/AuthComponent";
 
 const {Content} = Layout;
 
@@ -101,34 +97,7 @@ class App extends Component {
 
     if (!this.state.isAuth) {
       return (
-        <Switch>
-          <Route exact path="/login"
-                 render={(props) => <LoginComponent
-                   {...props}
-                   checkAuth={this.checkAuth}
-                 />}/>
-          <Route exact path="/register"
-                 render={(props) => <RegisterComponent
-                   {...props}
-                   checkAuth={this.checkAuth}
-                 />}/>
-          <Route exact path="/register/code"
-                 render={(props) => <RegisterCodeComponent
-                   {...props}
-                   checkAuth={this.checkAuth}
-                 />}/>
-          <Route exact path="/recover"
-                 render={(props) => <RecoverComponent
-                   {...props}
-                   checkAuth={this.checkAuth}
-                 />}/>
-          <Route exact path="/recover/code"
-                 render={(props) => <RecoverCodeComponent
-                   {...props}
-                   checkAuth={this.checkAuth}
-                 />}/>
-          <Route path='*' render={() => <Redirect to={'/login'}/>}/>
-        </Switch>
+        <AuthComponent checkAuth={this.checkAuth}/>
       )
     }
     const PrivateRoute = ({component: RouteComponent, ...rest}) => (

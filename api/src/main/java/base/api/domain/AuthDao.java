@@ -5,6 +5,8 @@ import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Mapper
 @Repository
 public interface AuthDao {
@@ -14,12 +16,12 @@ public interface AuthDao {
     "and is_deleted is false",
     "and is_active is true",
   })
-  UserEntity authUserByNameOrEmail(String userNameOrEmail);
+  Optional<UserEntity> authUserByNameOrEmail(String userNameOrEmail);
 
   @Select({
     "select * from sys_users where id = #{userId} and is_deleted is false and is_active is true"
   })
-  UserEntity authUserById(Long userId);
+  Optional<UserEntity> authUserById(Long userId);
 
   @Insert({
     "insert into sys_tokens",
@@ -27,14 +29,14 @@ public interface AuthDao {
     "values",
     "(#{token}, #{type}, #{email})"
   })
-  boolean saveRegisterToken(TokenEntity tokenEntity);
+  void saveRegisterToken(TokenEntity tokenEntity);
 
   @Select({
     "select * from sys_tokens",
     "where email = #{email} and type = #{type} and created_at > ( NOW() - INTERVAL '10 min' )",
     "and is_active is true and is_deleted is false limit 1"
   })
-  TokenEntity findTokenByType(@Param("email") String email, @Param("type") String type);
+  Optional<TokenEntity> findTokenByType(@Param("email") String email, @Param("type") String type);
 
   @Insert({
     "insert into sys_users",
@@ -42,7 +44,7 @@ public interface AuthDao {
     "values",
     "(#{userName}, #{userEmail}, #{userPassword}, #{userRoles})"
   })
-  boolean registerUser(UserEntity userEntity);
+  void registerUser(UserEntity userEntity);
 
   @Update({
     "update sys_users set",

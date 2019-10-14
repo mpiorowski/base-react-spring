@@ -1,12 +1,12 @@
 package base.api.rest.auth;
 
 import base.api.annotations.CurrentUser;
-import base.api.config.AppConstants;
 import base.api.domain.user.UserEntity;
 import base.api.rest.auth.dto.*;
 import base.api.security.JwtAuthenticationTokenProvider;
 import base.api.security.SystemUser;
 import base.api.services.auth.AuthService;
+import base.api.utils.UtilsString;
 import org.mapstruct.factory.Mappers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +18,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
+//@ControllerAdvice
 public class AuthController {
 
   private final AuthenticationManager authenticationManager;
@@ -67,11 +67,9 @@ public class AuthController {
       @RequestBody @Valid RegisterRequestDto registerRequestDto) {
 
     UserEntity userEntity = authMapper.registerRequestToUserEntity(registerRequestDto);
-    userEntity.setUserRoles(List.of(AppConstants.RoleName.ROLE_USER.name()));
-
     return authService.registerUser(registerRequestDto.getVerificationCode(), userEntity)
         ? new ResponseEntity<>(true, HttpStatus.OK)
-        : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        : new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
   }
 
   @PostMapping("/recover-code")
@@ -95,12 +93,18 @@ public class AuthController {
 
   @PostMapping("/register/user-name")
   public ResponseEntity<Boolean> checkUserName(@RequestBody String userName) {
-    return new ResponseEntity<>(authService.checkUserName(userName), HttpStatus.OK);
+    if (!UtilsString.isBlank(userName)) {
+      return new ResponseEntity<>(authService.checkUserName(userName), HttpStatus.OK);
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   @PostMapping("/register/user-email")
   public ResponseEntity<Boolean> checkUserEmail(@RequestBody String userEmail) {
-    return new ResponseEntity<>(authService.checkUserEmail(userEmail), HttpStatus.OK);
+    if (!UtilsString.isBlank(userEmail)) {
+      return new ResponseEntity<>(authService.checkUserEmail(userEmail), HttpStatus.OK);
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   @GetMapping("/user")

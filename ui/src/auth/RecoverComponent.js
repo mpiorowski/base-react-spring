@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Layout} from "antd";
 import './LoginComponent.less';
 import {serviceRecoverCode} from "../services/auth/AuthService";
-import loginLogo from "../img/bear-logo-grey.png";
 import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
+import {RecoverMessages, WelcomeMessages} from "../common/RandomMessages";
 
 const {Content} = Layout;
 
@@ -51,43 +51,33 @@ class RecoverForm extends Component {
   render() {
 
     const {getFieldDecorator} = this.props.form;
+    const rn = Math.floor(Math.random() * RecoverMessages.length);
 
     return (
-      <Layout>
-        <Content className={"login-content"}>
-          <div className={"login-header"}>
-            <img src={loginLogo} alt="" className={"login-logo-icon"}/>
-            Codeito
-          </div>
-          <Form onSubmit={this.validateAndSubmit} className={"login-form"} hideRequiredMark={true}>
-            <Form.Item
-              label={'Nie martw się, zdarza się każdemu z nas'}
-              colon={false}
-            >
-              {getFieldDecorator('userEmail', {
-                rules: [
-                  {required: true, message: 'Pole nie może być puste'},
-                  {
-                    type: 'email',
-                    message: 'Niepoprawny format email.'
-                  }],
-                validateTrigger: 'onBlur'
-              })(
-                <Input prefix={<Icon type={"user"}/>} className={'login-input'}
-                       placeholder={"Podaj swój email"} onFocus={this.handleFocus}/>
-              )}
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" className="login-form-button"
-                      loading={this.state.checking}>
-                <span className={'login-form-button-text'}>Dalej</span>
-              </Button>
-              Wróć do <NavLink to="/login"><b>okna logowania.</b></NavLink>
-            </Form.Item>
-          </Form>
-        </Content>
-      </Layout>
-
+      <Form onSubmit={this.validateAndSubmit} className={"login-form"} hideRequiredMark={true}>
+        <div className={"login-message"}>{RecoverMessages[rn]}</div>
+        <Form.Item>
+          {getFieldDecorator('userEmail', {
+            rules: [
+              {required: true, message: 'Pole nie może być puste'},
+              {
+                type: 'email',
+                message: 'Niepoprawny format email.'
+              }],
+            validateTrigger: 'onBlur'
+          })(
+            <Input prefix={<Icon type={"user"}/>} className={'login-input'}
+                   placeholder={"Podaj swój email"} onFocus={this.handleFocus}/>
+          )}
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" className="login-form-button"
+                  loading={this.state.checking}>
+            <span className={'login-form-button-text'}>Dalej</span>
+          </Button>
+          Wróć do <NavLink to="/login"><b>okna logowania.</b></NavLink>
+        </Form.Item>
+      </Form>
     );
   }
 }

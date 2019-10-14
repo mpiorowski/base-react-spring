@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class SystemUserService implements UserDetailsService {
 
@@ -24,23 +26,23 @@ public class SystemUserService implements UserDetailsService {
   @Transactional
   public UserDetails loadUserByUsername(String userNameOrEmail) {
 
-    UserEntity user = service.authUserByNameOrEmail(userNameOrEmail);
+    Optional<UserEntity> user = service.authUserByNameOrEmail(userNameOrEmail);
 
-    if (user.getUserName().equals("")) {
+    if (user.isEmpty() || user.get().getUserName().equals("")) {
       throw new UsernameNotFoundException(
           "UserEntity not found with user name or email: " + userNameOrEmail);
     }
-    return SystemUser.createUser(user);
+    return SystemUser.createUser(user.get());
   }
 
   @Transactional
   public UserDetails loadUserByUserId(Long userId) {
 
-    UserEntity user = service.authUserById(userId);
+    Optional<UserEntity> user = service.authUserById(userId);
 
-    if (user.getUserName().equals("")) {
+    if (user.isEmpty() || user.get().getUserName().equals("")) {
       throw new UsernameNotFoundException("UserEntity not found with user id: " + userId);
     }
-    return SystemUser.createUser(user);
+    return SystemUser.createUser(user.get());
   }
 }

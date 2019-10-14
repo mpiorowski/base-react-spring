@@ -1,15 +1,13 @@
 import React, {Component} from 'react';
-import {Button, Form, Icon, Input, Layout} from "antd";
+import {Button, Form, Icon, Input} from "antd";
 import './LoginComponent.less';
 import {serviceLogIn} from "../services/auth/AuthService";
 import {ACCESS_TOKEN} from "../config/AppConfig";
-import loginLogo from "../img/bear-logo-grey.png";
 import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
 import {WelcomeMessages} from "../common/RandomMessages";
 
-const {Content} = Layout;
-
+const rn = Math.floor(Math.random() * WelcomeMessages.length);
 class LoginForm extends Component {
 
   authToken;
@@ -22,26 +20,22 @@ class LoginForm extends Component {
       checking: true,
     });
     e.preventDefault();
-    this.props.form.validateFields((error, credentials) => {
-      if (!error) {
+    this.props.form.validateFields((formError, credentials) => {
+      if (!formError) {
         serviceLogIn(credentials).then(response => {
           if (response.authToken) {
             localStorage.setItem(ACCESS_TOKEN, response.authToken);
             this.props.checkAuth();
           }
-        }).catch(authError => {
-          console.log(authError);
-          if (authError.status === 401) {
-            openNotification('authError');
-          } else {
-            openNotification('serverAccess');
-          }
+        }).catch(apiError => {
+          console.log(apiError);
+          openNotification('serverAccess');
           this.setState({
             checking: false,
           });
         })
       } else {
-        console.log(error);
+        console.log(formError);
         this.setState({
           checking: false,
         });
@@ -52,48 +46,37 @@ class LoginForm extends Component {
   render() {
 
     const {getFieldDecorator} = this.props.form;
-    const rn = Math.floor(Math.random() * WelcomeMessages.length);
 
     return (
-      <Layout>
-        <Content className={"login-content"}>
-          <div className={"login-header"}>
-            <img src={loginLogo} alt="" className={"login-logo-icon"}/>
-            Codeito
+      <Form onSubmit={this.validateAndSubmit} className={"auth-form"} hideRequiredMark={true}>
+        <div className={"auth-message"}>{WelcomeMessages[rn]}</div>
+        <Form.Item>
+          {getFieldDecorator('userNameOrEmail', {
+            rules: [{required: true, message: 'Podaj nazwę użytkownika lub email.'}],
+          })(
+            <Input prefix={<Icon type={"user"}/>} className={'login-input'}
+                   placeholder={"Nazwa użytkownika lub email"} onFocus={this.handleFocus}/>
+          )}
+        </Form.Item>
+        <Form.Item>
+          {getFieldDecorator('userPassword', {
+            rules: [{required: true, message: 'Podaj hasło.'}],
+          })(
+            <Input prefix={<Icon type={"lock"}/>} className={"login-input"} type={"password"}
+                   placeholder={"Hasło"} onFocus={this.handleFocus}/>
+          )}
+        </Form.Item>
+        <Form.Item>
+          <div className="login-form-forgot">
+            <NavLink to={'/recover'}>Nie pamiętasz hasła?</NavLink>
           </div>
-          <div className={"login-message"}>{WelcomeMessages[rn]}</div>
-          <Form onSubmit={this.validateAndSubmit} className={"login-form"} hideRequiredMark={true}>
-            <Form.Item>
-              {getFieldDecorator('userNameOrEmail', {
-                // initialValue: PROFILE === 'dev' ? devUser.user : '',
-                rules: [{required: true, message: 'Podaj nazwę użytkownika lub email.'}],
-              })(
-                <Input prefix={<Icon type={"user"}/>} className={'login-input'}
-                       placeholder={"Nazwa użytkownika lub email"} onFocus={this.handleFocus}/>
-              )}
-            </Form.Item>
-            <Form.Item>
-              {getFieldDecorator('userPassword', {
-                // initialValue: PROFILE === 'dev' ? devUser.pass : '',
-                rules: [{required: true, message: 'Podaj hasło.'}],
-              })(
-                <Input prefix={<Icon type={"lock"}/>} className={"login-input"} type={"password"}
-                       placeholder={"Hasło"} onFocus={this.handleFocus}/>
-              )}
-            </Form.Item>
-            <Form.Item>
-              <div className="login-form-forgot">
-                <NavLink to={'/recover'}>Nie pamiętasz hasła?</NavLink>
-              </div>
-              <Button type="primary" htmlType="submit" className="login-form-button"
-                      loading={this.state.checking}>
-                <span className={'login-form-button-text'}>Zaloguj się</span>
-              </Button>
-              Lub <NavLink to="/register"><b>załóż nowe konto.</b></NavLink>
-            </Form.Item>
-          </Form>
-        </Content>
-      </Layout>
+          <Button type="primary" htmlType="submit" className="login-form-button"
+                  loading={this.state.checking}>
+            <span className={'login-form-button-text'}>Zaloguj się</span>
+          </Button>
+          Lub <NavLink to="/register"><b>załóż nowe konto.</b></NavLink>
+        </Form.Item>
+      </Form>
 
     );
   }
