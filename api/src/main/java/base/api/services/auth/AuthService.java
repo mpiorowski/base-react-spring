@@ -10,6 +10,7 @@ import base.api.domain.user.UserEntity;
 import base.api.services.mail.MailService;
 import base.api.utils.UtilsString;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,17 +46,19 @@ public class AuthService {
   }
 
   @Transactional
-  public boolean sendRegisterCode(UserEntity userEntity) {
+  public boolean sendRegisterCode(UserEntity userEntity) throws JsonProcessingException {
 
     if (authDao.findUserByNameOrEmail(userEntity).isPresent()) {
       return false;
     }
 
+    var mapper = new ObjectMapper();
     String userEmail = userEntity.getUserEmail();
     String code = UtilsString.generateSecureNumber(9999);
     String encodedToken = UtilsString.encodeString(code);
     String tokenType = AppConstants.TokenTypes.REGISTER_TOKEN;
-    var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail, userEntity.toString());
+    String tokenData = mapper.writeValueAsString(userEntity);
+    var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail, tokenData);
 
     tokenDao.clearTokens(userEmail, tokenType);
     tokenDao.addToken(tokenEntity);
@@ -68,7 +71,8 @@ public class AuthService {
   }
 
   @Transactional
-  public boolean registerUser(String verificationCode, UserEntity userEntity) throws JsonProcessingException {
+  public boolean registerUser(String verificationCode, UserEntity userEntity)
+      throws JsonProcessingException {
 
     if (authDao.findUserByNameOrEmail(userEntity).isPresent()) {
       return false;
@@ -80,9 +84,8 @@ public class AuthService {
     Optional<TokenEntity> token = tokenDao.findTokenByType(userEmail, tokenType);
     if (token.isPresent()
         && !token.get().getToken().isBlank()
-        && UtilsString.compareEncodedStrings(verificationCode, token.get().getToken())) {
-
-      logger.debug(UtilsString.compareJsonToObject(token.get().getData(), userEntity) ? "true" : "false");
+        && UtilsString.compareEncodedStrings(verificationCode, token.get().getToken())
+        && UtilsString.compareJsonToObject(token.get().getData(), userEntity)) {
 
       String encodedPassword = UtilsString.encodeString(userEntity.getUserPassword());
       userEntity.setUserPassword(encodedPassword);

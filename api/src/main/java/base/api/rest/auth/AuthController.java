@@ -7,6 +7,7 @@ import base.api.security.JwtAuthenticationTokenProvider;
 import base.api.security.SystemUser;
 import base.api.services.auth.AuthService;
 import base.api.utils.UtilsString;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.mapstruct.factory.Mappers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class AuthController {
 
   @PostMapping("/register/code")
   public ResponseEntity<Boolean> sendRegisterCode(
-      @RequestBody @Valid RegisterRequestDto registerRequestDto) {
+      @RequestBody @Valid RegisterRequestDto registerRequestDto) throws JsonProcessingException {
 
     UserEntity userEntity = authMapper.registerRequestToUserEntity(registerRequestDto);
     return authService.sendRegisterCode(userEntity)
@@ -66,7 +67,7 @@ public class AuthController {
 
   @PostMapping("/register/user")
   public ResponseEntity<Boolean> registerUser(
-      @RequestBody @Valid RegisterRequestDto registerRequestDto) {
+      @RequestBody @Valid RegisterRequestDto registerRequestDto) throws JsonProcessingException {
 
     UserEntity userEntity = authMapper.registerRequestToUserEntity(registerRequestDto);
     return authService.registerUser(registerRequestDto.getVerificationCode(), userEntity)

@@ -16,7 +16,7 @@ public class UtilsString {
 
   //TODO - add zero depending on max range
   public static String generateSecureNumber(int maxRange) {
-    String format = "%0"+maxRange+"d";
+    String format = "%0"+String.valueOf(maxRange).length()+"d";
     return String.format(format, secureRandom.nextInt(maxRange));
   }
 

@@ -49,6 +49,7 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
 
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
 
   implementation 'io.jsonwebtoken:jjwt-api:0.10.7'
   runtime 'io.jsonwebtoken:jjwt-impl:0.10.7', 'io.jsonwebtoken:jjwt-jackson:0.10.7'
