@@ -12,13 +12,11 @@ class RegisterCodeForm extends Component {
     checking: false,
   };
 
-
   componentDidMount() {
     if (this.props.location.state === undefined || this.props.location.state.credentials === undefined) {
       this.props.history.push('/register');
     }
   }
-
 
   validateAndSubmit = (e) => {
     this.setState({

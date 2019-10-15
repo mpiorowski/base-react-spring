@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.*;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

@@ -9,6 +9,7 @@ import base.api.domain.user.UserDao;
 import base.api.domain.user.UserEntity;
 import base.api.services.mail.MailService;
 import base.api.utils.UtilsString;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,11 @@ public class AuthService {
   }
 
   @Transactional
-  public boolean registerUser(String verificationCode, UserEntity userEntity) {
+  public boolean registerUser(String verificationCode, UserEntity userEntity) throws JsonProcessingException {
+
+    if (authDao.findUserByNameOrEmail(userEntity).isPresent()) {
+      return false;
+    }
 
     String userEmail = userEntity.getUserEmail();
     String tokenType = AppConstants.TokenTypes.REGISTER_TOKEN;
@@ -76,6 +81,9 @@ public class AuthService {
     if (token.isPresent()
         && !token.get().getToken().isBlank()
         && UtilsString.compareEncodedStrings(verificationCode, token.get().getToken())) {
+
+      logger.debug(UtilsString.compareJsonToObject(token.get().getData(), userEntity) ? "true" : "false");
+
       String encodedPassword = UtilsString.encodeString(userEntity.getUserPassword());
       userEntity.setUserPassword(encodedPassword);
       userEntity.setUserRoles(List.of(AppConstants.RoleName.ROLE_USER.name()));
