@@ -55,7 +55,8 @@ public class AuthController {
   }
 
   @PostMapping("/register/code")
-  public ResponseEntity<Boolean> sendRegisterCode(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
+  public ResponseEntity<Boolean> sendRegisterCode(
+      @RequestBody @Valid RegisterRequestDto registerRequestDto) {
 
     UserEntity userEntity = authMapper.registerRequestToUserEntity(registerRequestDto);
     return authService.sendRegisterCode(userEntity)
@@ -70,18 +71,19 @@ public class AuthController {
     UserEntity userEntity = authMapper.registerRequestToUserEntity(registerRequestDto);
     return authService.registerUser(registerRequestDto.getVerificationCode(), userEntity)
         ? new ResponseEntity<>(true, HttpStatus.OK)
-        : new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
   }
 
-  @PostMapping("/recover-code")
-  public ResponseEntity<Boolean> sendRecoverCode(@RequestBody String userEmail) {
+  @PostMapping("/recover/code")
+  public ResponseEntity<Boolean> sendRecoverCode(@RequestBody RecoverRequestDto recoverRequestDto) {
 
-    return authService.sendRecoverCode(userEmail)
+    UserEntity userEntity = authMapper.recoverRequestToUserEntity(recoverRequestDto);
+    return authService.sendRecoverCode(userEntity)
         ? new ResponseEntity<>(true, HttpStatus.OK)
         : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
   }
 
-  @PostMapping("/recover")
+  @PostMapping("/recover/user")
   public ResponseEntity<Boolean> recoverPassword(
       @RequestBody @Valid RecoverRequestDto recoverRequestDto) {
 

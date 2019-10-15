@@ -29,16 +29,6 @@ public interface UserDao {
           + "user_email as userEmail, "
           + "user_password as userPassword "
           + "FROM sys_users "
-          + "WHERE ( user_name = #{userNameOrEmail} OR user_email = #{userNameOrEmail} )")
-  UserEntity selectUserByUserNameOrEmail(String userNameOrEmail);
-
-  @Select(
-      "SELECT "
-          + "user_id as userId, "
-          + "user_name as userName, "
-          + "user_email as userEmail, "
-          + "user_password as userPassword "
-          + "FROM sys_users "
           + "WHERE user_id = #{userId}")
   UserEntity selectUserByUserId(Long userId);
 

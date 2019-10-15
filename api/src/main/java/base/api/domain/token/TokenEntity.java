@@ -12,4 +12,5 @@ public class TokenEntity extends GenericEntity {
   private String token;
   private String type;
   private String email;
+  private String data;
 }

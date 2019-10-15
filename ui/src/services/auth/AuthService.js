@@ -15,17 +15,17 @@ export function serviceLogIn(credentials) {
   });
 }
 
-export function serviceRegisterCode(email) {
+export function serviceRegisterCode(credentials) {
   return apiRequest({
-    url: "/api/auth/register-code",
+    url: "/api/auth/register/code",
     method: "POST",
-    body: email
+    body: JSON.stringify(credentials)
   });
 }
 
 export function serviceRegister(credentials) {
   return apiRequest({
-    url: "/api/auth/register",
+    url: "/api/auth/register/user",
     method: "POST",
     body: JSON.stringify(credentials)
   });

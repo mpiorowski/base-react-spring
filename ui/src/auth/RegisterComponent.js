@@ -7,6 +7,8 @@ import {NavLink} from "react-router-dom";
 import {PasswordInput} from "antd-password-input-strength";
 import {RegisterMessages} from "../common/RandomMessages";
 import {isEmptyString} from "../utils/UtilsString";
+import {validationErrorMsg} from "../config/ErrorConfig";
+import {emailRegEx} from "../config/AppConfig";
 
 const rn = Math.floor(Math.random() * RegisterMessages.length);
 
@@ -15,6 +17,10 @@ class RegisterForm extends Component {
   authToken;
   state = {
     checking: false,
+    userNameStatus: '',
+    userNameHelp: '',
+    userEmailStatus: '',
+    userEmailHelp: ''
   };
 
   validateAndSubmit = (e) => {
@@ -24,7 +30,7 @@ class RegisterForm extends Component {
     e.preventDefault();
     this.props.form.validateFields((error, credentials) => {
       if (!error) {
-        serviceRegisterCode(credentials.userEmail).then(response => {
+        serviceRegisterCode(credentials).then(response => {
           if (response) {
             console.log(response);
             openNotification('validationCodeSend');
@@ -37,7 +43,7 @@ class RegisterForm extends Component {
           }
         }).catch(apiError => {
           console.log(apiError);
-          apiError === 409
+          apiError.status === 400
             ? openNotification('serverError')
             : openNotification('serverAccess');
           this.setState({checking: false});
@@ -52,7 +58,7 @@ class RegisterForm extends Component {
   compareToFirstPassword = (rule, value, callback) => {
     const {form} = this.props;
     if (value && value !== form.getFieldValue('userPassword')) {
-      callback('Hasła nie pasują. Spróbuj ponownie.');
+      callback(validationErrorMsg.diffPass);
     } else {
       callback();
     }
@@ -60,14 +66,19 @@ class RegisterForm extends Component {
 
   checkUserName = (rule, value, callback) => {
     if (isEmptyString(value)) {
-      callback('Pole nie może być puste');
+      this.setState({userNameStatus: 'error', userNameHelp: validationErrorMsg.empty});
+      callback(validationErrorMsg.empty);
     } else if (/\s/.test(value)) {
-      callback('Podaj nazwę użytkownika bez spacji.');
+      this.setState({userNameStatus: 'error', userNameHelp: validationErrorMsg.space});
+      callback(validationErrorMsg.space);
     } else {
+      this.setState({userNameStatus: 'validating', userNameHelp: ''});
       serviceCheckUserName(value).then(response => {
         if (response) {
-          callback('Ta nazwa jest już zajęta');
+          this.setState({userNameStatus: 'error', userNameHelp: validationErrorMsg.userName});
+          callback(validationErrorMsg.userName);
         } else {
+          this.setState({userNameStatus: 'success', userNameHelp: ''});
           callback();
         }
       });
@@ -76,14 +87,22 @@ class RegisterForm extends Component {
 
   checkUserEmail = (rule, value, callback) => {
     if (isEmptyString(value)) {
-      callback('Pole nie może być puste');
+      this.setState({userEmailStatus: 'error', userEmailHelp: validationErrorMsg.empty});
+      callback(validationErrorMsg.empty);
     } else if (/\s/.test(value)) {
-      callback('Podaj poprawny email bez spacji.');
+      this.setState({userEmailStatus: 'error', userEmailHelp: validationErrorMsg.space});
+      callback(validationErrorMsg.space);
+    } else if (!emailRegEx.test(value)) {
+      this.setState({userEmailStatus: 'error', userEmailHelp: validationErrorMsg.email});
+      callback(validationErrorMsg.email);
     } else {
       serviceCheckUserEmail(value).then(response => {
+        this.setState({userEmailStatus: 'validating', userEmailHelp: ''});
         if (response) {
-          callback('Ten email jest już zajęty');
+          this.setState({userEmailStatus: 'error', userEmailHelp: validationErrorMsg.userEmail});
+          callback(validationErrorMsg.userEmail);
         } else {
+          this.setState({userEmailStatus: 'success', userEmailHelp: ''});
           callback();
         }
       });
@@ -93,6 +112,7 @@ class RegisterForm extends Component {
   render() {
 
     const {getFieldDecorator} = this.props.form;
+    const {userNameStatus, userNameHelp, userEmailStatus, userEmailHelp} = this.state;
 
     return (
       <Form
@@ -101,14 +121,13 @@ class RegisterForm extends Component {
       >
         <div className={"auth-message"}>{RegisterMessages[rn]}</div>
         <Form.Item
-          // validateStatus={this.state.userNameStatus = ''}
-          // help={this.state.userNameValidation}
+          hasFeedback
+          validateStatus={userNameStatus}
+          help={userNameHelp}
         >
           {getFieldDecorator('userName', {
             rules: [
-              // {required: true, message: 'Pole nie może być puste'},
-              // {pattern: new RegExp("^\\S+$"), message: 'Podaj nazwę bez spacji.'},
-              // {validator: this.checkUserName}
+              {validator: this.checkUserName}
             ],
             validateTrigger: 'onBlur'
           })(
@@ -116,11 +135,13 @@ class RegisterForm extends Component {
                    placeholder={"Nazwa użytkownika"} onFocus={this.handleFocus}/>
           )}
         </Form.Item>
-        <Form.Item>
+        <Form.Item
+          hasFeedback
+          validateStatus={userEmailStatus}
+          help={userEmailHelp}>
           {getFieldDecorator('userEmail', {
             rules: [
-              {validator: this.checkUserEmail},
-              {type: 'email', message: 'Niepoprawny format email.'}
+              {validator: this.checkUserEmail}
             ],
             validateTrigger: 'onBlur'
           })(
@@ -128,36 +149,42 @@ class RegisterForm extends Component {
                    placeholder={"Email"} onFocus={this.handleFocus}/>
           )}
         </Form.Item>
-        <Form.Item>
+        <Form.Item
+          hasFeedback
+        >
           {getFieldDecorator('userPassword', {
             rules: [
-              {required: true, message: 'Podaj hasło.'},
-              {pattern: new RegExp("^\\S+$"), message: 'Podaj hasło bez spacji.'},
+              {required: true, message: validationErrorMsg.empty},
+              {pattern: new RegExp("^\\S+$"), message: validationErrorMsg.space},
             ],
             validateTrigger: 'onBlur',
             settings: {
               height: 4
             }
           })(
-            <PasswordInput
-              settings={{
-                colorScheme: {
-                  levels: ["#ff4033", "#fe940d", "#ffd908", "#cbe11d", "#6ecc3a"],
-                  noLevel: "lightgrey"
-                },
-                height: 4,
-                alwaysVisible: false
-              }}
-              inputProps={{}}
-              prefix={<Icon type={"lock"}/>}
-              className={"register-input"}
-              type={"password"}
-              placeholder={"Hasło"}
-              onFocus={this.handleFocus}
-            />
+            <span className={'ant-form-item-children'}>
+              <PasswordInput
+                settings={{
+                  colorScheme: {
+                    levels: ["#ff4033", "#fe940d", "#ffd908", "#cbe11d", "#6ecc3a"],
+                    noLevel: "lightgrey"
+                  },
+                  height: 4,
+                  alwaysVisible: false
+                }}
+                inputProps={{}}
+                prefix={<Icon type={"lock"}/>}
+                className={"register-input"}
+                type={"password"}
+                placeholder={"Hasło"}
+                onFocus={this.handleFocus}
+              />
+            </span>
           )}
         </Form.Item>
-        <Form.Item>
+        <Form.Item
+          hasFeedback
+        >
           {getFieldDecorator('userRepeatPassword', {
             rules: [
               {required: true, message: 'Powtórz hasło.'},

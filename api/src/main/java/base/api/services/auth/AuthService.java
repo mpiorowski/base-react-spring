@@ -3,7 +3,9 @@ package base.api.services.auth;
 import base.api.config.AppConstants;
 import base.api.config.mail.MessagesConfig;
 import base.api.domain.AuthDao;
+import base.api.domain.token.TokenDao;
 import base.api.domain.token.TokenEntity;
+import base.api.domain.user.UserDao;
 import base.api.domain.user.UserEntity;
 import base.api.services.mail.MailService;
 import base.api.utils.UtilsString;
@@ -24,10 +26,12 @@ public class AuthService {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
   private AuthDao authDao;
+  private TokenDao tokenDao;
   private MailService mailService;
 
-  public AuthService(AuthDao authDao, MailService mailService) {
+  public AuthService(AuthDao authDao, TokenDao tokenDao, UserDao userDao, MailService mailService) {
     this.authDao = authDao;
+    this.tokenDao = tokenDao;
     this.mailService = mailService;
   }
 
@@ -42,15 +46,18 @@ public class AuthService {
   @Transactional
   public boolean sendRegisterCode(UserEntity userEntity) {
 
+    if (authDao.findUserByNameOrEmail(userEntity).isPresent()) {
+      return false;
+    }
+
     String userEmail = userEntity.getUserEmail();
     String code = UtilsString.generateSecureNumber(9999);
     String encodedToken = UtilsString.encodeString(code);
     String tokenType = AppConstants.TokenTypes.REGISTER_TOKEN;
+    var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail, userEntity.toString());
 
-    var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail);
-
-    authDao.clearTokens(userEmail, tokenType);
-    authDao.saveRegisterToken(tokenEntity);
+    tokenDao.clearTokens(userEmail, tokenType);
+    tokenDao.addToken(tokenEntity);
 
     String message = MessagesConfig.RegisterTokenMessage.message(code);
     String header = MessagesConfig.RegisterTokenMessage.HEADER;
@@ -65,7 +72,7 @@ public class AuthService {
     String userEmail = userEntity.getUserEmail();
     String tokenType = AppConstants.TokenTypes.REGISTER_TOKEN;
 
-    Optional<TokenEntity> token = authDao.findTokenByType(userEmail, tokenType);
+    Optional<TokenEntity> token = tokenDao.findTokenByType(userEmail, tokenType);
     if (token.isPresent()
         && !token.get().getToken().isBlank()
         && UtilsString.compareEncodedStrings(verificationCode, token.get().getToken())) {
@@ -84,17 +91,18 @@ public class AuthService {
   }
 
   @Transactional
-  public boolean sendRecoverCode(String userEmail) {
+  public boolean sendRecoverCode(UserEntity userEntity) {
 
+    String userEmail = userEntity.getUserEmail();
     String token = UtilsString.generateSecureNumber(9999);
     String encodedToken = UtilsString.encodeString(token);
     String tokenType = AppConstants.TokenTypes.RECOVER_TOKEN;
 
-    var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail);
+    var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail, userEntity.toString());
 
-    authDao.clearTokens(userEmail, tokenType);
+    tokenDao.clearTokens(userEmail, tokenType);
+    tokenDao.addToken(tokenEntity);
 
-    authDao.saveRegisterToken(tokenEntity);
     String message = MessagesConfig.RecoverMessage.messageCode(token);
     String header = MessagesConfig.RecoverMessage.HEADER_CODE;
     mailService.sendHtmlMail(userEmail, header, message);
@@ -107,10 +115,10 @@ public class AuthService {
     String userEmail = userEntity.getUserEmail();
     String tokenType = AppConstants.TokenTypes.RECOVER_TOKEN;
 
-    Optional<TokenEntity> token = authDao.findTokenByType(userEmail, tokenType);
+    Optional<TokenEntity> token = tokenDao.findTokenByType(userEmail, tokenType);
     if (token.isPresent()
-      && !token.get().getToken().isBlank()
-      && UtilsString.compareEncodedStrings(verificationCode, token.get().getToken())) {
+        && !token.get().getToken().isBlank()
+        && UtilsString.compareEncodedStrings(verificationCode, token.get().getToken())) {
       String encodedPassword = UtilsString.encodeString(userEntity.getUserPassword());
       userEntity.setUserPassword(encodedPassword);
 
