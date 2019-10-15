@@ -4,7 +4,7 @@ export const notificationConfig = {
   serverError: {
     type: 'error',
     message: "Wystąpił problem",
-    description: "Wystąpił problem przy połączeniu z serwerem. Proszę spróbować ponownie.",
+    description: "Wystąpił problem podczas przesyłania danych. Proszę spróbować ponownie.",
     duration: 3
   },
   serverAccess: {

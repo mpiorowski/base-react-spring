@@ -39,9 +39,10 @@ public class AuthService {
     return authDao.authUserById(userId);
   }
 
-  @Transactional(rollbackFor = {MessagingException.class, UnsupportedEncodingException.class})
-  public boolean sendRegisterCode(String userEmail) {
+  @Transactional
+  public boolean sendRegisterCode(UserEntity userEntity) {
 
+    String userEmail = userEntity.getUserEmail();
     String code = UtilsString.generateSecureNumber(9999);
     String encodedToken = UtilsString.encodeString(code);
     String tokenType = AppConstants.TokenTypes.REGISTER_TOKEN;

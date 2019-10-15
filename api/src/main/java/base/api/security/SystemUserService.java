@@ -15,7 +15,6 @@ import java.util.Optional;
 @Service
 public class SystemUserService implements UserDetailsService {
 
-  private static final Logger authLogger = LoggerFactory.getLogger(SystemUserService.class);
   private final AuthService service;
 
   public SystemUserService(AuthService service) {

@@ -8,6 +8,7 @@ import {NavLink} from "react-router-dom";
 import {WelcomeMessages} from "../common/RandomMessages";
 
 const rn = Math.floor(Math.random() * WelcomeMessages.length);
+
 class LoginForm extends Component {
 
   authToken;
@@ -29,16 +30,14 @@ class LoginForm extends Component {
           }
         }).catch(apiError => {
           console.log(apiError);
-          openNotification('serverAccess');
-          this.setState({
-            checking: false,
-          });
+          apiError.status === 404
+            ? openNotification('authError')
+            : openNotification('serverAccess');
+          this.setState({checking: false});
         })
       } else {
         console.log(formError);
-        this.setState({
-          checking: false,
-        });
+        this.setState({checking: false});
       }
     })
   };

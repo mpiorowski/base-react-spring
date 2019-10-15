@@ -21,7 +21,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
-//@ControllerAdvice
+// @ControllerAdvice
 public class AuthController {
 
   private final AuthenticationManager authenticationManager;
@@ -51,18 +51,19 @@ public class AuthController {
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String authToken = tokenProvider.generateToken(authentication);
 
-    return ResponseEntity.ok(new LoginResponseDto(authToken));
+    return new ResponseEntity<>(new LoginResponseDto(authToken), HttpStatus.OK);
   }
 
-  @PostMapping("/register-code")
-  public ResponseEntity<Boolean> sendRegisterCode(@RequestBody String userEmail) {
+  @PostMapping("/register/code")
+  public ResponseEntity<Boolean> sendRegisterCode(@RequestBody @Valid RegisterRequestDto registerRequestDto) {
 
-    return authService.sendRegisterCode(userEmail)
+    UserEntity userEntity = authMapper.registerRequestToUserEntity(registerRequestDto);
+    return authService.sendRegisterCode(userEntity)
         ? new ResponseEntity<>(true, HttpStatus.OK)
         : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
   }
 
-  @PostMapping("/register")
+  @PostMapping("/register/user")
   public ResponseEntity<Boolean> registerUser(
       @RequestBody @Valid RegisterRequestDto registerRequestDto) {
 

@@ -37,16 +37,14 @@ class RegisterForm extends Component {
           }
         }).catch(apiError => {
           console.log(apiError);
-          openNotification('serverError');
-          this.setState({
-            checking: false,
-          });
+          apiError === 409
+            ? openNotification('serverError')
+            : openNotification('serverAccess');
+          this.setState({checking: false});
         })
       } else {
         console.log(error);
-        this.setState({
-          checking: false,
-        });
+        this.setState({checking: false});
       }
     })
   };
@@ -61,7 +59,6 @@ class RegisterForm extends Component {
   };
 
   checkUserName = (rule, value, callback) => {
-    console.log(value);
     if (isEmptyString(value)) {
       callback('Pole nie może być puste');
     } else if (/\s/.test(value)) {
@@ -111,7 +108,7 @@ class RegisterForm extends Component {
             rules: [
               // {required: true, message: 'Pole nie może być puste'},
               // {pattern: new RegExp("^\\S+$"), message: 'Podaj nazwę bez spacji.'},
-              {validator: this.checkUserName}
+              // {validator: this.checkUserName}
             ],
             validateTrigger: 'onBlur'
           })(

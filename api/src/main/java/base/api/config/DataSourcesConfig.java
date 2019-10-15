@@ -57,7 +57,9 @@ public class DataSourcesConfig {
     //            .ignoreMissingMigrations(true);
 
     Flyway flyway = new Flyway(configuration);
-    flyway.clean();
+    if (this.migration.cleanOnStart) {
+      flyway.clean();
+    }
     flyway.migrate();
     return flyway;
   }
@@ -65,6 +67,7 @@ public class DataSourcesConfig {
   @Data
   private static class Migration {
     private String[] locations;
+    private boolean cleanOnStart = false;
   }
 
   @Data

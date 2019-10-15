@@ -19,6 +19,7 @@ datasources:
     host: localhost
   migration:
     locations: ["classpath:/db/migration", "classpath:/db/test"]
+    cleanOnStart: false
 
 spring:
   profiles:
