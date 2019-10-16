@@ -5,6 +5,7 @@ import {serviceRecover} from "../services/auth/AuthService";
 import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
 import {PasswordInput} from "antd-password-input-strength";
+import {validationErrorMsg} from "../config/ErrorConfig";
 
 const {Content} = Layout;
 
@@ -15,13 +16,11 @@ class RecoverCodeForm extends Component {
     checking: false,
   };
 
-
   componentDidMount() {
     if (this.props.location.state === undefined || this.props.location.state.userEmail === undefined) {
       this.props.history.push('/recover');
     }
   }
-
 
   validateAndSubmit = (e) => {
     this.setState({
@@ -45,8 +44,8 @@ class RecoverCodeForm extends Component {
           }
         }).catch(authError => {
           console.log(authError);
-          if (authError.status === 401) {
-            openNotification('authError');
+          if (authError.status === 404) {
+            openNotification('validationCodeError');
           } else {
             openNotification('serverAccess');
           }
@@ -61,6 +60,15 @@ class RecoverCodeForm extends Component {
         });
       }
     })
+  };
+
+  compareToFirstPassword = (rule, value, callback) => {
+    const {form} = this.props;
+    if (value && value !== form.getFieldValue('userPassword')) {
+      callback(validationErrorMsg.diffPass);
+    } else {
+      callback();
+    }
   };
 
   render() {

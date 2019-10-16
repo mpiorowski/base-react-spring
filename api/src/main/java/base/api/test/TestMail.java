@@ -1,7 +1,9 @@
 package base.api.test;
 
-import base.api.config.mail.MessagesConfig;
+import base.api.domain.AuthDao;
 import base.api.services.mail.MailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +17,16 @@ import java.io.UnsupportedEncodingException;
 @RequestMapping("/api/test")
 public class TestMail {
 
+  private static final Logger logger = LoggerFactory.getLogger(TestMail.class);
+
   private JavaMailSender javaMailSender;
   private MailService mailService;
+  private AuthDao authDao;
 
-  public TestMail(JavaMailSender javaMailSender, MailService mailService) {
+  public TestMail(JavaMailSender javaMailSender, MailService mailService, AuthDao authDao) {
     this.javaMailSender = javaMailSender;
     this.mailService = mailService;
+    this.authDao = authDao;
   }
 
   @GetMapping("/mail1")

@@ -68,7 +68,8 @@ public class AuthController {
 
   @PostMapping("/register/user")
   public ResponseEntity<Boolean> registerUser(
-      @RequestBody @Valid RegisterRequestDto registerRequestDto) throws JsonProcessingException, InvalidTokenException {
+      @RequestBody @Valid RegisterRequestDto registerRequestDto)
+      throws JsonProcessingException, InvalidTokenException {
 
     UserEntity userEntity = authMapper.registerRequestToUserEntity(registerRequestDto);
     return authService.registerUser(registerRequestDto.getVerificationCode(), userEntity)
@@ -77,12 +78,11 @@ public class AuthController {
   }
 
   @PostMapping("/recover/code")
-  public ResponseEntity<Boolean> sendRecoverCode(@RequestBody RecoverRequestDto recoverRequestDto) {
+  public ResponseEntity<Boolean> sendRecoverCode(@RequestBody String userEmail) {
 
-    UserEntity userEntity = authMapper.recoverRequestToUserEntity(recoverRequestDto);
-    return authService.sendRecoverCode(userEntity)
+    return authService.sendRecoverCode(userEmail)
         ? new ResponseEntity<>(true, HttpStatus.OK)
-        : new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        : new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
   }
 
   @PostMapping("/recover/user")

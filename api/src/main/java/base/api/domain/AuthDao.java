@@ -45,9 +45,16 @@ public interface AuthDao {
   })
   boolean recoverUser(UserEntity userEntity);
 
-  @Select("select exists(select 1 from sys_users where user_name = #{userName})")
+  // TODO - work with deleted users
+  @Select({
+    "select exists(select 1 from sys_users where user_name = #{userName}",
+    "and is_deleted is false and is_active is true)"
+  })
   boolean checkUserName(@Param("userName") String userName);
 
-  @Select("select exists(select 1 from sys_users where user_email = #{userEmail})")
+  @Select({
+    "select exists(select 1 from sys_users where user_email = #{userEmail}",
+    "and is_deleted is false and is_active is true)"
+  })
   boolean checkUserEmail(@Param("userEmail") String userEmail);
 }

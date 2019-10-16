@@ -3,12 +3,11 @@ package base.api.services.auth;
 import base.api.config.AppConstants;
 import base.api.config.mail.MessagesConfig;
 import base.api.domain.AuthDao;
-import base.api.domain.token.TokenDao;
 import base.api.domain.token.TokenEntity;
-import base.api.domain.user.UserDao;
 import base.api.domain.user.UserEntity;
 import base.api.exceptions.InvalidTokenException;
 import base.api.services.mail.MailService;
+import base.api.services.token.TokenService;
 import base.api.utils.UtilsString;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,12 +26,12 @@ public class AuthService {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
   private AuthDao authDao;
-  private TokenDao tokenDao;
+  private TokenService tokenService;
   private MailService mailService;
 
-  public AuthService(AuthDao authDao, TokenDao tokenDao, UserDao userDao, MailService mailService) {
+  public AuthService(AuthDao authDao, TokenService tokenService, MailService mailService) {
     this.authDao = authDao;
-    this.tokenDao = tokenDao;
+    this.tokenService = tokenService;
     this.mailService = mailService;
   }
 
@@ -61,8 +58,7 @@ public class AuthService {
     String tokenData = mapper.writeValueAsString(userEntity);
     var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail, tokenData);
 
-    tokenDao.clearTokens(userEmail, tokenType);
-    tokenDao.addToken(tokenEntity);
+    tokenService.addToken(tokenEntity);
 
     String message = MessagesConfig.RegisterTokenMessage.message(code);
     String header = MessagesConfig.RegisterTokenMessage.HEADER;
@@ -73,7 +69,7 @@ public class AuthService {
 
   @Transactional
   public boolean registerUser(String verificationCode, UserEntity userEntity)
-    throws JsonProcessingException, InvalidTokenException {
+      throws JsonProcessingException, InvalidTokenException {
 
     if (authDao.findUserByNameOrEmail(userEntity).isPresent()) {
       return false;
@@ -82,7 +78,7 @@ public class AuthService {
     String userEmail = userEntity.getUserEmail();
     String tokenType = AppConstants.TokenTypes.REGISTER_TOKEN;
 
-    Optional<TokenEntity> token = tokenDao.findTokenByType(userEmail, tokenType);
+    Optional<TokenEntity> token = tokenService.findTokenByType(userEmail, tokenType);
     if (token.isPresent()
         && !token.get().getToken().isBlank()
         && UtilsString.compareEncodedStrings(verificationCode, token.get().getToken())
@@ -93,27 +89,31 @@ public class AuthService {
       userEntity.setUserRoles(List.of(AppConstants.RoleName.ROLE_USER.name()));
 
       authDao.registerUser(userEntity);
+      tokenService.clearTokens(userEmail, tokenType);
+
       String userName = userEntity.getUserName();
       String message = MessagesConfig.WelcomeMessage.message(userName, userEmail);
       mailService.sendHtmlMail(
           userEntity.getUserEmail(), MessagesConfig.WelcomeMessage.HEADER, message);
       return true;
     }
-    throw new InvalidTokenException("Incorrect token");
+    throw new InvalidTokenException("Invalid token exception");
   }
 
   @Transactional
-  public boolean sendRecoverCode(UserEntity userEntity) {
+  public boolean sendRecoverCode(String userEmail) {
 
-    String userEmail = userEntity.getUserEmail();
+    if (!this.checkUserEmail(userEmail)) {
+      return false;
+    }
+
     String token = UtilsString.generateSecureNumber(9999);
     String encodedToken = UtilsString.encodeString(token);
     String tokenType = AppConstants.TokenTypes.RECOVER_TOKEN;
 
-    var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail, userEntity.toString());
+    var tokenEntity = new TokenEntity(encodedToken, tokenType, userEmail, "");
 
-    tokenDao.clearTokens(userEmail, tokenType);
-    tokenDao.addToken(tokenEntity);
+    tokenService.addToken(tokenEntity);
 
     String message = MessagesConfig.RecoverMessage.messageCode(token);
     String header = MessagesConfig.RecoverMessage.HEADER_CODE;
@@ -121,28 +121,29 @@ public class AuthService {
     return true;
   }
 
-  @Transactional(rollbackFor = {MessagingException.class, UnsupportedEncodingException.class})
+  @Transactional
   public boolean recoverUser(String verificationCode, UserEntity userEntity) {
 
     String userEmail = userEntity.getUserEmail();
     String tokenType = AppConstants.TokenTypes.RECOVER_TOKEN;
 
-    Optional<TokenEntity> token = tokenDao.findTokenByType(userEmail, tokenType);
+    Optional<TokenEntity> token = tokenService.findTokenByType(userEmail, tokenType);
     if (token.isPresent()
         && !token.get().getToken().isBlank()
         && UtilsString.compareEncodedStrings(verificationCode, token.get().getToken())) {
       String encodedPassword = UtilsString.encodeString(userEntity.getUserPassword());
       userEntity.setUserPassword(encodedPassword);
 
-      if (authDao.recoverUser(userEntity)) {
-        String userName = userEntity.getUserName();
-        String message = MessagesConfig.RecoverMessage.messageRecover(userName, userEmail);
-        mailService.sendHtmlMail(
-            userEntity.getUserEmail(), MessagesConfig.RecoverMessage.HEADER_RECOVER, message);
-        return true;
-      }
+      authDao.recoverUser(userEntity);
+      tokenService.clearTokens(userEmail, tokenType);
+
+      String userName = userEntity.getUserName();
+      String message = MessagesConfig.RecoverMessage.messageRecover(userName, userEmail);
+      mailService.sendHtmlMail(
+          userEntity.getUserEmail(), MessagesConfig.RecoverMessage.HEADER_RECOVER, message);
+      return true;
     }
-    return false;
+    throw new InvalidTokenException("Invalid token exception");
   }
 
   public boolean checkUserName(String userName) {

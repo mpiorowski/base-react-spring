@@ -31,17 +31,17 @@ export function serviceRegister(credentials) {
   });
 }
 
-export function serviceRecoverCode(userNameOrEmail) {
+export function serviceRecoverCode(userEmail) {
   return apiRequest({
-    url: "/api/auth/recover-code",
+    url: "/api/auth/recover/code",
     method: "POST",
-    body: userNameOrEmail
+    body: userEmail
   });
 }
 
 export function serviceRecover(credentials) {
   return apiRequest({
-    url: "/api/auth/recover",
+    url: "/api/auth/recover/user",
     method: "POST",
     body: JSON.stringify(credentials)
   });
