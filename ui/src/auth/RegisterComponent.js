@@ -1,19 +1,26 @@
 import React, {Component} from 'react';
-import {Button, Form, Icon, Input, Layout} from "antd";
+import {Button, Form, Icon, Input} from "antd";
 import './RegisterComponent.less';
 import {serviceCheckUserEmail, serviceCheckUserName, serviceRegisterCode} from "../services/auth/AuthService";
-import loginLogo from "../img/bear-logo-grey.png";
 import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
 import {PasswordInput} from "antd-password-input-strength";
+import {RegisterMessages} from "../common/RandomMessages";
+import {isEmptyString} from "../utils/UtilsString";
+import {validationErrorMsg} from "../config/ErrorConfig";
+import {emailRegEx} from "../config/AppConfig";
 
-const {Content} = Layout;
+const rn = Math.floor(Math.random() * RegisterMessages.length);
 
 class RegisterForm extends Component {
 
   authToken;
   state = {
     checking: false,
+    userNameStatus: '',
+    userNameHelp: '',
+    userEmailStatus: '',
+    userEmailHelp: ''
   };
 
   validateAndSubmit = (e) => {
@@ -23,10 +30,10 @@ class RegisterForm extends Component {
     e.preventDefault();
     this.props.form.validateFields((error, credentials) => {
       if (!error) {
-        serviceRegisterCode(credentials.userEmail).then(response => {
+        serviceRegisterCode(credentials).then(response => {
           if (response) {
             console.log(response);
-            openNotification('validationCode');
+            openNotification('validationCodeSend');
             this.props.history.push({
               pathname: '/register/code',
               state: {
@@ -34,22 +41,16 @@ class RegisterForm extends Component {
               }
             });
           }
-        }).catch(authError => {
-          console.log(authError);
-          if (authError.status === 401) {
-            openNotification('authError');
-          } else {
-            openNotification('serverAccess');
-          }
-          this.setState({
-            checking: false,
-          });
+        }).catch(apiError => {
+          console.log(apiError);
+          apiError.status === 400
+            ? openNotification('serverError')
+            : openNotification('serverAccess');
+          this.setState({checking: false});
         })
       } else {
         console.log(error);
-        this.setState({
-          checking: false,
-        });
+        this.setState({checking: false});
       }
     })
   };
@@ -57,22 +58,27 @@ class RegisterForm extends Component {
   compareToFirstPassword = (rule, value, callback) => {
     const {form} = this.props;
     if (value && value !== form.getFieldValue('userPassword')) {
-      callback('Hasła nie pasują. Spróbuj ponownie.');
+      callback(validationErrorMsg.diffPass);
     } else {
       callback();
     }
   };
 
   checkUserName = (rule, value, callback) => {
-    if (value === '') {
-      callback('Podaj nazwę użytkownika.');
+    if (isEmptyString(value)) {
+      this.setState({userNameStatus: 'error', userNameHelp: validationErrorMsg.empty});
+      callback(validationErrorMsg.empty);
     } else if (/\s/.test(value)) {
-      callback('Podaj nazwę użytkownika bez spacji.');
+      this.setState({userNameStatus: 'error', userNameHelp: validationErrorMsg.space});
+      callback(validationErrorMsg.space);
     } else {
+      this.setState({userNameStatus: 'validating', userNameHelp: ''});
       serviceCheckUserName(value).then(response => {
         if (response) {
-          callback('Ta nazwa jest już zajęta');
+          this.setState({userNameStatus: 'error', userNameHelp: validationErrorMsg.userName});
+          callback(validationErrorMsg.userName);
         } else {
+          this.setState({userNameStatus: 'success', userNameHelp: ''});
           callback();
         }
       });
@@ -80,15 +86,23 @@ class RegisterForm extends Component {
   };
 
   checkUserEmail = (rule, value, callback) => {
-    if (value === '') {
-      callback('Podaj poprawny email.');
+    if (isEmptyString(value)) {
+      this.setState({userEmailStatus: 'error', userEmailHelp: validationErrorMsg.empty});
+      callback(validationErrorMsg.empty);
     } else if (/\s/.test(value)) {
-      callback('Podaj poprawny email bez spacji.');
+      this.setState({userEmailStatus: 'error', userEmailHelp: validationErrorMsg.space});
+      callback(validationErrorMsg.space);
+    } else if (!emailRegEx.test(value)) {
+      this.setState({userEmailStatus: 'error', userEmailHelp: validationErrorMsg.email});
+      callback(validationErrorMsg.email);
     } else {
       serviceCheckUserEmail(value).then(response => {
+        this.setState({userEmailStatus: 'validating', userEmailHelp: ''});
         if (response) {
-          callback('Ten email jest już zajęty');
+          this.setState({userEmailStatus: 'error', userEmailHelp: validationErrorMsg.userEmail});
+          callback(validationErrorMsg.userEmail);
         } else {
+          this.setState({userEmailStatus: 'success', userEmailHelp: ''});
           callback();
         }
       });
@@ -98,102 +112,103 @@ class RegisterForm extends Component {
   render() {
 
     const {getFieldDecorator} = this.props.form;
+    const {userNameStatus, userNameHelp, userEmailStatus, userEmailHelp} = this.state;
 
     return (
-      <Layout>
-        <Content className={"register-content"}>
-          <div className={"register-header"}>
-            <img src={loginLogo} alt="" className={"register-logo-icon"}/>
-            Codeito
-          </div>
-          <Form
-            onSubmit={this.validateAndSubmit}
-            className={"register-form"}
-          >
-            <Form.Item
-              // validateStatus={this.state.userNameStatus = ''}
-              // help={this.state.userNameValidation}
-            >
-              {getFieldDecorator('userName', {
-                rules: [
-                  // {required: true, message: 'Podaj nazwę użytkownika.'},
-                  // {pattern: new RegExp("^\\S+$"), message: 'Podaj nazwę bez spacji.'},
-                  {validator: this.checkUserName}
-                ],
-                validateTrigger: 'onBlur'
-              })(
-                <Input prefix={<Icon type={"user"}/>} className={'register-input'}
-                       placeholder={"Nazwa użytkownika"} onFocus={this.handleFocus}/>
-              )}
-            </Form.Item>
-            <Form.Item>
-              {getFieldDecorator('userEmail', {
-                rules: [
-                  {validator: this.checkUserEmail},
-                  {type: 'email', message: 'Niepoprawny format email.'}
-                ],
-                validateTrigger: 'onBlur'
-              })(
-                <Input prefix={<Icon type={"mail"}/>} className={'register-input'}
-                       placeholder={"Email"} onFocus={this.handleFocus}/>
-              )}
-            </Form.Item>
-            <Form.Item>
-              {getFieldDecorator('userPassword', {
-                rules: [
-                  {required: true, message: 'Podaj hasło.'},
-                  {pattern: new RegExp("^\\S+$"), message: 'Podaj hasło bez spacji.'},
-                ],
-                validateTrigger: 'onBlur',
-                settings: {
-                  height: 4
-                }
-              })(
-                <PasswordInput
-                  settings={{
-                    colorScheme: {
-                      levels: ["#ff4033", "#fe940d", "#ffd908", "#cbe11d", "#6ecc3a"],
-                      noLevel: "lightgrey"
-                    },
-                    height: 4,
-                    alwaysVisible: false
-                  }}
-                  inputProps={{}}
-                  prefix={<Icon type={"lock"}/>}
-                  className={"register-input"}
-                  type={"password"}
-                  placeholder={"Hasło"}
-                  onFocus={this.handleFocus}
-                />
-              )}
-            </Form.Item>
-            <Form.Item>
-              {getFieldDecorator('userRepeatPassword', {
-                rules: [
-                  {required: true, message: 'Powtórz hasło.'},
-                  {validator: this.compareToFirstPassword},
-                ],
-                validateTrigger: 'onBlur'
-              })(
-                <Input.Password
-                  prefix={<Icon type={"lock"}/>}
-                  className={"register-input"}
-                  type={"password"}
-                  placeholder={"Powtórz hasło"}
-                  onFocus={this.handleFocus}
-                />
-              )}
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" className="register-form-button"
-                      loading={this.state.checking}>
-                <span className={'register-form-button-text'}>Dalej</span>
-              </Button>
-              Masz już konto?<NavLink to="/login"> <b>Zaloguj się.</b></NavLink>
-            </Form.Item>
-          </Form>
-        </Content>
-      </Layout>
+      <Form
+        onSubmit={this.validateAndSubmit}
+        className={"auth-form"}
+      >
+        <div className={"auth-message"}>{RegisterMessages[rn]}</div>
+        <Form.Item
+          hasFeedback
+          validateStatus={userNameStatus}
+          help={userNameHelp}
+        >
+          {getFieldDecorator('userName', {
+            rules: [
+              {validator: this.checkUserName}
+            ],
+            validateTrigger: 'onBlur'
+          })(
+            <Input prefix={<Icon type={"user"}/>} className={'register-input'}
+                   placeholder={"Nazwa użytkownika"} onFocus={this.handleFocus}/>
+          )}
+        </Form.Item>
+        <Form.Item
+          hasFeedback
+          validateStatus={userEmailStatus}
+          help={userEmailHelp}>
+          {getFieldDecorator('userEmail', {
+            rules: [
+              {validator: this.checkUserEmail}
+            ],
+            validateTrigger: 'onBlur'
+          })(
+            <Input prefix={<Icon type={"mail"}/>} className={'register-input'}
+                   placeholder={"Email"} onFocus={this.handleFocus}/>
+          )}
+        </Form.Item>
+        <Form.Item
+          hasFeedback
+        >
+          {getFieldDecorator('userPassword', {
+            rules: [
+              {required: true, message: validationErrorMsg.empty},
+              {pattern: new RegExp("^\\S+$"), message: validationErrorMsg.space},
+            ],
+            validateTrigger: 'onBlur',
+            settings: {
+              height: 4
+            }
+          })(
+            <span className={'ant-form-item-children'}>
+              <PasswordInput
+                settings={{
+                  colorScheme: {
+                    levels: ["#ff4033", "#fe940d", "#ffd908", "#cbe11d", "#6ecc3a"],
+                    noLevel: "lightgrey"
+                  },
+                  height: 4,
+                  alwaysVisible: false
+                }}
+                inputProps={{}}
+                prefix={<Icon type={"lock"}/>}
+                className={"register-input"}
+                type={"password"}
+                placeholder={"Hasło"}
+                onFocus={this.handleFocus}
+              />
+            </span>
+          )}
+        </Form.Item>
+        <Form.Item
+          hasFeedback
+        >
+          {getFieldDecorator('userRepeatPassword', {
+            rules: [
+              {required: true, message: 'Powtórz hasło.'},
+              {validator: this.compareToFirstPassword},
+            ],
+            validateTrigger: 'onBlur'
+          })(
+            <Input.Password
+              prefix={<Icon type={"lock"}/>}
+              className={"register-input"}
+              type={"password"}
+              placeholder={"Powtórz hasło"}
+              onFocus={this.handleFocus}
+            />
+          )}
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" className="register-form-button"
+                  loading={this.state.checking}>
+            <span className={'register-form-button-text'}>Dalej</span>
+          </Button>
+          Masz już konto?<NavLink to="/login"> <b>Zaloguj się.</b></NavLink>
+        </Form.Item>
+      </Form>
 
     );
   }

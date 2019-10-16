@@ -23,7 +23,7 @@ public class SystemUser implements UserDetails {
 
   private Collection<? extends GrantedAuthority> authorities;
 
-  public SystemUser(
+  private SystemUser(
       Long userId,
       String userName,
       String userEmail,
@@ -36,11 +36,9 @@ public class SystemUser implements UserDetails {
     this.authorities = authorities;
   }
 
-  public static SystemUser createUser(UserEntity user) {
+  static SystemUser createUser(UserEntity user) {
     List<GrantedAuthority> authorities =
-        user.getUserRoles().stream()
-            .map(SimpleGrantedAuthority::new)
-            .collect(Collectors.toList());
+        user.getUserRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
     return new SystemUser(
         user.getId(), user.getUserName(), user.getUserEmail(), user.getUserPassword(), authorities);

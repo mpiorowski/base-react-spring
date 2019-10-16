@@ -1,42 +1,29 @@
 @import "../styles/global";
 
-.register-content {
-  height: 100vh;
-
-  .register-logo-icon {
-    width: 90px;
-  }
-}
-
-.register-header {
-  text-align: center;
-  padding-top: 100px;
-  font-size: 60px;
-}
-@media only screen and (max-width: @mobile-width) {
-  .register-header {
-    padding-top: 50px;
-  }
-}
-
-.register-form {
-  padding-top: 30px;
-  width: 388px;
-  margin: 0 auto;
-}
-
-@media screen and (max-width: @mobile-width) {
-  .register-form {
-    width: 95%;
-  }
-}
-
 .register-input {
   & > .ant-input {
     height: 40px;
     font-size: 16px;
     width: 100%;
   }
+}
+
+#registerForm_userPassword {
+  display: inline-grid;
+  width: 100%;
+}
+
+//error message
+.ant-form-explain {
+  font-size: 12px;
+}
+
+.ant-form-item {
+  margin-bottom: 19px;
+}
+
+.ant-form-item.ant-form-item-with-help {
+  margin-bottom: 0;
 }
 
 .register-form-button {

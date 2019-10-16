@@ -1,9 +1,10 @@
 package base.api.domain;
 
-import base.api.domain.token.TokenEntity;
 import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Mapper
 @Repository
@@ -14,27 +15,19 @@ public interface AuthDao {
     "and is_deleted is false",
     "and is_active is true",
   })
-  UserEntity authUserByNameOrEmail(String userNameOrEmail);
+  Optional<UserEntity> authUserByNameOrEmail(String userNameOrEmail);
+
+  // TODO - deleted user cannot be added
+  @Select({
+    "select * from sys_users",
+    "where ( user_name = #{userName} or user_email = #{userEmail} )",
+  })
+  Optional<UserEntity> findUserByNameOrEmail(UserEntity userEntity);
 
   @Select({
     "select * from sys_users where id = #{userId} and is_deleted is false and is_active is true"
   })
-  UserEntity authUserById(Long userId);
-
-  @Insert({
-    "insert into sys_tokens",
-    "(token, type, email)",
-    "values",
-    "(#{token}, #{type}, #{email})"
-  })
-  boolean saveRegisterToken(TokenEntity tokenEntity);
-
-  @Select({
-    "select * from sys_tokens",
-    "where email = #{email} and type = #{type} and created_at > ( NOW() - INTERVAL '10 min' )",
-    "and is_active is true and is_deleted is false limit 1"
-  })
-  TokenEntity findTokenByType(@Param("email") String email, @Param("type") String type);
+  Optional<UserEntity> authUserById(Long userId);
 
   @Insert({
     "insert into sys_users",
@@ -42,7 +35,7 @@ public interface AuthDao {
     "values",
     "(#{userName}, #{userEmail}, #{userPassword}, #{userRoles})"
   })
-  boolean registerUser(UserEntity userEntity);
+  void registerUser(UserEntity userEntity);
 
   @Update({
     "update sys_users set",
@@ -52,14 +45,16 @@ public interface AuthDao {
   })
   boolean recoverUser(UserEntity userEntity);
 
-  @Update({
-    "update sys_tokens set is_active = false where email = #{email} and type = #{type}",
+  // TODO - work with deleted users
+  @Select({
+    "select exists(select 1 from sys_users where user_name = #{userName}",
+    "and is_deleted is false and is_active is true)"
   })
-  void clearTokens(@Param("email") String email, @Param("type") String type);
-
-  @Select("select exists(select 1 from sys_users where user_name = #{userName})")
   boolean checkUserName(@Param("userName") String userName);
 
-  @Select("select exists(select 1 from sys_users where user_email = #{userEmail})")
+  @Select({
+    "select exists(select 1 from sys_users where user_email = #{userEmail}",
+    "and is_deleted is false and is_active is true)"
+  })
   boolean checkUserEmail(@Param("userEmail") String userEmail);
 }

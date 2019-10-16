@@ -1,5 +1,5 @@
 import {notification} from 'antd';
-import {notificationConfig} from "../config/NotificationsConfig";
+import {notificationConfig} from "../config/notification/NotificationsConfig";
 
 export const openNotification = (type) => {
 

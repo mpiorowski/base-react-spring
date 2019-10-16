@@ -1,9 +1,10 @@
 -- tokens table
 create table sys_tokens
 (
-    token       text      not null,
+    token      text      not null,
     type       text      not null,
     email      text      not null,
+    data       text      not null,
 
     id         serial primary key unique,
     uid        uuid               default uuid_generate_v4() unique,

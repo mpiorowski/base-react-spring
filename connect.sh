@@ -1,1 +1,1 @@
-pgcli postgresql://admin:xswedc@localhost:5432/app
+pgcli postgresql://admin:zaqwsx@localhost:5444/app

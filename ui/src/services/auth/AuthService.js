@@ -15,33 +15,33 @@ export function serviceLogIn(credentials) {
   });
 }
 
-export function serviceRegisterCode(email) {
+export function serviceRegisterCode(credentials) {
   return apiRequest({
-    url: "/api/auth/register-code",
-    method: "POST",
-    body: email
-  });
-}
-
-export function serviceRegister(credentials) {
-  return apiRequest({
-    url: "/api/auth/register",
+    url: "/api/auth/register/code",
     method: "POST",
     body: JSON.stringify(credentials)
   });
 }
 
-export function serviceRecoverCode(userNameOrEmail) {
+export function serviceRegister(credentials) {
   return apiRequest({
-    url: "/api/auth/recover-code",
+    url: "/api/auth/register/user",
     method: "POST",
-    body: userNameOrEmail
+    body: JSON.stringify(credentials)
+  });
+}
+
+export function serviceRecoverCode(userEmail) {
+  return apiRequest({
+    url: "/api/auth/recover/code",
+    method: "POST",
+    body: userEmail
   });
 }
 
 export function serviceRecover(credentials) {
   return apiRequest({
-    url: "/api/auth/recover",
+    url: "/api/auth/recover/user",
     method: "POST",
     body: JSON.stringify(credentials)
   });
