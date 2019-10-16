@@ -83,11 +83,6 @@ class App extends Component {
     })
   };
 
-  testError = () => {
-    console.log('test error');
-    throw new Error('Error thrown from problem child');
-  };
-
   render() {
 
     if (this.state.loading) {
@@ -144,7 +139,6 @@ class App extends Component {
     return (
       <div>
         <Layout className={'app-layout'}>
-          {this.testError()}
           <AppHeader
             toggle={this.headerToggle}
             logout={this.logout}
