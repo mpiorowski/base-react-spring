@@ -5,7 +5,6 @@ import {ACCESS_TOKEN} from "./config/AppConfig";
 import {momentDateTimeLanguage, setUpMomentDateTimeLanguage} from "./config/DateTimeConfig";
 import {routes} from './config/RoutesConfig';
 import AppHeader from "./main/AppHeader";
-import GlobalErrorBoundary from "./main/GlobalErrorBoundary";
 
 import './App.less';
 import './styles/global.less';
@@ -84,6 +83,11 @@ class App extends Component {
     })
   };
 
+  testError = () => {
+    console.log('test error');
+    throw new Error('Error thrown from problem child');
+  };
+
   render() {
 
     if (this.state.loading) {
@@ -139,21 +143,20 @@ class App extends Component {
 
     return (
       <div>
-        <GlobalErrorBoundary>
-          <Layout className={'app-layout'}>
-            <AppHeader
-              toggle={this.headerToggle}
-              logout={this.logout}
-              collapsed={this.state.collapsed}
-              currentUser={currentUser}
-            />
-            <Content className={'app-content'}>
-              <Switch>
-                {router}
-              </Switch>
-            </Content>
-          </Layout>
-        </GlobalErrorBoundary>
+        <Layout className={'app-layout'}>
+          {this.testError()}
+          <AppHeader
+            toggle={this.headerToggle}
+            logout={this.logout}
+            collapsed={this.state.collapsed}
+            currentUser={currentUser}
+          />
+          <Content className={'app-content'}>
+            <Switch>
+              {router}
+            </Switch>
+          </Content>
+        </Layout>
       </div>
     );
   }

@@ -1,13 +1,11 @@
 import React, {Component} from 'react';
-import {Button, Form, Icon, Input, Layout} from "antd";
+import {Button, Form, Icon, Input} from "antd";
 import './RegisterCodeComponent.less';
 import {serviceRecover} from "../services/auth/AuthService";
 import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
 import {PasswordInput} from "antd-password-input-strength";
 import {validationErrorMsg} from "../config/ErrorConfig";
-
-const {Content} = Layout;
 
 class RecoverCodeForm extends Component {
 

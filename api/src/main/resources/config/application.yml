@@ -35,3 +35,6 @@ mybatis:
     lazy-loading-enabled: true
     lazy-load-trigger-methods: ""
   type-handlers-package: base.api.config.mybatis
+
+storage:
+  location: "./files/"

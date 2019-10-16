@@ -31,6 +31,3 @@ spring:
       additional-paths: src/main/java
     livereload:
       enabled: true
-
-storage:
-  location: "./dev/files/"
