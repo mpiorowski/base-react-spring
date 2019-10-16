@@ -1,7 +1,5 @@
 .idea
-logs/*
 files/*
-dump/*
 database/pgdata
 
 # Compiled class file
