@@ -7,6 +7,7 @@ import base.api.domain.token.TokenDao;
 import base.api.domain.token.TokenEntity;
 import base.api.domain.user.UserDao;
 import base.api.domain.user.UserEntity;
+import base.api.exceptions.InvalidTokenException;
 import base.api.services.mail.MailService;
 import base.api.utils.UtilsString;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -72,7 +73,7 @@ public class AuthService {
 
   @Transactional
   public boolean registerUser(String verificationCode, UserEntity userEntity)
-      throws JsonProcessingException {
+    throws JsonProcessingException, InvalidTokenException {
 
     if (authDao.findUserByNameOrEmail(userEntity).isPresent()) {
       return false;
@@ -98,7 +99,7 @@ public class AuthService {
           userEntity.getUserEmail(), MessagesConfig.WelcomeMessage.HEADER, message);
       return true;
     }
-    return false;
+    throw new InvalidTokenException("Incorrect token");
   }
 
   @Transactional

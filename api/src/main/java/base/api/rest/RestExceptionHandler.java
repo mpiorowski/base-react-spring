@@ -1,5 +1,6 @@
 package base.api.rest;
 
+import base.api.exceptions.InvalidTokenException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler({BadCredentialsException.class})
   protected ResponseEntity<Object> badCredentials(RuntimeException ex, WebRequest request) {
     String bodyOfResponse = "Wrong credentials";
+    return handleExceptionInternal(
+        ex, bodyOfResponse, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+  }
+
+  @ExceptionHandler({InvalidTokenException.class})
+  protected ResponseEntity<Object> invalidToken(RuntimeException ex, WebRequest request) {
+    String bodyOfResponse = "Invalid token";
     return handleExceptionInternal(
         ex, bodyOfResponse, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
   }

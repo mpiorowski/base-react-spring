@@ -2,6 +2,7 @@ package base.api.rest.auth;
 
 import base.api.annotations.CurrentUser;
 import base.api.domain.user.UserEntity;
+import base.api.exceptions.InvalidTokenException;
 import base.api.rest.auth.dto.*;
 import base.api.security.JwtAuthenticationTokenProvider;
 import base.api.security.SystemUser;
@@ -67,7 +68,7 @@ public class AuthController {
 
   @PostMapping("/register/user")
   public ResponseEntity<Boolean> registerUser(
-      @RequestBody @Valid RegisterRequestDto registerRequestDto) throws JsonProcessingException {
+      @RequestBody @Valid RegisterRequestDto registerRequestDto) throws JsonProcessingException, InvalidTokenException {
 
     UserEntity userEntity = authMapper.registerRequestToUserEntity(registerRequestDto);
     return authService.registerUser(registerRequestDto.getVerificationCode(), userEntity)
