@@ -1,57 +1,29 @@
 import ContactComponent from "../pages/header/ContactComponent";
-import Test1Component from "../pages/test/Test1Component";
-import Test2Component from "../pages/test/Test2Component";
-import AdminHomeComponent from "../pages/admin/AdminHomeComponent";
+import ForumComponent from "../pages/forum/ForumComponent";
 
 export const routes =
   {
-    'main': {
-      'paths': [
+    main: {
+      paths: [
         {
           url: '/contact',
           component: ContactComponent,
         },
       ]
     },
-    'ROLE_ADMIN': {
-      'paths': [
+    ROLE_USER: {
+      paths: [
         {
-          url: '/home',
-          component: AdminHomeComponent,
-          headerName: 'Strona Główna',
-          headerIcon: 'book'
-        }, {
-          url: '/test1',
-          component: Test1Component,
-          headerName: 'Ksiazka',
-          headerIcon: 'book'
+          url: '/forum',
+          component: ForumComponent,
+          exact: false
         },
+      ],
+      headers: [
         {
-          url: '/test2',
-          component: Test2Component,
+          url: '/forum/categories',
           headerName: 'Forum',
-          headerIcon: 'user'
-        },
-      ]
-    },
-    'ROLE_USER': {
-      'paths': [
-        {
-          url: '/home',
-          component: AdminHomeComponent,
-          headerName: 'Strona Główna',
-          headerIcon: 'book'
-        }, {
-          url: '/test1',
-          component: Test1Component,
-          headerName: 'Ksiazka',
-          headerIcon: 'book'
-        },
-        {
-          url: '/test2',
-          component: Test2Component,
-          headerName: 'Forum',
-          headerIcon: 'user'
+          headerIcon: 'book',
         },
       ]
     }

@@ -118,7 +118,8 @@ class App extends Component {
     const router = [
       routes.main.paths.map(path => {
         return (
-          <PrivateRoute path={path.url}
+          <PrivateRoute exact={path.exact || true}
+                        path={path.url}
                         component={path.component}
                         currentUser={this.state.currentUser}
                         key={routerKey++}/>
