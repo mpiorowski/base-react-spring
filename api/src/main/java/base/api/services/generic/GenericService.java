@@ -22,15 +22,15 @@ public abstract class GenericService<E> {
   @Transactional(readOnly = true)
   public abstract List<E> findAll();
 
-//  @Transactional(readOnly = true)
-//  public abstract Optional<E> findByUid(String uid);
-//
-//  @Transactional
-//  public abstract String add(E entity);
-//
-//  @Transactional
-//  public abstract boolean edit(E entity);
-//
-//  @Transactional
-//  public abstract boolean delete(String uid);
+  @Transactional(readOnly = true)
+  public abstract Optional<E> findByUid(String uid);
+
+  @Transactional
+  public abstract String add(E entity);
+
+  @Transactional
+  public abstract boolean edit(E entity);
+
+  @Transactional
+  public abstract boolean delete(String uid);
 }

@@ -15,19 +15,4 @@ public class SqLBuilder {
     SQL sql = new SQL();
     return sql.SELECT("*").FROM(table).WHERE(uid).toString();
   }
-
-  public static String insert(final String table, final String uid) {
-    SQL sql = new SQL();
-    return sql.SELECT("*").FROM(table).WHERE(uid).toString();
-  }
-
-  public static String update(final String table, final String uid) {
-    SQL sql = new SQL();
-    return sql.SELECT("*").FROM(table).WHERE(uid).toString();
-  }
-
-  public static String delete(final String table, final String uid) {
-    SQL sql = new SQL();
-    return sql.SELECT("*").FROM(table).WHERE(uid).toString();
-  }
 }

@@ -20,12 +20,9 @@ public interface GenericDao<E> {
   @SelectProvider(type = SqLBuilder.class, method = "selectByUid")
   Optional<E> findByUid(String table, UUID uid);
 
-  @SelectProvider(type = SqLBuilder.class, method = "insert")
   UUID add(E entity);
 
-  @SelectProvider(type = SqLBuilder.class, method = "update")
   int edit(E entity);
 
-  @SelectProvider(type = SqLBuilder.class, method = "delete")
   int delete(UUID uuid);
 }
