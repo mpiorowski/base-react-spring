@@ -8,13 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class GenericService<E, D> {
-
-  protected D dao;
-
-  public GenericService(D dao) {
-    this.dao = dao;
-  }
+public abstract class GenericService<E> {
 
   protected SystemUser currentUser() {
     return (SystemUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -28,15 +22,15 @@ public abstract class GenericService<E, D> {
   @Transactional(readOnly = true)
   public abstract List<E> findAll();
 
-  @Transactional(readOnly = true)
-  public abstract Optional<E> findByUid(String uid);
-
-  @Transactional
-  public abstract String add(E entity);
-
-  @Transactional
-  public abstract boolean edit(E entity);
-
-  @Transactional
-  public abstract boolean delete(String uid);
+//  @Transactional(readOnly = true)
+//  public abstract Optional<E> findByUid(String uid);
+//
+//  @Transactional
+//  public abstract String add(E entity);
+//
+//  @Transactional
+//  public abstract boolean edit(E entity);
+//
+//  @Transactional
+//  public abstract boolean delete(String uid);
 }

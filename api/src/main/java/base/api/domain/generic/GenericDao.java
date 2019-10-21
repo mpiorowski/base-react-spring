@@ -1,29 +1,31 @@
 package base.api.domain.generic;
 
+import base.api.domain.SqLBuilder;
 import base.api.domain.user.UserEntity;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.SelectProvider;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Mapper
-@Repository
 public interface GenericDao<E> {
 
   @Select("select * from sys_users where deleted is false and id = #{id}")
   UserEntity selectUser(Long id);
 
-  List<E> findAll();
+  @SelectProvider(type = SqLBuilder.class, method = "selectAll")
+  List<E> findAll(String table);
 
-  Optional<E> findByUid(@Param("uid") UUID uuid);
+  @SelectProvider(type = SqLBuilder.class, method = "selectByUid")
+  Optional<E> findByUid(String table, UUID uid);
 
+  @SelectProvider(type = SqLBuilder.class, method = "insert")
   UUID add(E entity);
 
+  @SelectProvider(type = SqLBuilder.class, method = "update")
   int edit(E entity);
 
-  int delete(@Param("uid") UUID uuid);
+  @SelectProvider(type = SqLBuilder.class, method = "delete")
+  int delete(UUID uuid);
 }

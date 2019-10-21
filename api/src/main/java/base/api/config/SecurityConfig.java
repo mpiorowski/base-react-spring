@@ -100,13 +100,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/api/test/**")
         .permitAll()
         .antMatchers("/api/**")
-        .authenticated()
+        .permitAll()
         .antMatchers("/management/health")
         .permitAll()
         .antMatchers("/management/info")
         .permitAll()
         .antMatchers("/management/**")
-        .hasAuthority(AppConstants.RoleName.ROLE_ADMIN.toString());
+        .hasAuthority(AppConstants.RoleName.ROLE_ADMIN.toString())
+        .anyRequest()
+        .authenticated();
 
     httpSecurity.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class);
     httpSecurity.addFilterBefore(
