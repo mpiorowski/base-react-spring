@@ -19,6 +19,7 @@ class CategoriesComponent extends Component {
 
   componentDidMount() {
     serviceGetCategories().then(response => {
+      console.log(response);
       this.setState({
         categories: response,
         loading: false,
@@ -26,27 +27,30 @@ class CategoriesComponent extends Component {
     })
   }
 
+  //TODO - add option to choose icon, dynamic pagination
   render() {
+    const {categories, loading} = this.state;
+
     return (
       <div>
         <List
           // bordered={true}
           header={<div className={"cat-header"}>Kategorie</div>}
           itemLayout="horizontal"
-          loading={this.state.loading}
+          loading={loading}
           pagination={{
             onChange: (page) => {
               console.log(page);
             },
             pageSize: 16,
           }}
-          dataSource={this.state.categories}
+          dataSource={categories}
           renderItem={item => (
 
             <List.Item
               key={item.categoryTitle}
             >
-              <Skeleton title={false} loading={this.state.loading} active>
+              <Skeleton title={false} loading={loading} active>
                 <Row gutter={16} type="flex" justify="space-between" style={{width: "100%"}}>
                   <Col span={14} style={{margin: 'auto', marginLeft: 0}}>
                     <List.Item.Meta
@@ -70,8 +74,8 @@ class CategoriesComponent extends Component {
 
                   <Col span={4} style={{margin: "auto"}}>
                     <div style={{fontSize: 12}}>
-                      Najnowszy: Ostatnia nadzieja<br/>
-                      Autor: Mateusz Piórowski <br/>
+                      Ostatni post: <br/>
+                      W:  <br/>
                       Data: 24.03.2019, 14:30:33
                     </div>
                   </Col>

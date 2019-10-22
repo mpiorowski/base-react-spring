@@ -2,6 +2,7 @@ package base.api.rest.forum.categories;
 
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.logging.LogExecutionTime;
+import base.api.rest.forum.categories.dto.CategoryAdditionalDto;
 import base.api.rest.forum.categories.dto.CategoryRequestDto;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import base.api.services.forum.CategoryService;
@@ -20,7 +21,7 @@ public class CategoriesController {
 
   private final CategoryService categoryService;
 
-  private CategoryMapper mapper = Mappers.getMapper(CategoryMapper.class);
+  private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
 
   public CategoriesController(CategoryService categoryService) {
     this.categoryService = categoryService;
@@ -31,30 +32,19 @@ public class CategoriesController {
    *
    * @return CategoryRespondDto list of all categories
    */
-  // todo swagger config
-  //  @ApiOperation(value = "Get all partners")
-  //  @ApiResponses(value = {
-  //      @ApiResponse(
-  //          code = 200, message = "Partner List", response = PartnerDto.class, responseContainer =
-  // "List",
-  //          responseHeaders = {
-  //              @ResponseHeader(
-  //                  response = Long.class,
-  //                  name = X_TOTAL_HEADER,
-  //                  description = "Number of total fields without pagination limit"
-  //              )
-  //          }
-  //      )
-  //  })
-  @ResponseStatus(HttpStatus.OK)
   @LogExecutionTime
   @GetMapping()
   public ResponseEntity<List<CategoryRespondDto>> findAllCategories() {
 
-    List<CategoryRespondDto> categories =
-        categoryService.findAll().stream().map(mapper::entityToDto).collect(Collectors.toList());
+    List<CategoryEntity> categoryEntities = categoryService.findAll();
+    List<CategoryAdditionalDto> categories = categoryEntities.stream().map(categoryEntity -> {
+      categoryService.findAdditionalById(categoryEntity.getId());
+    }).collect(Collectors.toList());
 
-    return ResponseEntity.ok(categories);
+//    List<CategoryRespondDto> categories =
+//        categoryService.findAll().stream().map(categoryMapper::entityToDto).collect(Collectors.toList());
+
+    return new ResponseEntity<>(categories, HttpStatus.OK);
   }
 
   /**
@@ -70,7 +60,7 @@ public class CategoriesController {
     Optional<CategoryEntity> categoryEntity = categoryService.findByUid(categoryUid);
 
     if (categoryEntity.isPresent()) {
-      CategoryRespondDto categoryRespondDto = mapper.entityToDto(categoryEntity.get());
+      CategoryRespondDto categoryRespondDto = categoryMapper.entityToDto(categoryEntity.get());
       return ResponseEntity.ok(categoryRespondDto);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -86,7 +76,7 @@ public class CategoriesController {
   @PostMapping
   public ResponseEntity<String> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
 
-    CategoryEntity categoryEntity = mapper.dtoToEntity(categoryRequestDto);
+    CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
     String uid = categoryService.add(categoryEntity);
 
     return new ResponseEntity<>(uid, HttpStatus.CREATED);
@@ -105,7 +95,7 @@ public class CategoriesController {
       @PathVariable("categoryUid") String categoryUid,
       @RequestBody CategoryRequestDto categoryRequestDto) {
     categoryRequestDto.setUid(categoryUid);
-    CategoryEntity categoryEntity = mapper.dtoToEntity(categoryRequestDto);
+    CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
     if (categoryService.edit(categoryEntity)) {
       return new ResponseEntity<>(HttpStatus.OK);
     }

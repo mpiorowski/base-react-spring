@@ -47,4 +47,8 @@ public class CategoryService extends GenericService<CategoryEntity> {
     UUID uuid = UtilsStringConversions.uidDecode(uid);
     return dao.delete(uuid) == 1;
   }
+
+  public void findAdditionalById(Long id) {
+//    select fk_topic_id, post_content, created_at from forum_posts where fk_topic_id in (select id from forum_topics where fk_category_id = 1) order by created_at desc limit 1;
+  }
 }

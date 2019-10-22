@@ -1,14 +1,9 @@
 package base.api.rest.forum.categories.dto;
 
-import base.api.rest.generic.GenericResponseDto;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class CategoryRespondDto extends GenericResponseDto {
-  private String categoryTitle;
-  private String categoryDescription;
+public class CategoryAdditionalDto {
 
   private Integer categoryTopicsNumber;
   private Integer categoryPostsNumber;
@@ -17,6 +12,4 @@ public class CategoryRespondDto extends GenericResponseDto {
   private String categoryNewestPostTopic;
   private String categoryNewestPostAuthor;
   private String categoryNewestPostDate;
-
-
 }
