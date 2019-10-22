@@ -2,6 +2,7 @@ package base.api.domain.generic;
 
 import base.api.domain.SqLBuilder;
 import base.api.domain.user.UserEntity;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 
@@ -18,7 +19,7 @@ public interface GenericDao<E> {
   List<E> findAll(String table);
 
   @SelectProvider(type = SqLBuilder.class, method = "selectByUid")
-  Optional<E> findByUid(String table, UUID uid);
+  Optional<E> findByUid(String table, @Param("uid") UUID uid);
 
   UUID add(E entity);
 

@@ -1,4 +1,4 @@
-package base.api.domain.forum;
+package base.api.domain.forum.categories;
 
 import base.api.domain.generic.GenericDao;
 import org.apache.ibatis.annotations.*;

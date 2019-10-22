@@ -1,7 +1,7 @@
 package base.api.services.forum;
 
-import base.api.domain.forum.CategoryDao;
-import base.api.domain.forum.CategoryEntity;
+import base.api.domain.forum.categories.CategoryDao;
+import base.api.domain.forum.categories.CategoryEntity;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsStringConversions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,8 @@ import java.util.UUID;
 @Service
 public class CategoryService extends GenericService<CategoryEntity> {
 
-  @Autowired private CategoryDao dao;
+  private CategoryDao dao;
 
-  @Autowired
   public CategoryService(CategoryDao dao) {
     this.dao = dao;
   }
@@ -27,15 +26,15 @@ public class CategoryService extends GenericService<CategoryEntity> {
   }
 
   @Override
-  public Optional<CategoryEntity> findByUid(String uid) {
-    UUID uuid = UtilsStringConversions.uidDecode(uid);
-    return dao.findByUid(uuid);
+  public Optional<CategoryEntity> findByUid(String huid) {
+    UUID uid = UtilsStringConversions.uidDecode(huid);
+    return dao.findByUid(uid);
   }
 
   @Override
   public String add(CategoryEntity entity) {
-    UUID uid = dao.add(entity);
-    return UtilsStringConversions.uidEncode(uid);
+    UUID uuid = dao.add(entity);
+    return UtilsStringConversions.uidEncode(uuid);
   }
 
   @Override

@@ -26,7 +26,7 @@ class PostComponent extends Component {
           updatedAt: '',
         }]
       }],
-      response:{
+      response: {
         topic: {},
         posts: [{}],
       },
@@ -41,21 +41,19 @@ class PostComponent extends Component {
     }
   }
 
-  componentWillMount() {
+
+  componentDidMount() {
 
     const {match: {params}} = this.props;
     serviceGetPosts(params.topicUid).then(response => {
-          console.log('post response', response);
-          this.setState({
-            posts: response.posts,
-            topicTitle: response.topic.topicTitle,
-            loading: false
-          });
-        }
-    )
-  }
-
-  componentDidMount() {
+        console.log('post response', response);
+        this.setState({
+          posts: response.posts,
+          topicTitle: response.topic.topicTitle,
+          loading: false
+        });
+      }
+    );
     console.log(this.state.currentUser);
   }
 
@@ -108,21 +106,21 @@ class PostComponent extends Component {
     const {openReplyArray} = this.state;
     const author = <span className={'post-author'}>{post.postAuthor}</span>;
     const postDatetime =
-        <div>
-          <Tooltip title={postCreated.format('YYYY-MM-DD HH:mm:ss')}>
-            <span>{postCreated.fromNow()}</span>
-          </Tooltip>
-          {postUpdated.isSame(postCreated) ? '' :
-              <span> | <span
-                  className={'post-updated'}>Edytowano: {postUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
-          }
-        </div>;
+      <div>
+        <Tooltip title={postCreated.format('YYYY-MM-DD HH:mm:ss')}>
+          <span>{postCreated.fromNow()}</span>
+        </Tooltip>
+        {postUpdated.isSame(postCreated) ? '' :
+          <span> | <span
+            className={'post-updated'}>Edytowano: {postUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
+        }
+      </div>;
     const createDropdownMenu = (post) => {
       return (
-          <Menu>
-            <Menu.Item onClick={() => this.editPost(post)} key="1">Edytuj</Menu.Item>
-            {/*<Menu.Item key="2">Usuń</Menu.Item>*/}
-          </Menu>
+        <Menu>
+          <Menu.Item onClick={() => this.editPost(post)} key="1">Edytuj</Menu.Item>
+          {/*<Menu.Item key="2">Usuń</Menu.Item>*/}
+        </Menu>
       )
     };
     let replies = [];
@@ -137,73 +135,73 @@ class PostComponent extends Component {
             let replyCreated = moment(reply.createdAt);
             let replyUpdated = moment(reply.updatedAt);
             const replyDatetime =
-                <div>
-                  <Tooltip title={replyCreated.format('YYYY-MM-DD HH:mm:ss')}>
-                    <span>{replyCreated.fromNow()}</span>
-                  </Tooltip>
-                  {replyUpdated.isSame(replyCreated) ? '' :
-                      <span> | <span
-                          className={'post-updated'}>Edytowano: {replyUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
-                  }
-                </div>;
+              <div>
+                <Tooltip title={replyCreated.format('YYYY-MM-DD HH:mm:ss')}>
+                  <span>{replyCreated.fromNow()}</span>
+                </Tooltip>
+                {replyUpdated.isSame(replyCreated) ? '' :
+                  <span> | <span
+                    className={'post-updated'}>Edytowano: {replyUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
+                }
+              </div>;
             return (
-                <div className={'post-reply-comment'} key={reply.uid} id={reply.uid}>
-                  {this.state.hoverCommentId === reply.uid ?
-                      <Dropdown overlay={() => createDropdownMenu(reply)} placement="bottomRight">
-                        <Button className={'post-more-btn'}><Icon type="more"/></Button>
-                      </Dropdown> : ''
-                  }
-                  <Comment
-                      author={author}
-                      content={ReactHtmlParser(reply.postContent)}
-                      datetime={replyDatetime}
-                      onMouseEnter={() => this.handleMouseHover(reply.uid)}
-                  >
-                  </Comment>
-                </div>)
+              <div className={'post-reply-comment'} key={reply.uid} id={reply.uid}>
+                {this.state.hoverCommentId === reply.uid ?
+                  <Dropdown overlay={() => createDropdownMenu(reply)} placement="bottomRight">
+                    <Button className={'post-more-btn'}><Icon type="more"/></Button>
+                  </Dropdown> : ''
+                }
+                <Comment
+                  author={author}
+                  content={ReactHtmlParser(reply.postContent)}
+                  datetime={replyDatetime}
+                  onMouseEnter={() => this.handleMouseHover(reply.uid)}
+                >
+                </Comment>
+              </div>)
           });
           actions.push(
-              <span>
+            <span>
               <Button size={"small"}
                       onClick={() => this.closeReply(post.uid)}>Ukryj odpowiedzi ({repliesCount}) <Icon
-                  type="caret-up"/></Button>
+                type="caret-up"/></Button>
             </span>
           );
         } else {
           actions.push(
-              <span>
+            <span>
               <Button size={"small"}
                       onClick={() => this.openReply(post.uid)}>Pokaż odpowiedzi ({repliesCount}) <Icon
-                  type="caret-down"/></Button>
+                type="caret-down"/></Button>
             </span>
           );
         }
       }
 
       return (
-          <div key={post.uid} id={post.uid} className={'post-content'}>
-            {this.state.hoverCommentId === post.uid ?
-                <Dropdown overlay={() => createDropdownMenu(post)} placement="bottomRight">
-                  <Button className={'post-more-btn'}><Icon type="more"/></Button>
-                </Dropdown> : ''
+        <div key={post.uid} id={post.uid} className={'post-content'}>
+          {this.state.hoverCommentId === post.uid ?
+            <Dropdown overlay={() => createDropdownMenu(post)} placement="bottomRight">
+              <Button className={'post-more-btn'}><Icon type="more"/></Button>
+            </Dropdown> : ''
+          }
+          <Comment
+            actions={actions}
+            author={author}
+            content={
+              ReactHtmlParser(post.postContent)
             }
-            <Comment
-                actions={actions}
-                author={author}
-                content={
-                  ReactHtmlParser(post.postContent)
-                }
-                datetime={postDatetime}
-                className={'post-comment'}
-                onMouseEnter={() => this.handleMouseHover(post.uid)}
-                // onMouseLeave={() => this.handleMouseHover(0)}
-            >
-            </Comment>
-            <div className={'post-reply'}>
-              {replies}
-            </div>
-            <Divider style={{padding: 0, margin: 0}}/>
+            datetime={postDatetime}
+            className={'post-comment'}
+            onMouseEnter={() => this.handleMouseHover(post.uid)}
+            // onMouseLeave={() => this.handleMouseHover(0)}
+          >
+          </Comment>
+          <div className={'post-reply'}>
+            {replies}
           </div>
+          <Divider style={{padding: 0, margin: 0}}/>
+        </div>
       );
     }
     return '';
@@ -211,36 +209,36 @@ class PostComponent extends Component {
 
   render() {
     return (
-        <div>
-          <List
-              loading={this.state.loading}
-              header={
-                <div className={"post-header"}>
-                  {this.state.topicTitle}
-                </div>
-              }
-              dataSource={this.state.posts}
-              renderItem={post => (
-                  <li>
-                    {this.createContent(post)}
-                  </li>
-              )}
-          >
-          </List>
-          <WrappedPostDrawer
-              isChildrenDrawer={true}
-              isQuill={true}
+      <div>
+        <List
+          loading={this.state.loading}
+          header={
+            <div className={"post-header"}>
+              {this.state.topicTitle}
+            </div>
+          }
+          dataSource={this.state.posts}
+          renderItem={post => (
+            <li>
+              {this.createContent(post)}
+            </li>
+          )}
+        >
+        </List>
+        <WrappedPostDrawer
+          isChildrenDrawer={true}
+          isQuill={true}
 
-              drawerTitle={'Dodaj nowy post'}
-              drawerPlaceholder={'Tytuł postu (max 300 znaków)'}
-              drawerVisible={this.state.drawerVisible}
-              drawerRecord={this.state.drawerRecord}
-              drawerType={this.state.drawerType}
+          drawerTitle={'Dodaj nowy post'}
+          drawerPlaceholder={'Tytuł postu (max 300 znaków)'}
+          drawerVisible={this.state.drawerVisible}
+          drawerRecord={this.state.drawerRecord}
+          drawerType={this.state.drawerType}
 
-              handleDrawerVisible={this.handleDrawerVisible}
-              handleSubmit={this.submitPost}
-          />
-        </div>
+          handleDrawerVisible={this.handleDrawerVisible}
+          handleSubmit={this.submitPost}
+        />
+      </div>
     );
   }
 }

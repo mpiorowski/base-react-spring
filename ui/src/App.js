@@ -24,7 +24,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
+      loading: true,
       isAuth: false,
       currentUser: '',
       collapsed: true
@@ -32,10 +32,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.setState({
-      loading: true,
-      isAuth: false,
-    });
     console.log('APP');
     this.checkAuth();
   }
@@ -66,6 +62,7 @@ class App extends Component {
 
   loadInitData = () => {
     setUpMomentDateTimeLanguage(momentDateTimeLanguage);
+    // return initForumBreadcrumbs(this.state.breadcrumbs);
   };
 
   logout = () => {
@@ -94,7 +91,7 @@ class App extends Component {
       )
     }
 
-    if (!this.state.isAuth) {
+    if (!this.state.isAuth && !this.state.loading) {
       return (
         <AuthComponent checkAuth={this.checkAuth}/>
       )

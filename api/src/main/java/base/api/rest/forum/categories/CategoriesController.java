@@ -1,6 +1,6 @@
 package base.api.rest.forum.categories;
 
-import base.api.domain.forum.CategoryEntity;
+import base.api.domain.forum.categories.CategoryEntity;
 import base.api.logging.LogExecutionTime;
 import base.api.rest.forum.categories.dto.CategoryRequestDto;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;

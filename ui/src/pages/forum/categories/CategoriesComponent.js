@@ -17,7 +17,7 @@ class CategoriesComponent extends Component {
     loading: true
   };
 
-  componentWillMount() {
+  componentDidMount() {
     serviceGetCategories().then(response => {
       this.setState({
         categories: response,

@@ -16,12 +16,6 @@ export const apiRequest = (options) => {
   return fetch(options.url, options).then(response => {
     if (response.ok) {
       return response.json();
-      // response.json().then(json => {
-      //   if (!response.ok) {
-      //     return Promise.reject(json);
-      //   }
-      //   return json;
-      // })
     } else {
       return Promise.reject(response);
     }

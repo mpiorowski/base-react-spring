@@ -120,7 +120,7 @@ class PostDrawer extends Component {
                 <div>
                   <Drawer
                       title="Dodaj załączniki"
-                      height={500}
+                      className={"drawer-attachments"}
                       placement="bottom"
                       closable={false}
                       onClose={this.onChildrenDrawerClose}
