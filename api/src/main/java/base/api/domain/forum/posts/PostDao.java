@@ -1,5 +1,6 @@
 package base.api.domain.forum.posts;
 
+import base.api.domain.forum.NewestEntity;
 import base.api.domain.generic.GenericDao;
 import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.*;
@@ -34,21 +35,17 @@ public interface PostDao extends GenericDao<PostEntity> {
           + "and fp.is_deleted is false "
           + "order by fp.created_at desc")
   @Results({
-    @Result(
-        property = "postAuthor.userName",
-        column = "user_name"
-//        javaType = UserEntity.class
-        //          javaType = UserEntity.class,
-        //          one = @One(select = "selectUser")
-        ),
-    @Result(
-        property = "postAuthor.userEmail",
-        column = "user_email"
-//        javaType = UserEntity.class
-        //          one = @One(select = "selectUser")
-        )
+    @Result(property = "postAuthor.userName", column = "user_name"),
+    @Result(property = "postAuthor.userEmail", column = "user_email")
   })
   List<PostEntity> findPostsByTopicId(long topicId);
+
+  @Select({
+    "select created_at as newestDate, uid as newestUid from forum_posts",
+    "where fk_topic_id = #{id} and is_deleted is false",
+    "order by created_at desc limit 1"
+  })
+  Optional<NewestEntity> findNewestByTopicId(Integer id);
 
   @Override
   @Select(

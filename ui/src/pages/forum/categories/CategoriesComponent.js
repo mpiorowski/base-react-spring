@@ -5,6 +5,8 @@ import {faBullhorn, faComment, faPencilAlt} from "@fortawesome/free-solid-svg-ic
 import "./CategoriesComponent.less";
 import {NavLink} from "react-router-dom";
 import {serviceGetCategories} from "../../../services/forum/ForumService";
+import * as htmlToText from "html-to-text";
+import moment from "moment";
 
 class CategoriesComponent extends Component {
 
@@ -12,7 +14,13 @@ class CategoriesComponent extends Component {
     categories: [{
       uid: '',
       categoryTitle: '',
-      categoryDescription: ''
+      categoryDescription: '',
+      categoryTopicsNumber: '',
+      categoryPostsNumber: '',
+      categoryNewestPost: '',
+      categoryNewestTopic: '',
+      categoryNewestPostAuthor: '',
+      categoryNewestPostDate: '',
     }],
     loading: true
   };
@@ -68,15 +76,20 @@ class CategoriesComponent extends Component {
                   </Col>
 
                   <Col span={6} style={{margin: "auto"}}>
-                    <Col span={24}><FontAwesomeIcon icon={faPencilAlt}/> 4 tematy</Col>
-                    <Col span={24}><FontAwesomeIcon icon={faComment}/> 6 postów</Col>
+                    <Col span={24}><FontAwesomeIcon icon={faPencilAlt}/> {item.categoryTopicsNumber || 0} tematy</Col>
+                    <Col span={24}><FontAwesomeIcon icon={faComment}/> {item.categoryPostsNumber || 0} postów</Col>
                   </Col>
 
+                  {/*TODO - navlink to newest*/}
                   <Col span={4} style={{margin: "auto"}}>
+                    {item.categoryNewestPostDate
+                      ? <span style={{fontSize: 10}}><NavLink to={"/home"}>{moment(item.categoryNewestPostDate).fromNow()}</NavLink> w temacie:</span>
+                      : "Brak postów"
+                    }
                     <div style={{fontSize: 12}}>
-                      Ostatni post: <br/>
-                      W:  <br/>
-                      Data: 24.03.2019, 14:30:33
+                      <div className={"truncate"}>
+                        {htmlToText.fromString(item.categoryNewestTopic, {uppercaseHeadings: false})}
+                      </div>
                     </div>
                   </Col>
                 </Row>

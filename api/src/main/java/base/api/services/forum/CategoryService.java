@@ -2,9 +2,9 @@ package base.api.services.forum;
 
 import base.api.domain.forum.categories.CategoryDao;
 import base.api.domain.forum.categories.CategoryEntity;
+import base.api.domain.forum.categories.CategoryNewestEntity;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsStringConversions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,7 +48,15 @@ public class CategoryService extends GenericService<CategoryEntity> {
     return dao.delete(uuid) == 1;
   }
 
-  public void findAdditionalById(Long id) {
-//    select fk_topic_id, post_content, created_at from forum_posts where fk_topic_id in (select id from forum_topics where fk_category_id = 1) order by created_at desc limit 1;
+  public Integer countPostsById(Integer id) {
+    return dao.countPostsById(id);
+  }
+
+  public Integer countTopicsById(Integer id) {
+    return dao.countTopicsById(id);
+  }
+
+  public Optional<CategoryNewestEntity> findNewestById(Integer id) {
+    return dao.findNewestById(id);
   }
 }

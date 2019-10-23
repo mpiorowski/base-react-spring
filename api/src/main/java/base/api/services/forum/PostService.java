@@ -1,5 +1,6 @@
 package base.api.services.forum;
 
+import base.api.domain.forum.NewestEntity;
 import base.api.domain.forum.posts.PostDao;
 import base.api.domain.forum.posts.PostEntity;
 import base.api.services.generic.GenericService;
@@ -37,6 +38,10 @@ public class PostService extends GenericService<PostEntity> {
   public List<PostEntity> findPostsByTopicId(long id) {
 
     return dao.findPostsByTopicId(id);
+  }
+
+  public Optional<NewestEntity> findNewestByTopicId(Integer id) {
+    return dao.findNewestByTopicId(id);
   }
 
   @Override

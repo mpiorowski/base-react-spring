@@ -10,5 +10,5 @@ public class TopicEntity extends GenericEntity {
 
   private String topicTitle;
   private Integer topicViews;
-  private Long topicCategory;
+  private Integer topicCategory;
 }

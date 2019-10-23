@@ -2,13 +2,13 @@ import React, {Component} from 'react';
 import {Button, Col, Dropdown, Icon, List, Menu, Row} from "antd";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faComment, faEye} from "@fortawesome/free-solid-svg-icons";
-import "./TopicComponent.less";
+import "./TopicsComponent.less";
 import {NavLink} from "react-router-dom";
 import {serviceAddTopic, serviceEditTopic, serviceGetTopics} from "../../../services/forum/ForumService";
 import {WrappedTopicDrawer} from "./TopicDrawer";
 
 
-class TopicComponent extends Component {
+class TopicComponentList extends Component {
 
   state = {
     topics: [{
@@ -188,4 +188,4 @@ class TopicComponent extends Component {
   }
 }
 
-export default TopicComponent;
+export default TopicsComponent;

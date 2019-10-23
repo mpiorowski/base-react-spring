@@ -1,10 +1,12 @@
 package base.api.rest.forum.topics;
 
+import base.api.domain.forum.NewestEntity;
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.posts.PostEntity;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.logging.LogExecutionTime;
 import base.api.rest.forum.categories.CategoryMapper;
+import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import base.api.rest.forum.posts.PostMapper;
 import base.api.rest.forum.topics.dto.*;
 import base.api.services.forum.CategoryService;
@@ -57,21 +59,25 @@ public class TopicsController {
     Optional<CategoryEntity> category = categoryService.findByUid(categoryUid);
 
     if (category.isPresent()) {
+      CategoryRespondDto categoryRespondDto = categoryMapper.entityToDto(category.get());
       List<TopicEntity> topics = topicService.findTopicsByCategoryId(category.get().getId());
 
       List<TopicResponseDto> topicsDto =
           topics.stream()
               .map(
                   topic -> {
-                    int postsCount = postService.countPostsByTopicId(topic.getId());
+                    Integer topicId = topic.getId();
+                    int postsCount = postService.countPostsByTopicId(topicId);
                     TopicResponseDto topicResponseDto = topicMapper.entityToDto(topic);
                     topicResponseDto.setPostsCount(postsCount);
+                    if(postService.findNewestByTopicId(topicId).isPresent()) {
+                      topicResponseDto.setNewestPost(postService.findNewestByTopicId(topicId).get());
+                    }
                     return topicResponseDto;
                   })
               .collect(Collectors.toList());
 
-      TopicsResponseDto topicsResponseDto =
-          new TopicsResponseDto(categoryMapper.entityToDto(category.get()), topicsDto);
+      TopicsResponseDto topicsResponseDto = new TopicsResponseDto(categoryRespondDto, topicsDto);
       return ResponseEntity.ok(topicsResponseDto);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);

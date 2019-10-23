@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class SystemUser implements UserDetails {
 
-  private Long userId;
+  private Integer userId;
 
   private String userName;
 
@@ -24,7 +24,7 @@ public class SystemUser implements UserDetails {
   private Collection<? extends GrantedAuthority> authorities;
 
   private SystemUser(
-      Long userId,
+      Integer userId,
       String userName,
       String userEmail,
       String userPassword,
@@ -79,7 +79,7 @@ public class SystemUser implements UserDetails {
     return true;
   }
 
-  public Long getUserId() {
+  public Integer getUserId() {
     return userId;
   }
 

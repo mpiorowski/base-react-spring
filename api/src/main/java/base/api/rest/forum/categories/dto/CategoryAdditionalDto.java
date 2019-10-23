@@ -9,7 +9,7 @@ public class CategoryAdditionalDto {
   private Integer categoryPostsNumber;
 
   private String categoryNewestPost;
-  private String categoryNewestPostTopic;
+  private String categoryNewestTopic;
   private String categoryNewestPostAuthor;
   private String categoryNewestPostDate;
 }

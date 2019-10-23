@@ -2,7 +2,6 @@ package base.api.rest.forum.categories;
 
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.logging.LogExecutionTime;
-import base.api.rest.forum.categories.dto.CategoryAdditionalDto;
 import base.api.rest.forum.categories.dto.CategoryRequestDto;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import base.api.services.forum.CategoryService;
@@ -37,12 +36,21 @@ public class CategoriesController {
   public ResponseEntity<List<CategoryRespondDto>> findAllCategories() {
 
     List<CategoryEntity> categoryEntities = categoryService.findAll();
-    List<CategoryAdditionalDto> categories = categoryEntities.stream().map(categoryEntity -> {
-      categoryService.findAdditionalById(categoryEntity.getId());
-    }).collect(Collectors.toList());
-
-//    List<CategoryRespondDto> categories =
-//        categoryService.findAll().stream().map(categoryMapper::entityToDto).collect(Collectors.toList());
+    List<CategoryRespondDto> categories =
+        categoryEntities.stream()
+            .map(
+                categoryEntity -> {
+                  Integer id = categoryEntity.getId();
+                  if (categoryService.findNewestById(id).isPresent()) {
+                    CategoryRespondDto categoryRespondDto = categoryMapper.categoriesEntitiesToDto(categoryEntity,
+                        categoryService.findNewestById(id).get());
+                    categoryRespondDto.setCategoryTopicsNumber(categoryService.countTopicsById(id));
+                    categoryRespondDto.setCategoryPostsNumber(categoryService.countPostsById(id));
+                    return categoryRespondDto;
+                  }
+                  return categoryMapper.entityToDto(categoryEntity);
+                })
+            .collect(Collectors.toList());
 
     return new ResponseEntity<>(categories, HttpStatus.OK);
   }

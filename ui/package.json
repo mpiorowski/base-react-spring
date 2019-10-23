@@ -10,6 +10,7 @@
     "antd-password-input-strength": "^1.1.1",
     "craco": "0.0.3",
     "craco-antd": "^1.12.0",
+    "html-to-text": "^5.1.1",
     "moment": "^2.24.0",
     "preact": "^8.5.2",
     "preact-compat": "^3.19.0",

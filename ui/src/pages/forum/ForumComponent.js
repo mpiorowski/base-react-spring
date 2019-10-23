@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import CategoriesComponent from "./categories/CategoriesComponent";
 import PostComponent from "./posts/PostComponent";
-import TopicComponent from "./topics/TopicComponent";
 import {Route, Switch} from "react-router-dom";
+import TopicsComponent from "./topics/TopicsComponent";
 
 class ForumComponent extends Component {
 
@@ -20,7 +20,7 @@ class ForumComponent extends Component {
                  render={(props) => <CategoriesComponent {...props} currentUser={this.props.currentUser}/>}
           />
           <Route exact path={`${match.path}/categories/:categoryUid/topics`}
-                 render={(props) => <TopicComponent {...props} currentUser={this.props.currentUser}/>}
+                 render={(props) => <TopicsComponent {...props} currentUser={this.props.currentUser}/>}
           />
           <Route exact path={`${match.path}/categories/:categoryUid/topics/:topicUid/posts`}
                  render={(props) => <PostComponent {...props} currentUser={this.props.currentUser}/>}

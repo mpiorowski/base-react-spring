@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Drawer, Form, Icon, Input, Upload} from "antd";
-import {ACCESS_TOKEN} from "../../../config/AuthConfig";
+import {ACCESS_TOKEN} from "../../../config/AppConfig";
 import "./ForumDrawer.less";
 import ReactQuill from "react-quill";
 

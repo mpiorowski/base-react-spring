@@ -45,6 +45,34 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
   @Delete({"update " + Table.NAME + " set deleted = true where uid = #{uid}"})
   int delete(@Param("uid") UUID uid);
 
+  @Select({
+    "select",
+    "ft.topic_title as categoryNewestTopic,",
+    "fp.post_content as categoryNewestPost,",
+    "su.user_name as categoryNewestPostAuthor,",
+    "fp.created_at as categoryNewestPostDate",
+    "from forum_posts fp join forum_topics ft on fp.fk_topic_id = ft.id join sys_users su on fp.fk_user_id = su.id",
+    "where fk_topic_id in (select id from forum_topics where fk_category_id = #{id})",
+    "order by fp.created_at desc limit 1"
+  })
+  Optional<CategoryNewestEntity> findNewestById(Integer id);
+
+  @Select({
+    "select count(1)",
+    "from forum_posts",
+    "where fk_topic_id in (select id from forum_topics where fk_category_id = #{id})",
+    "and is_deleted is false"
+  })
+  Integer countPostsById(Integer id);
+
+  @Select({
+    "select count(1)",
+    "from forum_topics",
+    "where fk_category_id = #{id}",
+    "and is_deleted is false"
+  })
+  Integer countTopicsById(Integer id);
+
   class Table {
     private static final String NAME = "forum_categories";
 
