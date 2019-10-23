@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Menu, Table} from "antd";
+import {Table} from "antd";
 import "./TopicsComponent.less";
 import {serviceAddTopic, serviceEditTopic, serviceGetTopics} from "../../../services/forum/ForumService";
 import moment from "moment";
@@ -89,10 +89,6 @@ class TopicsComponent extends Component {
     );
   };
 
-  editTopic = (topic) => {
-    this.handleDrawerVisible(true, topic, 'edit');
-  };
-
   handleDrawerVisible = (flag, record, type) => {
     this.setState({
       drawerVisible: !!flag,
@@ -103,16 +99,7 @@ class TopicsComponent extends Component {
 
   render() {
 
-    const {category, topics, loading} = this.state;
-
-    const createDropdownMenu = (topic) => {
-      return (
-        <Menu>
-          <Menu.Item onClick={() => this.editTopic(topic)} key="1">Edytuj</Menu.Item>
-          {/*<Menu.Item key="2">Usuń</Menu.Item>*/}
-        </Menu>
-      )
-    };
+    const {category, topics, loading, drawerVisible, drawerRecord, drawerType} = this.state;
 
     const columns = [
         {
@@ -147,7 +134,7 @@ class TopicsComponent extends Component {
 
     return (
       <div>
-        
+
         <div
           className={"topic-header"}>{category ? category.categoryTitle : ''}
         </div>
@@ -161,9 +148,9 @@ class TopicsComponent extends Component {
 
           drawerTitle={'Dodaj nowy temat'}
           drawerPlaceholder={'Temat (maks 300 znaków)'}
-          drawerVisible={this.state.drawerVisible}
-          drawerRecord={this.state.drawerRecord}
-          drawerType={this.state.drawerType}
+          drawerVisible={drawerVisible}
+          drawerRecord={drawerRecord}
+          drawerType={'topic'}
 
           handleDrawerVisible={this.handleDrawerVisible}
           handleSubmit={this.submitTopic}
