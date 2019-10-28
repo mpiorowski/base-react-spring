@@ -4,6 +4,7 @@ import base.api.domain.user.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -42,6 +43,18 @@ public class SystemUser implements UserDetails {
 
     return new SystemUser(
         user.getId(), user.getUserName(), user.getUserEmail(), user.getUserPassword(), authorities);
+  }
+
+  public UserEntity getUser() {
+
+    List<String> roles = this.authorities.stream().map(Object::toString).collect(Collectors.toList());
+
+    UserEntity userEntity = new UserEntity();
+    userEntity.setId(this.userId);
+    userEntity.setUserName(this.userName);
+    userEntity.setUserEmail(this.userEmail);
+    userEntity.setUserRoles(roles);
+    return userEntity;
   }
 
   @Override

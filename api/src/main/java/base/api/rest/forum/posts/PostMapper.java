@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface PostMapper {
 
-  PostEntity dtoToEntity1(NewTopicRequestDto dto);
+  PostEntity newDtoToEntity(NewTopicRequestDto dto);
 
   PostEntity dtoToEntity2(PostRequestDto dto);
 

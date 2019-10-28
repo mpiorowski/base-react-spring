@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {Table} from "antd";
 import "./TopicsComponent.less";
-import {serviceAddTopic, serviceEditTopic, serviceGetTopics} from "../../../services/forum/ForumService";
+import {serviceAddTopic, serviceGetTopics} from "../../../services/forum/ForumService";
 import moment from "moment";
 import {WrappedForumDrawer} from "../common/ForumDrawer";
+import {NavLink} from "react-router-dom";
 
 
 class TopicsComponent extends Component {
@@ -25,11 +26,8 @@ class TopicsComponent extends Component {
 
   componentDidMount() {
 
-    console.log(window.innerHeight);
-    let paginationSize = Math.round((window.innerHeight - 280) / 60);
-    console.log(paginationSize);
-
     const {match: {params}} = this.props;
+    let paginationSize = Math.round((window.innerHeight - 280) / 60);
 
     serviceGetTopics(params.categoryUid).then(response => {
       console.log(response);
@@ -43,50 +41,19 @@ class TopicsComponent extends Component {
     });
   }
 
-  submitTopic = (data) => {
-    console.log(data);
-    return new Promise((resolve, reject) => {
+  submitDrawer = (data) => {
+    const categoryUid = this.state.categoryUid;
+    const topicData = {topicTitle: data.title, postContent: data.content};
+    serviceAddTopic(categoryUid, topicData).then(response => {
+      if (response) {
+        this.setState({
+          topics: [{topicId: response, topicTitle: data.topicTitle}, ...this.state.topics]
+        });
 
-        const categoryId = this.state.categoryId;
-        const topicId = data.topicId || null;
-        if (topicId === null) {
-          const serviceData = {topicTitle: data.topicTitle, postContent: data.postContent};
-          serviceAddTopic(categoryId, serviceData).then(response => {
-            if (response) {
-              this.setState({
-                topics: [{topicId: response, topicTitle: data.topicTitle}, ...this.state.topics]
-              });
-            }
-            resolve(true);
-          }).catch(error => {
-            console.log(error);
-            reject(false);
-          });
-        } else {
-          const serviceData = {topicTitle: data.topicTitle};
-          serviceEditTopic(categoryId, topicId, serviceData).then(response => {
-            if (response) {
-              let newTopicArray = [...this.state.topics];
-              const index = newTopicArray.findIndex(item => response === item.topicId);
-              const item = newTopicArray[index];
-              const values = {topicId: response, topicTitle: data.topicTitle};
-              newTopicArray.splice(index, 1, {
-                ...item,
-                ...values,
-              });
-
-              this.setState({
-                topics: newTopicArray,
-              });
-            }
-            resolve(true);
-          }).catch(error => {
-            console.log(error);
-            reject(false);
-          });
-        }
       }
-    );
+    }).catch(error => {
+      console.log(error);
+    });
   };
 
   handleDrawerVisible = (flag, record, type) => {
@@ -99,7 +66,7 @@ class TopicsComponent extends Component {
 
   render() {
 
-    const {category, topics, loading, drawerVisible, drawerRecord, drawerType} = this.state;
+    const {category, topics, loading, drawerVisible, drawerRecord} = this.state;
 
     const columns = [
         {
@@ -107,6 +74,10 @@ class TopicsComponent extends Component {
           dataIndex: 'topicTitle',
           key: 'topicTitle',
           sorter: (a, b) => a.topicTitle.localeCompare(b.topicTitle),
+          render: (text, row, index) => {
+            return <NavLink
+              to={"/forum/categories/" + this.state.categoryUid + "/topics/" + row.uid + "/posts"}>{text}</NavLink>
+          }
         },
         {
           title: 'Posty',
@@ -136,15 +107,13 @@ class TopicsComponent extends Component {
       <div>
 
         <div
-          className={"topic-header"}>{category ? category.categoryTitle : ''}
+          className={'cat-header'}>{category ? category.categoryTitle : ''}
         </div>
 
-        <Table columns={columns} dataSource={topics} onChange={this.handleChange} size="middle" loading={loading}/>
+        <Table columns={columns} dataSource={topics} onChange={this.handleChange} size='middle' loading={loading}
+               className={'topic-table'}/>
 
         <WrappedForumDrawer
-          isTitle={true}
-          isQuill={true}
-          isChildrenDrawer={false}
 
           drawerTitle={'Dodaj nowy temat'}
           drawerPlaceholder={'Temat (maks 300 znaków)'}
@@ -153,7 +122,7 @@ class TopicsComponent extends Component {
           drawerType={'topic'}
 
           handleDrawerVisible={this.handleDrawerVisible}
-          handleSubmit={this.submitTopic}
+          handleSubmit={this.submitDrawer}
         />
       </div>
 

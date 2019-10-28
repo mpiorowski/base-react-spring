@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 public class PostEntity extends GenericEntity {
 
   private String postContent;
-  private long topicId;
-  private Long replyId;
+  private Integer topicId;
+  private Integer replyId;
   private UserEntity postAuthor;
 }

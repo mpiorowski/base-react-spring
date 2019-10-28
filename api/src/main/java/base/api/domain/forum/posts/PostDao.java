@@ -2,6 +2,7 @@ package base.api.domain.forum.posts;
 
 import base.api.domain.forum.NewestEntity;
 import base.api.domain.generic.GenericDao;
+import base.api.domain.generic.ResponseDao;
 import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
@@ -52,8 +53,8 @@ public interface PostDao extends GenericDao<PostEntity> {
       "insert into forum_posts (post_content, reply_id, fk_topic_id, fk_user_id) "
           + "values "
           + "(#{postContent}, #{replyId}, #{topicId}, #{postAuthor.id}) "
-          + "returning uid")
-  UUID add(PostEntity entity);
+          + "returning id, uid")
+  ResponseDao add(PostEntity entity);
 
   @Override
   @Update(

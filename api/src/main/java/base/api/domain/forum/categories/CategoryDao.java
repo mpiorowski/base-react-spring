@@ -1,6 +1,7 @@
 package base.api.domain.forum.categories;
 
 import base.api.domain.generic.GenericDao;
+import base.api.domain.generic.ResponseDao;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +29,7 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
     "(#{categoryTitle}, #{categoryDescription}, 1)",
     "returning uid"
   })
-  UUID add(CategoryEntity entity);
+  ResponseDao add(CategoryEntity entity);
 
   @Override
   @Update({

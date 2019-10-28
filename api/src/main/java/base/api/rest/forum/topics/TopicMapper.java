@@ -17,7 +17,7 @@ public interface TopicMapper {
 
   TopicResponseDto entityToDto(TopicEntity entity);
 
-  TopicEntity dtoToEntity1(NewTopicRequestDto dto);
+  TopicEntity newDtoToEntity(NewTopicRequestDto dto);
 
   TopicEntity dtoToEntity2(EditTopicRequestDto dto);
 }

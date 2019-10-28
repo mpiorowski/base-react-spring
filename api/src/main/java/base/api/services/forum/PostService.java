@@ -3,6 +3,7 @@ package base.api.services.forum;
 import base.api.domain.forum.NewestEntity;
 import base.api.domain.forum.posts.PostDao;
 import base.api.domain.forum.posts.PostEntity;
+import base.api.domain.generic.ResponseDao;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsStringConversions;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,9 @@ public class PostService extends GenericService<PostEntity> {
 
   @Override
   public String add(PostEntity entity) {
-    return UtilsStringConversions.uidEncode(dao.add(entity));
+    entity.setPostAuthor(currentUserEntity());
+    ResponseDao responseDao = dao.add(entity);
+    return UtilsStringConversions.uidEncode(responseDao.getUid());
   }
 
   @Override

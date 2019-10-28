@@ -37,7 +37,6 @@ class App extends Component {
   }
 
   checkAuth = () => {
-
     this.setState({
       loading: true,
       isAuth: false,

@@ -41,9 +41,10 @@ class CategoriesComponent extends Component {
 
     return (
       <div>
+        <div className={"cat-header"}>Kategorie</div>
         <List
           // bordered={true}
-          header={<div className={"cat-header"}>Kategorie</div>}
+          header={""}
           itemLayout="horizontal"
           loading={loading}
           pagination={{

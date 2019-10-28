@@ -3,6 +3,7 @@ package base.api.services.forum;
 import base.api.domain.forum.categories.CategoryDao;
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.categories.CategoryNewestEntity;
+import base.api.domain.generic.ResponseDao;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsStringConversions;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,8 @@ public class CategoryService extends GenericService<CategoryEntity> {
 
   @Override
   public String add(CategoryEntity entity) {
-    UUID uuid = dao.add(entity);
-    return UtilsStringConversions.uidEncode(uuid);
+    ResponseDao responseDao = dao.add(entity);
+    return UtilsStringConversions.uidEncode(responseDao.getUid());
   }
 
   @Override

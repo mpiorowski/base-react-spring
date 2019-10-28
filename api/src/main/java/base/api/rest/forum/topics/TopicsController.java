@@ -1,6 +1,5 @@
 package base.api.rest.forum.topics;
 
-import base.api.domain.forum.NewestEntity;
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.posts.PostEntity;
 import base.api.domain.forum.topics.TopicEntity;
@@ -70,8 +69,9 @@ public class TopicsController {
                     int postsCount = postService.countPostsByTopicId(topicId);
                     TopicResponseDto topicResponseDto = topicMapper.entityToDto(topic);
                     topicResponseDto.setPostsCount(postsCount);
-                    if(postService.findNewestByTopicId(topicId).isPresent()) {
-                      topicResponseDto.setNewestPost(postService.findNewestByTopicId(topicId).get());
+                    if (postService.findNewestByTopicId(topicId).isPresent()) {
+                      topicResponseDto.setNewestPost(
+                          postService.findNewestByTopicId(topicId).get());
                     }
                     return topicResponseDto;
                   })
@@ -119,30 +119,16 @@ public class TopicsController {
   public ResponseEntity<NewTopicResponseDto> addTopic(
       @PathVariable("categoryUid") String categoryUid,
       @Valid @RequestBody NewTopicRequestDto newTopicRequestDto) {
-    try {
-      Optional<CategoryEntity> category = categoryService.findByUid(categoryUid);
-      if (category.isPresent()) {
 
-        TopicEntity topic = topicMapper.dtoToEntity1(newTopicRequestDto);
-        topic.setTopicCategory(category.get().getId());
-        String topicUid = topicService.add(topic);
-
-        Optional<TopicEntity> newTopic = topicService.findByUid(topicUid);
-
-        if (newTopic.isPresent()) {
-          PostEntity post = postMapper.dtoToEntity1(newTopicRequestDto);
-          post.setTopicId(newTopic.get().getId());
-          String postUid = postService.add(post);
-
-          NewTopicResponseDto responseDto = new NewTopicResponseDto(topicUid, postUid);
-          return ResponseEntity.ok(responseDto);
-        }
-      }
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    } catch (Exception e) {
-      logger.error("add topic error: ", e);
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    Optional<CategoryEntity> categoryEntity = categoryService.findByUid(categoryUid);
+    if (categoryEntity.isPresent()) {
+      TopicEntity topicEntity = topicMapper.newDtoToEntity(newTopicRequestDto);
+      PostEntity postEntity = postMapper.newDtoToEntity(newTopicRequestDto);
+      NewTopicResponseDto responseDto =
+          topicService.add(categoryEntity.get(), topicEntity, postEntity);
+      return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   /**

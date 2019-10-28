@@ -1,6 +1,7 @@
 package base.api.domain.forum.topics;
 
 import base.api.domain.generic.GenericDao;
+import base.api.domain.generic.ResponseDao;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
@@ -23,15 +24,16 @@ public interface TopicDao extends GenericDao<TopicEntity> {
     return findByUid(TopicDao.Table.NAME, uid);
   }
 
-  @Select("select * from forum_topics where fk_category_id = #{id} and is_deleted is false")
-  List<TopicEntity> findTopicsByCategoryId(long id);
+  @Select("select * from forum_topics where fk_category_id = #{id} and is_deleted is false order by created_at desc")
+  List<TopicEntity> findTopicsByCategoryId(Integer id);
 
   @Override
-  @Select(
-      "insert into forum_topics (topic_title, fk_category_id, fk_user_id) "
-          + "values (#{topicTitle}, #{topicCategory}, 1) "
-          + "returning uid")
-  UUID add(TopicEntity entity);
+  @Select({
+    "insert into forum_topics (topic_title, fk_category_id, fk_user_id) ",
+    "values (#{topicTitle}, #{topicCategory}, #{topicAuthor.id}) ",
+    "returning id, uid"
+  })
+  ResponseDao add(TopicEntity entity);
 
   @Override
   @Update(

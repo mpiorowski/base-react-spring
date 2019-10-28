@@ -21,7 +21,7 @@ public interface GenericDao<E> {
   @SelectProvider(type = SqLBuilder.class, method = "selectByUid")
   Optional<E> findByUid(String table, @Param("uid") UUID uid);
 
-  UUID add(E entity);
+  ResponseDao add(E entity);
 
   int edit(E entity);
 
