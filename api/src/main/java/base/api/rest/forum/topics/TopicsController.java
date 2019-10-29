@@ -124,8 +124,9 @@ public class TopicsController {
     if (categoryEntity.isPresent()) {
       TopicEntity topicEntity = topicMapper.newDtoToEntity(newTopicRequestDto);
       PostEntity postEntity = postMapper.newDtoToEntity(newTopicRequestDto);
-      NewTopicResponseDto responseDto =
-          topicService.add(categoryEntity.get(), topicEntity, postEntity);
+      String topicUid = topicService.add(categoryEntity.get(), topicEntity, postEntity);
+      var responseDto = new NewTopicResponseDto(topicUid);
+
       return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -46,10 +46,7 @@ class TopicsComponent extends Component {
     const topicData = {topicTitle: data.title, postContent: data.content};
     serviceAddTopic(categoryUid, topicData).then(response => {
       if (response) {
-        this.setState({
-          topics: [{topicId: response, topicTitle: data.topicTitle}, ...this.state.topics]
-        });
-
+        this.props.history.push('/forum/categories/' + categoryUid + '/topics/' + response.topicUid + "/posts");
       }
     }).catch(error => {
       console.log(error);
@@ -73,6 +70,7 @@ class TopicsComponent extends Component {
           title: 'Temat',
           dataIndex: 'topicTitle',
           key: 'topicTitle',
+          width: '70%',
           sorter: (a, b) => a.topicTitle.localeCompare(b.topicTitle),
           render: (text, row, index) => {
             return <NavLink
@@ -110,8 +108,15 @@ class TopicsComponent extends Component {
           className={'cat-header'}>{category ? category.categoryTitle : ''}
         </div>
 
-        <Table columns={columns} dataSource={topics} onChange={this.handleChange} size='middle' loading={loading}
-               className={'topic-table'}/>
+        <Table
+          columns={columns}
+          dataSource={topics}
+          onChange={this.handleChange}
+          size='middle'
+          loading={loading}
+          className={'topic-table'}
+          rowKey={record => record.uid}
+        />
 
         <WrappedForumDrawer
 

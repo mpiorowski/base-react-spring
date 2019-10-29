@@ -7,5 +7,4 @@ import lombok.Data;
 @AllArgsConstructor
 public class NewTopicResponseDto {
   private String topicUid;
-  private String postUid;
 }

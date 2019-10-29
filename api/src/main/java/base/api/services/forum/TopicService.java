@@ -49,7 +49,7 @@ public class TopicService extends GenericService<TopicEntity> {
   }
 
   @Transactional
-  public NewTopicResponseDto add(CategoryEntity categoryEntity, TopicEntity topicEntity, PostEntity postEntity) {
+  public String add(CategoryEntity categoryEntity, TopicEntity topicEntity, PostEntity postEntity) {
 
     topicEntity.setTopicCategory(categoryEntity.getId());
     topicEntity.setTopicAuthor(currentUserEntity());
@@ -59,7 +59,7 @@ public class TopicService extends GenericService<TopicEntity> {
     String postUid = postService.add(postEntity);
     String topicUid = UtilsStringConversions.uidEncode(responseDao.getUid());
 
-    return new NewTopicResponseDto(topicUid, postUid);
+    return topicUid;
   }
 
   @Override
