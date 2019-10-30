@@ -49,17 +49,13 @@ public class TopicService extends GenericService<TopicEntity> {
   }
 
   @Transactional
-  public String add(CategoryEntity categoryEntity, TopicEntity topicEntity, PostEntity postEntity) {
+  public String add(CategoryEntity categoryEntity, TopicEntity topicEntity) {
 
     topicEntity.setTopicCategory(categoryEntity.getId());
     topicEntity.setTopicAuthor(currentUserEntity());
     ResponseDao responseDao = dao.add(topicEntity);
 
-    postEntity.setTopicId(responseDao.getId());
-    String postUid = postService.add(postEntity);
-    String topicUid = UtilsStringConversions.uidEncode(responseDao.getUid());
-
-    return topicUid;
+    return UtilsStringConversions.uidEncode(responseDao.getUid());
   }
 
   @Override

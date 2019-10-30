@@ -111,6 +111,9 @@ class App extends Component {
 
     const currentUser = this.state.currentUser;
     let routerKey = 0;
+
+    // ROUTER CONFIG
+    // const router = new Map();
     const router = [
       routes.main.paths.map(path => {
         return (
@@ -129,7 +132,7 @@ class App extends Component {
                         key={routerKey++}/>
         )
       ),
-      <Route path='*' render={() => <Redirect to={'/home'}/>}
+      <Route path='*' render={() => <Redirect to={routes[currentUser.userRoles[0]].redirect}/>}
              key={routerKey++}/>
     ];
 

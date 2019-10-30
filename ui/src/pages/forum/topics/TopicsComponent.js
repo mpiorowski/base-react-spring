@@ -43,7 +43,7 @@ class TopicsComponent extends Component {
 
   submitDrawer = (data) => {
     const categoryUid = this.state.categoryUid;
-    const topicData = {topicTitle: data.title, postContent: data.content};
+    const topicData = {topicTitle: data.title, topicDescription: data.content};
     serviceAddTopic(categoryUid, topicData).then(response => {
       if (response) {
         this.props.history.push('/forum/categories/' + categoryUid + '/topics/' + response.topicUid + "/posts");

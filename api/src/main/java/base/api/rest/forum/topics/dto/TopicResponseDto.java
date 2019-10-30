@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 public class TopicResponseDto extends GenericResponseDto {
 
   private String topicTitle;
+  private String topicDescription;
   private int topicViews;
   private int postsCount;
   private NewestEntity newestPost;

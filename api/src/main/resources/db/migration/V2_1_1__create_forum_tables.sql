@@ -18,18 +18,19 @@ create table forum_categories
 -- topics table
 create table forum_topics
 (
-    topic_title    varchar(100) not null,
-    topic_views    integer               default 0,
-    fk_category_id integer      not null REFERENCES forum_categories (id) ON delete RESTRICT,
-    fk_user_id     integer      not null REFERENCES sys_users (id) ON delete RESTRICT,
+    topic_title       varchar(100) not null,
+    topic_description varchar(400),
+    topic_views       integer              default 0,
+    fk_category_id    integer     not null REFERENCES forum_categories (id) ON delete RESTRICT,
+    fk_user_id        integer     not null REFERENCES sys_users (id) ON delete RESTRICT,
 
-    id             serial primary key unique,
-    uid            uuid                  default uuid_generate_v4() unique,
-    version        int                   default 1,
-    is_active      boolean               default true,
-    is_deleted     boolean               default false,
-    created_at     timestamptz  not null default NOW(),
-    updated_at     timestamptz  not null default NOW()
+    id                serial primary key unique,
+    uid               uuid                 default uuid_generate_v4() unique,
+    version           int                  default 1,
+    is_active         boolean              default true,
+    is_deleted        boolean              default false,
+    created_at        timestamptz not null default NOW(),
+    updated_at        timestamptz not null default NOW()
 );
 
 -- posts table

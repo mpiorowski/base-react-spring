@@ -8,5 +8,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class TopicDataDto extends GenericResponseDto {
   private String topicTitle;
+  private String topicDescription;
   private int topicViews;
 }

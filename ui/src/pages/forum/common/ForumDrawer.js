@@ -46,7 +46,7 @@ class ForumDrawer extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        this.props.handleSubmit(values);
+        this.props.submitDrawer(values);
       }
     });
   };
@@ -88,8 +88,14 @@ class ForumDrawer extends Component {
                 )}
               </FormItem> : ''
             }
-            {drawerType === 'topic' ?
-              <FormItem>
+            {drawerType === 'topic'
+              ? <FormItem>
+                {getFieldDecorator('content')
+                (
+                  <Input.TextArea rows={6} placeholder={"Opis (opcjonalne)"}/>,
+                )}
+              </FormItem>
+              : <FormItem>
                 {getFieldDecorator('content', {
                     rules: [{
                       required: true,
@@ -97,21 +103,12 @@ class ForumDrawer extends Component {
                     }]
                   }
                 )(
-                  <Input.TextArea rows={6} placeholder={"Pierwszy post"}/>,
+                  <Input.TextArea rows={8} placeholder={"Komentarz (maks 300 znaków)"}/>,
                 )}
-
-                {/*TODO - rich text editor*/}
-                {/*<ReactQuill*/}
-                {/*  className={'forum-drawer-quill'}*/}
-                {/*  // value={getFieldValue('postContent') || ''}*/}
-                {/*  onChange={this.drawerChange}*/}
-                {/*>*/}
-                {/*</ReactQuill>*/}
               </FormItem>
-              : ''
             }
             <br/>
-            {drawerType === 'topic' ?
+            {drawerType === 'post' ?
               <div>
                 <Drawer
                   title="Dodaj załączniki"
@@ -139,12 +136,12 @@ class ForumDrawer extends Component {
             }
 
           </div>
-          <div className={"forum-drawer-footer"}>
+          < div className={"forum-drawer-footer"}>
             <Button onClick={() => this.props.handleDrawerVisible(false, {})} style={{marginRight: 8}}>
               Anuluj
             </Button>
             {drawerType === 'post' ?
-              <Button type="primary" onClick={this.showChildrenDrawer}>
+              <Button type="primary" onClick={this.showChildrenDrawer} style={{marginRight: 8}}>
                 <Icon type="plus"/> Dodaj załączniki
               </Button> : ''}
             <Button htmlType={"submit"} type="primary" style={{marginRight: 8}}>

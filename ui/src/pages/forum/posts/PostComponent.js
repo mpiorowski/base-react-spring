@@ -1,17 +1,25 @@
 import React, {Component} from "react";
-import {Button, Comment, Divider, Dropdown, Icon, List, Menu, Tooltip} from "antd";
+import {List} from "antd";
 import "./PostComponent.less";
-import ReactHtmlParser from "react-html-parser";
 import "react-quill/dist/quill.snow.css";
 import {serviceGetPosts} from "../../../services/forum/ForumService";
-import {WrappedPostDrawer} from "./PostDrawer";
-import moment from "moment";
+import {WrappedForumDrawer} from "../common/ForumDrawer";
+import PostContent from "./PostContent";
+import {submitPost} from "./PostSubmit";
+import * as moment from "moment";
 
 class PostComponent extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      currentUser: props.currentUser,
+      loading: true,
+
+      topicUid: props.match.params.topicUid,
+      topicTitle: '',
+      drawerRecord: {},
+
       posts: [{
         uid: '',
         postContent: '',
@@ -31,16 +39,8 @@ class PostComponent extends Component {
         posts: [{}],
       },
       openReplyArray: [],
-      loading: true,
-      topicUid: props.match.params.topicUid,
-      topicTitle: '',
-      drawerRecord: {},
-      drawerType: '',
-      hoverCommentId: 0,
-      currentUser: props.currentUser,
     }
   }
-
 
   componentDidMount() {
 
@@ -48,14 +48,48 @@ class PostComponent extends Component {
     serviceGetPosts(params.topicUid).then(response => {
         console.log('post response', response);
         this.setState({
-          posts: response.posts,
           topicTitle: response.topic.topicTitle,
+          topicDescription: response.topic.topicDescription,
+          posts: response.posts,
           loading: false
         });
       }
     );
-    console.log(this.state.currentUser);
   }
+
+  submitDrawer = (postContent) => {
+    const topicUid = this.state.topicUid;
+    submitPost(postContent, topicUid).then(response => {
+        console.log(postContent);
+        const data = {
+          uid: response,
+          postContent: postContent.content,
+          postAuthor: this.state.currentUser.userName,
+          createdAt: moment.now(),
+          updatedAt: moment.now(),
+          postReplies: [{
+            uid: '',
+            postContent: '',
+            postAuthor: '',
+            createdAt: '',
+            updatedAt: '',
+          }]
+        };
+        console.log(this.state.posts);
+        this.state.posts.unshift(data);
+        this.setState({
+          posts: this.state.posts
+        });
+        this.handleDrawerVisible(false, {});
+        //
+        // const element = document.getElementById(response);
+        // const elementRect = element.getBoundingClientRect();
+        // const absoluteElementTop = elementRect.top + window.pageYOffset;
+        // const middle = absoluteElementTop - (window.innerHeight / 2);
+        // window.scrollTo(0, middle);
+      }
+    );
+  };
 
   openReply = (uid) => {
     let openReplyArray = this.state.openReplyArray;
@@ -89,125 +123,10 @@ class PostComponent extends Component {
     this.handleDrawerVisible(true, post, 'edit');
   };
 
-  handleMouseHover = (postId) => {
-    this.setState({
-      hoverCommentId: postId,
-    })
-  };
-
-  createContent = (post) => {
-
-    let postCreated = moment(post.createdAt);
-    let postUpdated = moment(post.updatedAt);
-    let actions = [
-      <span><Button size={"small"} onClick={() => this.replyPost(post)}>Odpowiedz</Button></span>
-    ];
-
-    const {openReplyArray} = this.state;
-    const author = <span className={'post-author'}>{post.postAuthor}</span>;
-    const postDatetime =
-      <div>
-        <Tooltip title={postCreated.format('YYYY-MM-DD HH:mm:ss')}>
-          <span>{postCreated.fromNow()}</span>
-        </Tooltip>
-        {postUpdated.isSame(postCreated) ? '' :
-          <span> | <span
-            className={'post-updated'}>Edytowano: {postUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
-        }
-      </div>;
-    const createDropdownMenu = (post) => {
-      return (
-        <Menu>
-          <Menu.Item onClick={() => this.editPost(post)} key="1">Edytuj</Menu.Item>
-          {/*<Menu.Item key="2">Usuń</Menu.Item>*/}
-        </Menu>
-      )
-    };
-    let replies = [];
-    if (post.postReplies !== undefined) {
-
-      // const replies = replyArray.filter(item => post.postUid === item.replyId);
-      const repliesCount = post.postReplies.length;
-
-      if (repliesCount > 0) {
-        if (openReplyArray.includes(post.uid)) {
-          replies = post.postReplies.map(reply => {
-            let replyCreated = moment(reply.createdAt);
-            let replyUpdated = moment(reply.updatedAt);
-            const replyDatetime =
-              <div>
-                <Tooltip title={replyCreated.format('YYYY-MM-DD HH:mm:ss')}>
-                  <span>{replyCreated.fromNow()}</span>
-                </Tooltip>
-                {replyUpdated.isSame(replyCreated) ? '' :
-                  <span> | <span
-                    className={'post-updated'}>Edytowano: {replyUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
-                }
-              </div>;
-            return (
-              <div className={'post-reply-comment'} key={reply.uid} id={reply.uid}>
-                {this.state.hoverCommentId === reply.uid ?
-                  <Dropdown overlay={() => createDropdownMenu(reply)} placement="bottomRight">
-                    <Button className={'post-more-btn'}><Icon type="more"/></Button>
-                  </Dropdown> : ''
-                }
-                <Comment
-                  author={author}
-                  content={ReactHtmlParser(reply.postContent)}
-                  datetime={replyDatetime}
-                  onMouseEnter={() => this.handleMouseHover(reply.uid)}
-                >
-                </Comment>
-              </div>)
-          });
-          actions.push(
-            <span>
-              <Button size={"small"}
-                      onClick={() => this.closeReply(post.uid)}>Ukryj odpowiedzi ({repliesCount}) <Icon
-                type="caret-up"/></Button>
-            </span>
-          );
-        } else {
-          actions.push(
-            <span>
-              <Button size={"small"}
-                      onClick={() => this.openReply(post.uid)}>Pokaż odpowiedzi ({repliesCount}) <Icon
-                type="caret-down"/></Button>
-            </span>
-          );
-        }
-      }
-
-      return (
-        <div key={post.uid} id={post.uid} className={'post-content'}>
-          {this.state.hoverCommentId === post.uid ?
-            <Dropdown overlay={() => createDropdownMenu(post)} placement="bottomRight">
-              <Button className={'post-more-btn'}><Icon type="more"/></Button>
-            </Dropdown> : ''
-          }
-          <Comment
-            actions={actions}
-            author={author}
-            content={
-              ReactHtmlParser(post.postContent)
-            }
-            datetime={postDatetime}
-            className={'post-comment'}
-            onMouseEnter={() => this.handleMouseHover(post.uid)}
-            // onMouseLeave={() => this.handleMouseHover(0)}
-          >
-          </Comment>
-          <div className={'post-reply'}>
-            {replies}
-          </div>
-          <Divider style={{padding: 0, margin: 0}}/>
-        </div>
-      );
-    }
-    return '';
-  };
-
   render() {
+
+    const {drawerVisible, drawerRecord} = this.state;
+
     return (
       <div>
         <List
@@ -215,28 +134,28 @@ class PostComponent extends Component {
           header={
             <div className={"post-header"}>
               {this.state.topicTitle}
+              <div className={"post-header-description"}>
+                {this.state.topicDescription}
+              </div>
             </div>
           }
           dataSource={this.state.posts}
           renderItem={post => (
             <li>
-              {this.createContent(post)}
+              <PostContent post={post} {...this.state}/>
             </li>
           )}
         >
         </List>
-        <WrappedPostDrawer
-          isChildrenDrawer={true}
-          isQuill={true}
-
-          drawerTitle={'Dodaj nowy post'}
-          drawerPlaceholder={'Tytuł postu (max 300 znaków)'}
-          drawerVisible={this.state.drawerVisible}
-          drawerRecord={this.state.drawerRecord}
-          drawerType={this.state.drawerType}
+        <WrappedForumDrawer
+          drawerTitle={'Dodaj nowy komentarz'}
+          drawerPlaceholder={'Komentarz (maks 300 znaków)'}
+          drawerVisible={drawerVisible}
+          drawerRecord={drawerRecord}
+          drawerType={'post'}
 
           handleDrawerVisible={this.handleDrawerVisible}
-          handleSubmit={this.submitPost}
+          submitDrawer={this.submitDrawer}
         />
       </div>
     );

@@ -5,6 +5,7 @@ import base.api.domain.forum.posts.PostEntity;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.domain.user.UserEntity;
 import base.api.logging.LogExecutionTime;
+import base.api.rest.RestResponse;
 import base.api.rest.forum.posts.dto.PostDataDto;
 import base.api.rest.forum.posts.dto.PostReplyDto;
 import base.api.rest.forum.posts.dto.PostRequestDto;
@@ -122,10 +123,12 @@ public class PostsController {
    * @return postUid
    */
   @PostMapping()
-  public ResponseEntity<String> addPost(
+  public ResponseEntity<RestResponse<String>> addPost(
       @Valid @PathVariable("topicUid") String topicUid,
       @Valid @RequestBody PostRequestDto postRequestDto,
       @CurrentUser SystemUser user) {
+
+    //TODO - return postEntity
 
     UserEntity userEntity = new UserEntity();
     userEntity.setId(user.getUserId());
@@ -136,7 +139,9 @@ public class PostsController {
       postEntity.setTopicId(topic.get().getId());
       postEntity.setPostAuthor(userEntity);
       String postUid = postService.add(postEntity);
-      return new ResponseEntity<>(postUid, HttpStatus.CREATED);
+
+      RestResponse<String> restResponse = new RestResponse<>(postUid);
+      return new ResponseEntity<>(restResponse, HttpStatus.CREATED);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }

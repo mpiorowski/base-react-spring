@@ -29,8 +29,8 @@ public interface TopicDao extends GenericDao<TopicEntity> {
 
   @Override
   @Select({
-    "insert into forum_topics (topic_title, fk_category_id, fk_user_id) ",
-    "values (#{topicTitle}, #{topicCategory}, #{topicAuthor.id}) ",
+    "insert into forum_topics (topic_title, topic_description, fk_category_id, fk_user_id) ",
+    "values (#{topicTitle}, #{topicDescription}, #{topicCategory}, #{topicAuthor.id}) ",
     "returning id, uid"
   })
   ResponseDao add(TopicEntity entity);

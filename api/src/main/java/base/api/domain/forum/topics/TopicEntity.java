@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 public class TopicEntity extends GenericEntity {
 
   private String topicTitle;
+  private String topicDescription;
   private Integer topicViews;
   private Integer topicCategory;
   private UserEntity topicAuthor;
