@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import moment from "moment";
 import {Button, Comment, Divider, Dropdown, Icon, Menu, Tooltip} from "antd";
 import ReactHtmlParser from "react-html-parser";
+import './PostContent.less';
 
 class PostContent extends Component {
 
@@ -23,7 +24,7 @@ class PostContent extends Component {
     let postCreated = moment(post.createdAt);
     let postUpdated = moment(post.updatedAt);
     let actions = [
-      <span><Button size={"small"} onClick={() => this.replyPost(post)}>Odpowiedz</Button></span>
+      <span><Button type="link" size={"small"} onClick={() => this.replyPost(post)}>Odpowiedz</Button></span>
     ];
 
     const author = <span className={'post-author'}>{post.postAuthor}</span>;
@@ -85,6 +86,7 @@ class PostContent extends Component {
           actions.push(
             <span>
               <Button size={"small"}
+                      type="link"
                       onClick={() => this.closeReply(post.uid)}>Ukryj odpowiedzi ({repliesCount}) <Icon
                 type="caret-up"/></Button>
             </span>
@@ -93,6 +95,7 @@ class PostContent extends Component {
           actions.push(
             <span>
               <Button size={"small"}
+                      type="link"
                       onClick={() => this.openReply(post.uid)}>Pokaż odpowiedzi ({repliesCount}) <Icon
                 type="caret-down"/></Button>
             </span>

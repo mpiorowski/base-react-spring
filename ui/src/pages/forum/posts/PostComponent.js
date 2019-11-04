@@ -67,29 +67,24 @@ class PostComponent extends Component {
           postAuthor: this.state.currentUser.userName,
           createdAt: moment.now(),
           updatedAt: moment.now(),
-          postReplies: [{
-            uid: '',
-            postContent: '',
-            postAuthor: '',
-            createdAt: '',
-            updatedAt: '',
-          }]
+          postReplies: []
         };
         console.log(this.state.posts);
-        this.state.posts.unshift(data);
+        this.state.posts.push(data);
         this.setState({
           posts: this.state.posts
         });
         this.handleDrawerVisible(false, {});
-        //
-        // const element = document.getElementById(response);
-        // const elementRect = element.getBoundingClientRect();
-        // const absoluteElementTop = elementRect.top + window.pageYOffset;
-        // const middle = absoluteElementTop - (window.innerHeight / 2);
-        // window.scrollTo(0, middle);
+
+        const element = document.getElementById(response);
+        const elementRect = element.getBoundingClientRect();
+        const absoluteElementTop = elementRect.top + window.pageYOffset;
+        const middle = absoluteElementTop - (window.innerHeight / 2);
+        window.scrollTo(0, middle);
       }
     );
   };
+
 
   openReply = (uid) => {
     let openReplyArray = this.state.openReplyArray;

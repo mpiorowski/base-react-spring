@@ -23,8 +23,8 @@ VALUES ('TopicDao 2',
         (SELECT id FROM sys_users WHERE user_name = 'user'));
 
 
-INSERT INTO forum_topics(topic_title, fk_category_id, fk_user_id)
-VALUES ('Why would somebody use this?', 1, (SELECT id FROM sys_users WHERE user_name = 'admin'));
+INSERT INTO forum_topics(topic_title, topic_description, fk_category_id, fk_user_id)
+VALUES ('Why would somebody use this?', 'Tristique fringilla, lacus ante sociosqu. Aliquet vel venenatis pharetra venenatis faucibus eros usertis pellentesque, curabitur tortor egestas.', 1, (SELECT id FROM sys_users WHERE user_name = 'admin'));
 
 INSERT INTO forum_topics(topic_title, fk_category_id, fk_user_id)
 VALUES ('NodeBB 1.11.0: traffic filtering, navigation improvements and more.', 1,
