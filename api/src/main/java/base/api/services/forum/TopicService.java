@@ -1,14 +1,11 @@
 package base.api.services.forum;
 
 import base.api.domain.forum.categories.CategoryEntity;
-import base.api.domain.forum.posts.PostEntity;
 import base.api.domain.forum.topics.TopicDao;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.domain.generic.ResponseDao;
-import base.api.rest.forum.topics.dto.NewTopicResponseDto;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsStringConversions;
-import javafx.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
