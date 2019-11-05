@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {List} from "antd";
+import {Icon, List} from "antd";
 import "./PostComponent.less";
 import "react-quill/dist/quill.snow.css";
 import {serviceGetPosts} from "../../../services/forum/ForumService";
@@ -39,6 +39,9 @@ class PostComponent extends Component {
         posts: [{}],
       },
       openReplyArray: [],
+
+      current: 1,
+      pageSize: 3,
     }
   }
 
@@ -67,6 +70,7 @@ class PostComponent extends Component {
           postAuthor: this.state.currentUser.userName,
           createdAt: moment.now(),
           updatedAt: moment.now(),
+          replyUid: postContent.replyUid || null,
           postReplies: []
         };
         console.log(this.state.posts);
@@ -77,14 +81,15 @@ class PostComponent extends Component {
         this.handleDrawerVisible(false, {});
 
         const element = document.getElementById(response);
-        const elementRect = element.getBoundingClientRect();
-        const absoluteElementTop = elementRect.top + window.pageYOffset;
-        const middle = absoluteElementTop - (window.innerHeight / 2);
-        window.scrollTo(0, middle);
+        if (element) {
+          const elementRect = element.getBoundingClientRect();
+          const absoluteElementTop = elementRect.top + window.pageYOffset;
+          const middle = absoluteElementTop - (window.innerHeight / 2);
+          window.scrollTo(0, middle);
+        }
       }
     );
   };
-
 
   openReply = (uid) => {
     let openReplyArray = this.state.openReplyArray;
@@ -101,21 +106,26 @@ class PostComponent extends Component {
     })
   };
 
-  handleDrawerVisible = (flag, record, type) => {
+  handleDrawerVisible = (flag, record, type, title) => {
     this.setState({
       drawerVisible: !!flag,
       drawerRecord: record || {},
-      drawerType: type
+      drawerType: type,
+      drawerTitle: title,
     });
   };
 
   replyPost = (post) => {
-    const replyPost = {postId: null, postContent: '', replyId: post.postId};
-    this.handleDrawerVisible(true, replyPost, 'reply');
+    const replyPost = {postUid: null, postContent: '', replyUid: post.uid};
+    this.handleDrawerVisible(true, replyPost, 'reply', 'Odpowiedz na komentarz');
   };
 
   editPost = (post) => {
     this.handleDrawerVisible(true, post, 'edit');
+  };
+
+  onPaginationChange = (page, pageSize) => {
+    this.setState({current: page});
   };
 
   render() {
@@ -135,23 +145,43 @@ class PostComponent extends Component {
             </div>
           }
           dataSource={this.state.posts}
+          pagination={{
+            position: 'both',
+            pageSize: this.state.pageSize,
+            size: 'small',
+            current: this.state.current,
+            onChange: this.onPaginationChange
+          }}
           renderItem={post => (
             <li>
-              <PostContent post={post} {...this.state}/>
+              <PostContent
+                post={post}
+                openReply={this.openReply}
+                closeReply={this.closeReply}
+                replyPost={this.replyPost}
+                {...this.state}
+              />
             </li>
           )}
         >
         </List>
-        <WrappedForumDrawer
-          drawerTitle={'Dodaj nowy komentarz'}
-          drawerPlaceholder={'Komentarz (maks 300 znaków)'}
-          drawerVisible={drawerVisible}
-          drawerRecord={drawerRecord}
-          drawerType={'post'}
+        <div>
+          <div className="forum-floating-drawer-btn-initial" hidden={drawerVisible}
+               onClick={() => this.handleDrawerVisible(true, {}, 'new', 'Dodaj nowy komentarz')}
+          >
+            <Icon type="plus"/>
+          </div>
+          <WrappedForumDrawer
+            drawerTitle={this.state.drawerTitle}
+            drawerPlaceholder={'Komentarz (maks 300 znaków)'}
+            drawerVisible={drawerVisible}
+            drawerRecord={drawerRecord}
+            drawerType={'post'}
 
-          handleDrawerVisible={this.handleDrawerVisible}
-          submitDrawer={this.submitDrawer}
-        />
+            handleDrawerVisible={this.handleDrawerVisible}
+            submitDrawer={this.submitDrawer}
+          />
+        </div>
       </div>
     );
   }

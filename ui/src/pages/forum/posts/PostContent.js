@@ -24,7 +24,7 @@ class PostContent extends Component {
     let postCreated = moment(post.createdAt);
     let postUpdated = moment(post.updatedAt);
     let actions = [
-      <span><Button type="link" size={"small"} onClick={() => this.replyPost(post)}>Odpowiedz</Button></span>
+      <span><Button type="link" size={"small"} onClick={() => this.props.replyPost(post)}>Odpowiedz</Button></span>
     ];
 
     const author = <span className={'post-author'}>{post.postAuthor}</span>;
@@ -87,7 +87,7 @@ class PostContent extends Component {
             <span>
               <Button size={"small"}
                       type="link"
-                      onClick={() => this.closeReply(post.uid)}>Ukryj odpowiedzi ({repliesCount}) <Icon
+                      onClick={() => this.props.closeReply(post.uid)}>Ukryj odpowiedzi ({repliesCount}) <Icon
                 type="caret-up"/></Button>
             </span>
           );
@@ -96,7 +96,7 @@ class PostContent extends Component {
             <span>
               <Button size={"small"}
                       type="link"
-                      onClick={() => this.openReply(post.uid)}>Pokaż odpowiedzi ({repliesCount}) <Icon
+                      onClick={() => this.props.openReply(post.uid)}>Pokaż odpowiedzi ({repliesCount}) <Icon
                 type="caret-down"/></Button>
             </span>
           );

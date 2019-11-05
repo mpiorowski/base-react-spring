@@ -16,7 +16,7 @@ public interface PostMapper {
 
   PostEntity newDtoToEntity(NewTopicRequestDto dto);
 
-  PostEntity dtoToEntity2(PostRequestDto dto);
+  PostEntity requestDtoToEntity(PostRequestDto dto);
 
   //  TODO - use whole user object
   @Mapping(target = "postAuthor", source = "postAuthor.userName")

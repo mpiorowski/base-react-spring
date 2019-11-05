@@ -56,23 +56,29 @@ class ForumDrawer extends Component {
     const {drawerTitle, drawerRecord, drawerType, drawerVisible} = this.props;
     const {getFieldDecorator, getFieldValue} = this.props.form;
 
+    console.log(drawerRecord);
+
     let drawerForm = () => {
       return (
         <Form onSubmit={this.handleSubmit}>
           <div>
             <div className="forum-floating-drawer-btn"
                  onClick={
-                   drawerVisible
-                     ? () => this.props.handleDrawerVisible(false, {})
-                     : () => this.props.handleDrawerVisible(true, {}, 'new')
+                   () => this.props.handleDrawerVisible(false, {})
+                   // drawerVisible
+                   //   ? () => this.props.handleDrawerVisible(false, {})
+                   //   // : () => this.props.handleDrawerVisible(true, {}, 'new')
                  }
             >
               {drawerVisible ? <Icon type="minus"/> : <Icon type="plus"/>}
             </div>
 
-            {/*<FormItem style={{display: "none"}}>*/}
-            {/*  {getFieldDecorator('topicId', {initialValue: drawerRecord['topicId'] || null})(<Input/>)}*/}
-            {/*</FormItem>*/}
+            <FormItem style={{display: "none"}}>
+              {getFieldDecorator('topicUid', {initialValue: drawerRecord['topicUid'] || null})(<Input/>)}
+            </FormItem>
+            <FormItem style={{display: "none"}}>
+              {getFieldDecorator('replyUid', {initialValue: drawerRecord['replyUid'] || null})(<Input/>)}
+            </FormItem>
 
             {drawerType === 'topic' ?
               <FormItem>
@@ -97,13 +103,19 @@ class ForumDrawer extends Component {
               </FormItem>
               : <FormItem>
                 {getFieldDecorator('content', {
-                    rules: [{
-                      required: true,
-                      message: validationErrorMsg.empty,
-                    }]
+                    rules: [
+                      {
+                        required: true,
+                        message: validationErrorMsg.empty,
+                      },
+                      {
+                        max: 10000,
+                        message: validationErrorMsg.maxSize10000
+                      }
+                    ]
                   }
                 )(
-                  <Input.TextArea rows={8} placeholder={"Komentarz (maks 300 znaków)"}/>,
+                  <Input.TextArea rows={8} maxLength={1000} placeholder={"Komentarz"}/>,
                 )}
               </FormItem>
             }
@@ -154,11 +166,7 @@ class ForumDrawer extends Component {
 
     return (
       <div>
-        <div className="forum-floating-drawer-btn-initial" hidden={drawerVisible}
-             onClick={() => this.props.handleDrawerVisible(true, {}, 'new')}
-        >
-          <Icon type="plus"/>
-        </div>
+
         <Drawer
           title={drawerTitle}
           height={500}

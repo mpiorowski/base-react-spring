@@ -34,7 +34,7 @@ public interface PostDao extends GenericDao<PostEntity> {
           + "join sys_users su on fk_user_id = su.id "
           + "where fk_topic_id = #{topicId} "
           + "and fp.is_deleted is false "
-          + "order by fp.created_at desc")
+          + "order by fp.created_at asc")
   @Results({
     @Result(property = "postAuthor.userName", column = "user_name"),
     @Result(property = "postAuthor.userEmail", column = "user_email")

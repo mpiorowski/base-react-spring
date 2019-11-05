@@ -4,31 +4,31 @@ export const submitPost = (post, topicUid) => {
 
   return new Promise((resolve, reject) => {
 
-      let postId = post.postId || null;
+      let postUid = post.postUid || null;
       let serviceData = {
         postContent: post.content,
-        replyId: post.replyId || null
+        replyUid: post.replyUid || null
       };
-      if (postId === null) {
+      if (postUid === null) {
         serviceAddPost(topicUid, serviceData).then(response => {
           console.log(response);
           if (response.data) {
-            // if (post.replyId != null) {
-            //   replyArray.unshift({
-            //     postUid: response.data,
-            //     postContent: post.content,
-            //     replyId: post.replyId,
-            //     postAuthor: this.state.currentUser.userName
-            //   });
-            //   // this.openReply(post.replyId);
-            // } else {
-            //   postsArray.unshift({
-            //     postId: response,
-            //     postContent: post.content,
-            //     replyId: null,
-            //     postAuthor: this.state.currentUser.userName
-            //   });
-            // }
+            if (post.replyUid != null) {
+              // replyArray.unshift({
+              //   postUid: response.data,
+              //   postContent: post.content,
+              //   replyUid: post.replyUid,
+              //   postAuthor: this.state.currentUser.userName
+              // });
+              // this.openReply(post.replyUid);
+            } else {
+              // postsArray.unshift({
+              //   postUid: response,
+              //   postContent: post.content,
+              //   replyUid: null,
+              //   postAuthor: this.state.currentUser.userName
+              // });
+            }
             resolve(response.data);
           }
         }).catch(error => {
@@ -36,24 +36,24 @@ export const submitPost = (post, topicUid) => {
           reject(false);
         });
       } else {
-        serviceEditPost(topicUid, postId, serviceData).then(response => {
+        serviceEditPost(topicUid, postUid, serviceData).then(response => {
           if (response) {
             const newPostsArray = [...this.state.postsArray];
             const newReplyArray = [...this.state.replyArray];
 
-            if (post.replyId !== null) {
-              const index = newReplyArray.findIndex(item => response === item.postId);
+            if (post.replyUid !== null) {
+              const index = newReplyArray.findIndex(item => response === item.postUid);
               const item = newReplyArray[index];
-              const values = {postId: response, postContent: post.content, replyId: post.replyId};
+              const values = {postUid: response, postContent: post.content, replyUid: post.replyUid};
               newReplyArray.splice(index, 1, {
                 ...item,
                 ...values,
               });
               console.log(newReplyArray);
             } else {
-              const index = newPostsArray.findIndex(item => response === item.postId);
+              const index = newPostsArray.findIndex(item => response === item.postUid);
               const item = newPostsArray[index];
-              const values = {postId: response, postContent: post.content, replyId: null};
+              const values = {postUid: response, postContent: post.content, replyUid: null};
               newPostsArray.splice(index, 1, {
                 ...item,
                 ...values,
