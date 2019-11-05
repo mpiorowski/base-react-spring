@@ -12,24 +12,8 @@ export const submitPost = (post, topicUid) => {
       if (postUid === null) {
         serviceAddPost(topicUid, serviceData).then(response => {
           console.log(response);
-          if (response.data) {
-            if (post.replyUid != null) {
-              // replyArray.unshift({
-              //   postUid: response.data,
-              //   postContent: post.content,
-              //   replyUid: post.replyUid,
-              //   postAuthor: this.state.currentUser.userName
-              // });
-              // this.openReply(post.replyUid);
-            } else {
-              // postsArray.unshift({
-              //   postUid: response,
-              //   postContent: post.content,
-              //   replyUid: null,
-              //   postAuthor: this.state.currentUser.userName
-              // });
-            }
-            resolve(response.data);
+          if (response) {
+              resolve(response.data);
           }
         }).catch(error => {
           console.log(error);

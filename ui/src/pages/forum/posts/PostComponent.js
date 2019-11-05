@@ -3,7 +3,7 @@ import {Icon, List} from "antd";
 import "./PostComponent.less";
 import "react-quill/dist/quill.snow.css";
 import {serviceGetPosts} from "../../../services/forum/ForumService";
-import {WrappedForumDrawer} from "../common/ForumDrawer";
+import {WrappedPostDrawer} from "./PostDrawer";
 import PostContent from "./PostContent";
 import {submitPost} from "./PostSubmit";
 import * as moment from "moment";
@@ -20,19 +20,21 @@ class PostComponent extends Component {
       topicTitle: '',
       drawerRecord: {},
 
+      mapPosts: [],
+
       posts: [{
-        uid: '',
-        postContent: '',
-        postAuthor: '',
-        createdAt: '',
-        updatedAt: '',
-        postReplies: [{
-          uid: '',
-          postContent: '',
-          postAuthor: '',
-          createdAt: '',
-          updatedAt: '',
-        }]
+        // uid: '',
+        // postContent: '',
+        // postAuthor: '',
+        // createdAt: '',
+        // updatedAt: '',
+        // postReplies: [{
+        //   uid: '',
+        //   postContent: '',
+        //   postAuthor: '',
+        //   createdAt: '',
+        //   updatedAt: '',
+        // }]
       }],
       response: {
         topic: {},
@@ -50,33 +52,53 @@ class PostComponent extends Component {
     const {match: {params}} = this.props;
     serviceGetPosts(params.topicUid).then(response => {
         console.log('post response', response);
+
+        let mapPosts = new Map();
+
+        response.posts.forEach(post => {
+          mapPosts.set(post.uid, {...post})
+        });
+
+        console.log('mapPosts', mapPosts);
+
+
         this.setState({
           topicTitle: response.topic.topicTitle,
           topicDescription: response.topic.topicDescription,
           posts: response.posts,
+          mapPosts: mapPosts,
           loading: false
         });
       }
     );
   }
 
-  submitDrawer = (postContent) => {
+  submitDrawer = (post) => {
     const topicUid = this.state.topicUid;
-    submitPost(postContent, topicUid).then(response => {
-        console.log(postContent);
+    const mapPosts = this.state.mapPosts;
+    submitPost(post, topicUid, mapPosts).then(response => {
+
         const data = {
           uid: response,
-          postContent: postContent.content,
+          postContent: post.content,
           postAuthor: this.state.currentUser.userName,
           createdAt: moment.now(),
-          updatedAt: moment.now(),
-          replyUid: postContent.replyUid || null,
-          postReplies: []
+          updatedAt: moment.now()
         };
-        console.log(this.state.posts);
-        this.state.posts.push(data);
+
+
+        if (post.replyUid) {
+          let newPost = mapPosts.get(post.replyUid);
+          newPost.postReplies.push(data);
+          mapPosts.set(post.replyUid, newPost);
+          this.openReply(post.replyUid);
+        }
+
+
+        console.log('mapPosts', mapPosts);
+
         this.setState({
-          posts: this.state.posts
+          mapPosts: mapPosts
         });
         this.handleDrawerVisible(false, {});
 
@@ -144,7 +166,7 @@ class PostComponent extends Component {
               </div>
             </div>
           }
-          dataSource={this.state.posts}
+          dataSource={this.state.mapPosts}
           pagination={{
             position: 'both',
             pageSize: this.state.pageSize,
@@ -171,7 +193,7 @@ class PostComponent extends Component {
           >
             <Icon type="plus"/>
           </div>
-          <WrappedForumDrawer
+          <WrappedPostDrawer
             drawerTitle={this.state.drawerTitle}
             drawerPlaceholder={'Komentarz (maks 300 znaków)'}
             drawerVisible={drawerVisible}

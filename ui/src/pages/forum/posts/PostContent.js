@@ -18,8 +18,10 @@ class PostContent extends Component {
 
   render() {
 
-    const {post, openReplyArray} = this.props;
+    const {openReplyArray} = this.props;
     const {hoverCommentId} = this.state;
+
+    const post = this.props.post[1];
 
     let postCreated = moment(post.createdAt);
     let postUpdated = moment(post.updatedAt);
