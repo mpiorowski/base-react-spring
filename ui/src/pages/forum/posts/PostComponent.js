@@ -78,7 +78,7 @@ class PostComponent extends Component {
     const mapPosts = this.state.mapPosts;
     submitPost(post, topicUid, mapPosts).then(response => {
 
-        const data = {
+        let data = {
           uid: response,
           postContent: post.content,
           postAuthor: this.state.currentUser.userName,
@@ -86,14 +86,19 @@ class PostComponent extends Component {
           updatedAt: moment.now()
         };
 
-
+        let newPosts;
         if (post.replyUid) {
-          let newPost = mapPosts.get(post.replyUid);
-          newPost.postReplies.push(data);
-          mapPosts.set(post.replyUid, newPost);
+          newPosts = mapPosts.get(post.replyUid);
+          newPosts.postReplies.push(data);
+          mapPosts.set(post.replyUid, newPosts);
           this.openReply(post.replyUid);
+        } else {
+          data = {
+            ...data,
+            postReplies: []
+          };
+          mapPosts.set(response, data);
         }
-
 
         console.log('mapPosts', mapPosts);
 

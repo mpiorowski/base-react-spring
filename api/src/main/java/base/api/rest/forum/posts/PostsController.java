@@ -128,7 +128,7 @@ public class PostsController {
       @Valid @RequestBody PostRequestDto postRequestDto,
       @CurrentUser SystemUser user) {
 
-    //TODO - return postEntity
+    // TODO - return postEntity
 
     UserEntity userEntity = new UserEntity();
     userEntity.setId(user.getUserId());
@@ -136,17 +136,18 @@ public class PostsController {
     Optional<TopicEntity> topic = topicService.findByUid(topicUid);
     if (topic.isPresent()) {
 
-      Optional<PostEntity> replyEntity = postService.findByUid(postRequestDto.getReplyUid());
-      if (replyEntity.isPresent()) {
-        PostEntity postEntity = postMapper.requestDtoToEntity(postRequestDto);
-        postEntity.setReplyId(replyEntity.get().getId());
-        postEntity.setTopicId(topic.get().getId());
-        postEntity.setPostAuthor(userEntity);
-        String postUid = postService.add(postEntity);
+      PostEntity postEntity = postMapper.requestDtoToEntity(postRequestDto);
 
-        RestResponse<String> restResponse = new RestResponse<>(postUid);
-        return new ResponseEntity<>(restResponse, HttpStatus.CREATED);
+      if (postRequestDto.getReplyUid() != null) {
+        Optional<PostEntity> replyEntity = postService.findByUid(postRequestDto.getReplyUid());
+        replyEntity.ifPresent(entity -> postEntity.setReplyId(entity.getId()));
       }
+      postEntity.setTopicId(topic.get().getId());
+      postEntity.setPostAuthor(userEntity);
+      String postUid = postService.add(postEntity);
+
+      RestResponse<String> restResponse = new RestResponse<>(postUid);
+      return new ResponseEntity<>(restResponse, HttpStatus.CREATED);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
