@@ -20,7 +20,7 @@ class PostComponent extends Component {
       topicTitle: '',
       drawerRecord: {},
 
-      mapPosts: [],
+      mapPosts: new Map(),
 
       posts: [{
         // uid: '',
@@ -157,6 +157,8 @@ class PostComponent extends Component {
 
   render() {
 
+    console.log(this.state.mapPosts.entries());
+
     const {drawerVisible, drawerRecord} = this.state;
 
     return (
@@ -171,13 +173,15 @@ class PostComponent extends Component {
               </div>
             </div>
           }
-          dataSource={this.state.mapPosts}
+          dataSource={Array.from(this.state.mapPosts.values())}
           pagination={{
             position: 'both',
-            pageSize: this.state.pageSize,
-            size: 'small',
-            current: this.state.current,
-            onChange: this.onPaginationChange
+            pageSize: 3,
+            // pageSize: this.state.pageSize,
+            // size: 'small',
+            // total: this.state.mapPosts.size,
+            // current: this.state.current,
+            // onChange: this.onPaginationChange
           }}
           renderItem={post => (
             <li>

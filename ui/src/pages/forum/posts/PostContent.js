@@ -21,7 +21,7 @@ class PostContent extends Component {
     const {openReplyArray} = this.props;
     const {hoverCommentId} = this.state;
 
-    const post = this.props.post[1];
+    const post = this.props.post;
 
     let postCreated = moment(post.createdAt);
     let postUpdated = moment(post.updatedAt);
@@ -72,7 +72,7 @@ class PostContent extends Component {
             return (
               <div className={'post-reply-comment'} key={reply.uid} id={reply.uid}>
                 {hoverCommentId === reply.uid ?
-                  <Dropdown overlay={() => createDropdownMenu(reply)} placement="bottomRight">
+                  <Dropdown overlay={() => createDropdownMenu(reply)} placement="bottomRight" trigger={['click']}>
                     <Button className={'post-more-btn'}><Icon type="more"/></Button>
                   </Dropdown> : ''
                 }
@@ -108,7 +108,7 @@ class PostContent extends Component {
       return (
         <div key={post.uid} id={post.uid} className={'post-content'}>
           {hoverCommentId === post.uid ?
-            <Dropdown overlay={() => createDropdownMenu(post)} placement="bottomRight">
+            <Dropdown overlay={() => createDropdownMenu(post)} placement="bottomRight" trigger={['click']}>
               <Button className={'post-more-btn'}><Icon type="more"/></Button>
             </Dropdown> : ''
           }
