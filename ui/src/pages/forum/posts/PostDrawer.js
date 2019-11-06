@@ -54,9 +54,7 @@ class PostDrawer extends Component {
   render() {
 
     const {drawerTitle, drawerRecord, drawerType, drawerVisible} = this.props;
-    const {getFieldDecorator, getFieldValue} = this.props.form;
-
-    console.log(drawerRecord);
+    const {getFieldDecorator} = this.props.form;
 
     let drawerForm = () => {
       return (
@@ -74,51 +72,34 @@ class PostDrawer extends Component {
             </div>
 
             <FormItem style={{display: "none"}}>
-              {getFieldDecorator('topicUid', {initialValue: drawerRecord['topicUid'] || null})(<Input/>)}
+              {getFieldDecorator('topicUid', {initialValue: drawerRecord.topicUid || null})(<Input/>)}
             </FormItem>
             <FormItem style={{display: "none"}}>
-              {getFieldDecorator('replyUid', {initialValue: drawerRecord['replyUid'] || null})(<Input/>)}
+              {getFieldDecorator('postUid', {initialValue: drawerRecord.uid || null})(<Input/>)}
+            </FormItem>
+            <FormItem style={{display: "none"}}>
+              {getFieldDecorator('replyUid', {initialValue: drawerRecord.replyUid || null})(<Input/>)}
             </FormItem>
 
-            {drawerType === 'topic' ?
-              <FormItem>
-                {getFieldDecorator('title', {
-                    rules: [{
+            <FormItem>
+              {getFieldDecorator('postContent', {
+                  initialValue: drawerRecord.postContent || '',
+                  rules: [
+                    {
                       required: true,
                       message: validationErrorMsg.empty,
-                    }],
-                    initialValue: drawerRecord.topicTitle || ''
-                  }
-                )(
-                  <Input placeholder={"Temat"} size={"large"} allowClear/>,
-                )}
-              </FormItem> : ''
-            }
-            {drawerType === 'topic'
-              ? <FormItem>
-                {getFieldDecorator('content')
-                (
-                  <Input.TextArea rows={6} placeholder={"Opis (opcjonalne)"}/>,
-                )}
-              </FormItem>
-              : <FormItem>
-                {getFieldDecorator('content', {
-                    rules: [
-                      {
-                        required: true,
-                        message: validationErrorMsg.empty,
-                      },
-                      {
-                        max: 10000,
-                        message: validationErrorMsg.maxSize10000
-                      }
-                    ]
-                  }
-                )(
-                  <Input.TextArea rows={8} maxLength={1000} placeholder={"Komentarz"}/>,
-                )}
-              </FormItem>
-            }
+                    },
+                    {
+                      max: 10000,
+                      message: validationErrorMsg.maxSize10000
+                    }
+                  ]
+                }
+              )(
+                <Input.TextArea rows={8} maxLength={1000} placeholder={"Komentarz"}/>,
+              )}
+            </FormItem>
+
             <br/>
             {drawerType === 'post' ?
               <div>

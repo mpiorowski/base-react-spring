@@ -54,6 +54,7 @@ public class PostService extends GenericService<PostEntity> {
 
   @Override
   public boolean edit(PostEntity entity) {
+    entity.setPostAuthor(currentUserEntity());
     return dao.edit(entity) == 1;
   }
 

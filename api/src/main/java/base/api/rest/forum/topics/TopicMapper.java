@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface TopicMapper {
 
-  TopicDataDto entityToDto2(TopicEntity entity);
+  TopicDataDto entityToDataDto(TopicEntity entity);
 
   TopicResponseDto entityToDto(TopicEntity entity);
 

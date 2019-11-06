@@ -57,7 +57,7 @@ public class PostsController {
     Optional<TopicEntity> topic = topicService.findByUid(topicUid);
 
     if (topic.isPresent()) {
-      TopicDataDto topicDataDto = topicMapper.entityToDto2(topic.get());
+      TopicDataDto topicDataDto = topicMapper.entityToDataDto(topic.get());
       List<PostEntity> postsEnitity = postService.findPostsByTopicId(topic.get().getId());
 
       List<PostDataDto> postDataDtoList = new ArrayList<>();
@@ -125,13 +125,9 @@ public class PostsController {
   @PostMapping()
   public ResponseEntity<RestResponse<String>> addPost(
       @Valid @PathVariable("topicUid") String topicUid,
-      @Valid @RequestBody PostRequestDto postRequestDto,
-      @CurrentUser SystemUser user) {
+      @Valid @RequestBody PostRequestDto postRequestDto) {
 
     // TODO - return postEntity
-
-    UserEntity userEntity = new UserEntity();
-    userEntity.setId(user.getUserId());
 
     Optional<TopicEntity> topic = topicService.findByUid(topicUid);
     if (topic.isPresent()) {
@@ -143,7 +139,6 @@ public class PostsController {
         replyEntity.ifPresent(entity -> postEntity.setReplyId(entity.getId()));
       }
       postEntity.setTopicId(topic.get().getId());
-      postEntity.setPostAuthor(userEntity);
       String postUid = postService.add(postEntity);
 
       RestResponse<String> restResponse = new RestResponse<>(postUid);
@@ -165,18 +160,13 @@ public class PostsController {
   public ResponseEntity editPost(
       @Valid @PathVariable("postUid") String postUid,
       @Valid @PathVariable("topicUid") String topicUid,
-      @Valid @RequestBody PostRequestDto postRequestDto,
-      @CurrentUser SystemUser user) {
-
-    UserEntity userEntity = new UserEntity();
-    userEntity.setId(user.getUserId());
+      @Valid @RequestBody PostRequestDto postRequestDto) {
 
     Optional<TopicEntity> topic = topicService.findByUid(topicUid);
     if (topic.isPresent()) {
       PostEntity postEntity = postMapper.requestDtoToEntity(postRequestDto);
       postEntity.setUid(UtilsStringConversions.uidDecode(postUid));
       postEntity.setTopicId(topic.get().getId());
-      postEntity.setPostAuthor(userEntity);
       if (postService.edit(postEntity)) {
         return new ResponseEntity(HttpStatus.OK);
       }

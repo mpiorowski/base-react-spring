@@ -54,7 +54,7 @@ class ForumDrawer extends Component {
   render() {
 
     const {drawerTitle, drawerRecord, drawerType, drawerVisible} = this.props;
-    const {getFieldDecorator, getFieldValue} = this.props.form;
+    const {getFieldDecorator} = this.props.form;
 
     console.log(drawerRecord);
 
@@ -96,10 +96,7 @@ class ForumDrawer extends Component {
             }
             {drawerType === 'topic'
               ? <FormItem>
-                {getFieldDecorator('content')
-                (
-                  <Input.TextArea rows={6} placeholder={"Opis (opcjonalne)"}/>,
-                )}
+                {getFieldDecorator('content')(<Input.TextArea rows={6} placeholder={"Opis (opcjonalne)"}/>)}
               </FormItem>
               : <FormItem>
                 {getFieldDecorator('content', {

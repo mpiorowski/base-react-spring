@@ -6,22 +6,9 @@ import './PostContent.less';
 
 class PostContent extends Component {
 
-  state = {
-    hoverCommentId: null,
-  };
-
-  handleMouseHover = (postId) => {
-    this.setState({
-      hoverCommentId: postId,
-    })
-  };
-
   render() {
 
-    const {openReplyArray} = this.props;
-    const {hoverCommentId} = this.state;
-
-    const post = this.props.post;
+    const {openReplyArray, hoverCommentId, currentUser, post} = this.props;
 
     let postCreated = moment(post.createdAt);
     let postUpdated = moment(post.updatedAt);
@@ -29,7 +16,6 @@ class PostContent extends Component {
       <span><Button type="link" size={"small"} onClick={() => this.props.replyPost(post)}>Odpowiedz</Button></span>
     ];
 
-    const author = <span className={'post-author'}>{post.postAuthor}</span>;
     const postDatetime =
       <div>
         <Tooltip title={postCreated.format('YYYY-MM-DD HH:mm:ss')}>
@@ -43,7 +29,7 @@ class PostContent extends Component {
     const createDropdownMenu = (post) => {
       return (
         <Menu>
-          <Menu.Item onClick={() => this.editPost(post)} key="1">Edytuj</Menu.Item>
+          <Menu.Item onClick={() => this.props.editPost(post)} key="1">Edytuj</Menu.Item>
           {/*<Menu.Item key="2">Usuń</Menu.Item>*/}
         </Menu>
       )
@@ -71,16 +57,17 @@ class PostContent extends Component {
               </div>;
             return (
               <div className={'post-reply-comment'} key={reply.uid} id={reply.uid}>
-                {hoverCommentId === reply.uid ?
+                {(hoverCommentId === reply.uid && currentUser.userName === reply.postAuthor) ?
                   <Dropdown overlay={() => createDropdownMenu(reply)} placement="bottomRight" trigger={['click']}>
-                    <Button className={'post-more-btn'}><Icon type="more"/></Button>
+                    <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
                   </Dropdown> : ''
                 }
                 <Comment
-                  author={author}
-                  content={ReactHtmlParser(reply.postContent)}
+                  author={<span className={'post-author'}>{reply.postAuthor}</span>}
+                  // content={ReactHtmlParser(reply.postContent)}
+                  content={<span className={'post-content-span'}>{reply.postContent}</span>}
                   datetime={replyDatetime}
-                  onMouseEnter={() => this.handleMouseHover(reply.uid)}
+                  onMouseEnter={() => this.props.handleMouseHover(reply.uid)}
                 >
                 </Comment>
               </div>)
@@ -107,21 +94,20 @@ class PostContent extends Component {
 
       return (
         <div key={post.uid} id={post.uid} className={'post-content'}>
-          {hoverCommentId === post.uid ?
+          {(hoverCommentId === post.uid && currentUser.userName === post.postAuthor) ?
             <Dropdown overlay={() => createDropdownMenu(post)} placement="bottomRight" trigger={['click']}>
-              <Button className={'post-more-btn'}><Icon type="more"/></Button>
+              <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
             </Dropdown> : ''
           }
           <Comment
             actions={actions}
-            author={author}
+            author={<span className={'post-author'}>{post.postAuthor}</span>}
             content={
-              ReactHtmlParser(post.postContent)
+              <span className={'post-content-span'}>{ReactHtmlParser(post.postContent)}</span>
             }
             datetime={postDatetime}
             className={'post-comment'}
-            onMouseEnter={() => this.handleMouseHover(post.uid)}
-            // onMouseLeave={() => this.handleMouseHover(0)}
+            onMouseEnter={() => this.props.handleMouseHover(post.uid)}
           >
           </Comment>
           <div className={'post-reply'}>

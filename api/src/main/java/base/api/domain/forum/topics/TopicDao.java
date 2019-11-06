@@ -2,6 +2,7 @@ package base.api.domain.forum.topics;
 
 import base.api.domain.generic.GenericDao;
 import base.api.domain.generic.ResponseDao;
+import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,13 @@ public interface TopicDao extends GenericDao<TopicEntity> {
     return findAll(TopicDao.Table.NAME);
   }
 
+  @Results({
+    @Result(
+      property = "topicAuthor",
+      column = "fk_user_id",
+      javaType = UserEntity.class,
+      one = @One(select = "selectUser"))
+  })
   default Optional<TopicEntity> findByUid(UUID uid) {
     return findByUid(TopicDao.Table.NAME, uid);
   }

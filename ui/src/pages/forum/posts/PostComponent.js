@@ -17,30 +17,18 @@ class PostComponent extends Component {
       loading: true,
 
       topicUid: props.match.params.topicUid,
-      topicTitle: '',
       drawerRecord: {},
 
-      mapPosts: new Map(),
+      topic: {},
 
-      posts: [{
-        // uid: '',
-        // postContent: '',
-        // postAuthor: '',
-        // createdAt: '',
-        // updatedAt: '',
-        // postReplies: [{
-        //   uid: '',
-        //   postContent: '',
-        //   postAuthor: '',
-        //   createdAt: '',
-        //   updatedAt: '',
-        // }]
-      }],
+      mapPosts: new Map(),
       response: {
         topic: {},
         posts: [{}],
       },
       openReplyArray: [],
+
+      hoverCommentId: null,
 
       current: 1,
       pageSize: 3,
@@ -51,7 +39,7 @@ class PostComponent extends Component {
 
     const {match: {params}} = this.props;
     serviceGetPosts(params.topicUid).then(response => {
-        console.log('post response', response);
+        console.log('get posts', response);
 
         let mapPosts = new Map();
 
@@ -61,11 +49,8 @@ class PostComponent extends Component {
 
         console.log('mapPosts', mapPosts);
 
-
         this.setState({
-          topicTitle: response.topic.topicTitle,
-          topicDescription: response.topic.topicDescription,
-          posts: response.posts,
+          topic: response.topic,
           mapPosts: mapPosts,
           loading: false
         });
@@ -80,7 +65,7 @@ class PostComponent extends Component {
 
         let data = {
           uid: response,
-          postContent: post.content,
+          postContent: post.postContent,
           postAuthor: this.state.currentUser.userName,
           createdAt: moment.now(),
           updatedAt: moment.now()
@@ -148,7 +133,14 @@ class PostComponent extends Component {
   };
 
   editPost = (post) => {
-    this.handleDrawerVisible(true, post, 'edit');
+    console.log(post);
+    this.handleDrawerVisible(true, post, 'edit', 'Edytuj komentarz');
+  };
+
+  handleMouseHover = (postId) => {
+    this.setState({
+      hoverCommentId: postId,
+    })
   };
 
   onPaginationChange = (page, pageSize) => {
@@ -156,8 +148,6 @@ class PostComponent extends Component {
   };
 
   render() {
-
-    console.log(this.state.mapPosts.entries());
 
     const {drawerVisible, drawerRecord} = this.state;
 
@@ -167,9 +157,9 @@ class PostComponent extends Component {
           loading={this.state.loading}
           header={
             <div className={"post-header"}>
-              {this.state.topicTitle}
+              {this.state.topic.topicTitle}
               <div className={"post-header-description"}>
-                {this.state.topicDescription}
+                {this.state.topic.topicDescription}
               </div>
             </div>
           }
@@ -177,19 +167,21 @@ class PostComponent extends Component {
           pagination={{
             position: 'both',
             pageSize: 3,
+            size: 'small',
             // pageSize: this.state.pageSize,
-            // size: 'small',
             // total: this.state.mapPosts.size,
-            // current: this.state.current,
-            // onChange: this.onPaginationChange
+            current: this.state.current,
+            onChange: this.onPaginationChange
           }}
           renderItem={post => (
             <li>
               <PostContent
                 post={post}
+                editPost={this.editPost}
                 openReply={this.openReply}
                 closeReply={this.closeReply}
                 replyPost={this.replyPost}
+                handleMouseHover={this.handleMouseHover}
                 {...this.state}
               />
             </li>
