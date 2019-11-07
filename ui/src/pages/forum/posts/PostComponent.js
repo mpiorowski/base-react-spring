@@ -90,14 +90,17 @@ class PostComponent extends Component {
         this.setState({
           mapPosts: mapPosts
         });
+        this.goToLast();
         this.handleDrawerVisible(false, {});
 
+        // TODO - choose scrolling position
         const element = document.getElementById(response);
         if (element) {
           const elementRect = element.getBoundingClientRect();
           const absoluteElementTop = elementRect.top + window.pageYOffset;
-          const middle = absoluteElementTop - (window.innerHeight / 2);
-          window.scrollTo(0, middle);
+          // const middle = absoluteElementTop - (window.innerHeight / 2);
+          window.scrollTo(0, absoluteElementTop);
+          // window.scrollTop(0);
         }
       }
     );
@@ -117,7 +120,6 @@ class PostComponent extends Component {
       openReplyArray: filtered
     })
   };
-
   handleDrawerVisible = (flag, record, type, title) => {
     this.setState({
       drawerVisible: !!flag,
@@ -126,25 +128,28 @@ class PostComponent extends Component {
       drawerTitle: title,
     });
   };
-
   replyPost = (post) => {
     const replyPost = {postUid: null, postContent: '', replyUid: post.uid};
     this.handleDrawerVisible(true, replyPost, 'reply', 'Odpowiedz na komentarz');
   };
-
   editPost = (post) => {
     console.log(post);
     this.handleDrawerVisible(true, post, 'edit', 'Edytuj komentarz');
   };
-
   handleMouseHover = (postId) => {
     this.setState({
       hoverCommentId: postId,
     })
   };
-
   onPaginationChange = (page, pageSize) => {
     this.setState({current: page});
+  };
+
+  goToLast = () => {
+    const {pageSize, mapPosts} = this.state;
+    console.log(mapPosts.size, pageSize);
+    const current = Math.ceil(mapPosts.size/pageSize);
+    this.setState({current: current});
   };
 
   render() {
@@ -166,10 +171,9 @@ class PostComponent extends Component {
           dataSource={Array.from(this.state.mapPosts.values())}
           pagination={{
             position: 'both',
-            pageSize: 3,
             size: 'small',
-            // pageSize: this.state.pageSize,
-            // total: this.state.mapPosts.size,
+            pageSize: this.state.pageSize,
+            total: this.state.mapPosts.size,
             current: this.state.current,
             onChange: this.onPaginationChange
           }}
