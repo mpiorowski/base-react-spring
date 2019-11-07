@@ -61,12 +61,7 @@ class PostDrawer extends Component {
         <Form onSubmit={this.handleSubmit}>
           <div>
             <div className="forum-floating-drawer-btn"
-                 onClick={
-                   () => this.props.handleDrawerVisible(false, {})
-                   // drawerVisible
-                   //   ? () => this.props.handleDrawerVisible(false, {})
-                   //   // : () => this.props.handleDrawerVisible(true, {}, 'new')
-                 }
+                 onClick={() => this.props.handleDrawerVisible(false, {})}
             >
               {drawerVisible ? <Icon type="minus"/> : <Icon type="plus"/>}
             </div>

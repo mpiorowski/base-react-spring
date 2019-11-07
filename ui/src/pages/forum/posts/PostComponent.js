@@ -1,12 +1,12 @@
 import React, {Component} from "react";
-import {Icon, List} from "antd";
+import {Button, Dropdown, Icon, List, Menu} from "antd";
 import "./PostComponent.less";
 import "react-quill/dist/quill.snow.css";
 import {serviceGetPosts} from "../../../services/forum/ForumService";
-import {WrappedPostDrawer} from "./PostDrawer";
 import PostContent from "./PostContent";
 import {submitPost} from "./PostSubmit";
 import * as moment from "moment";
+import DrawerComponent from "../drawer/DrawerComponent";
 
 class PostComponent extends Component {
 
@@ -17,7 +17,11 @@ class PostComponent extends Component {
       loading: true,
 
       topicUid: props.match.params.topicUid,
-      drawerRecord: {},
+      drawerData: {
+        visibility: false,
+        record: {},
+        type: ''
+      },
 
       topic: {},
 
@@ -30,8 +34,8 @@ class PostComponent extends Component {
 
       hoverCommentId: null,
 
-      current: 1,
-      pageSize: 3,
+      currentPage: 1,
+      pageSize: 10,
     }
   }
 
@@ -120,21 +124,21 @@ class PostComponent extends Component {
       openReplyArray: filtered
     })
   };
-  handleDrawerVisible = (flag, record, type, title) => {
+  handleDrawerVisible = (flag, record, type) => {
     this.setState({
-      drawerVisible: !!flag,
-      drawerRecord: record || {},
-      drawerType: type,
-      drawerTitle: title,
+      drawerData: {
+        visibility: !!flag,
+        record: record || {},
+        type: type,
+      }
     });
   };
   replyPost = (post) => {
     const replyPost = {postUid: null, postContent: '', replyUid: post.uid};
-    this.handleDrawerVisible(true, replyPost, 'reply', 'Odpowiedz na komentarz');
+    this.handleDrawerVisible(true, replyPost, 'replyPost');
   };
   editPost = (post) => {
-    console.log(post);
-    this.handleDrawerVisible(true, post, 'edit', 'Edytuj komentarz');
+    this.handleDrawerVisible(true, post, 'editPost');
   };
   handleMouseHover = (postId) => {
     this.setState({
@@ -142,39 +146,55 @@ class PostComponent extends Component {
     })
   };
   onPaginationChange = (page, pageSize) => {
-    this.setState({current: page});
+    window.scrollTo(0, 0);
+    this.setState({currentPage: page});
+  };
+  editTopic = (topic) => {
+    this.handleDrawerVisible(true, topic, 'editTopic', 'Edytuj temat');
   };
 
   goToLast = () => {
-    const {pageSize, mapPosts} = this.state;
-    console.log(mapPosts.size, pageSize);
-    const current = Math.ceil(mapPosts.size/pageSize);
+    let {pageSize, mapPosts} = this.state;
+    const current = Math.ceil(mapPosts.size / pageSize);
     this.setState({current: current});
   };
 
   render() {
 
-    const {drawerVisible, drawerRecord} = this.state;
+    const {drawerData, topic, mapPosts, loading} = this.state;
+    const {pageSize, currentPage} = this.state;
+
+    const header = [
+      <Dropdown overlay={() => createDropdownMenu(topic)} placement="bottomRight" trigger={['click']}>
+        <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
+      </Dropdown>,
+      <div className={"post-header"}>
+        {topic.topicTitle}
+        <div className={"post-header-description"}>
+          {topic.topicDescription}
+        </div>
+      </div>
+    ];
+    const createDropdownMenu = (data) => {
+      return (
+        <Menu><Menu.Item onClick={() => this.editTopic(data)} key="1">Edytuj</Menu.Item></Menu>
+      )
+    };
+
 
     return (
       <div>
         <List
-          loading={this.state.loading}
-          header={
-            <div className={"post-header"}>
-              {this.state.topic.topicTitle}
-              <div className={"post-header-description"}>
-                {this.state.topic.topicDescription}
-              </div>
-            </div>
-          }
-          dataSource={Array.from(this.state.mapPosts.values())}
+          locale={{emptyText: 'Brak wpisów'}}
+          loading={loading}
+          header={header}
+          dataSource={Array.from(mapPosts.values())}
           pagination={{
             position: 'both',
             size: 'small',
-            pageSize: this.state.pageSize,
-            total: this.state.mapPosts.size,
-            current: this.state.current,
+            pageSize: pageSize,
+            total: mapPosts.size,
+            current: currentPage,
             onChange: this.onPaginationChange
           }}
           renderItem={post => (
@@ -193,17 +213,13 @@ class PostComponent extends Component {
         >
         </List>
         <div>
-          <div className="forum-floating-drawer-btn-initial" hidden={drawerVisible}
-               onClick={() => this.handleDrawerVisible(true, {}, 'new', 'Dodaj nowy komentarz')}
+          <div className="forum-floating-drawer-btn-initial" hidden={drawerData.visibility}
+               onClick={() => this.handleDrawerVisible(true, {}, 'newPost')}
           >
             <Icon type="plus"/>
           </div>
-          <WrappedPostDrawer
-            drawerTitle={this.state.drawerTitle}
-            drawerPlaceholder={'Komentarz (maks 300 znaków)'}
-            drawerVisible={drawerVisible}
-            drawerRecord={drawerRecord}
-            drawerType={'post'}
+          <DrawerComponent
+            drawerData={drawerData}
 
             handleDrawerVisible={this.handleDrawerVisible}
             submitDrawer={this.submitDrawer}

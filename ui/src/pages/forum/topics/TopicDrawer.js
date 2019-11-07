@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import {Button, Drawer, Form, Icon, Input, Upload} from "antd";
 import {ACCESS_TOKEN} from "../../../config/AppConfig";
-import "./ForumDrawer.less";
+import "./TopicDrawer.less";
 import {validationErrorMsg} from "../../../config/ErrorConfig";
 
 const FormItem = Form.Item;
 
-class ForumDrawer extends Component {
+class TopicDrawer extends Component {
 
   constructor(props) {
     super(props);
@@ -55,8 +55,6 @@ class ForumDrawer extends Component {
 
     const {drawerTitle, drawerRecord, drawerType, drawerVisible} = this.props;
     const {getFieldDecorator} = this.props.form;
-
-    console.log(drawerRecord);
 
     let drawerForm = () => {
       return (
@@ -180,4 +178,4 @@ class ForumDrawer extends Component {
   }
 }
 
-export const WrappedForumDrawer = Form.create()(ForumDrawer);
+export const WrappedTopicDrawer = Form.create()(TopicDrawer);

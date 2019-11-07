@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import {Table} from "antd";
+import {Icon, Table} from "antd";
 import "./TopicsComponent.less";
 import {serviceAddTopic, serviceGetTopics} from "../../../services/forum/ForumService";
 import moment from "moment";
-import {WrappedForumDrawer} from "../common/ForumDrawer";
 import {NavLink} from "react-router-dom";
+import {WrappedTopicDrawer} from "./TopicDrawer";
 
 
 class TopicsComponent extends Component {
@@ -117,8 +117,12 @@ class TopicsComponent extends Component {
           className={'topic-table'}
           rowKey={record => record.uid}
         />
-
-        <WrappedForumDrawer
+        <div className="forum-floating-drawer-btn-initial" hidden={drawerVisible}
+             onClick={() => this.handleDrawerVisible(true, {}, 'new', 'Dodaj nowy temat')}
+        >
+          <Icon type="plus"/>
+        </div>
+        <WrappedTopicDrawer
 
           drawerTitle={'Dodaj nowy temat'}
           drawerPlaceholder={'Temat (maks 300 znaków)'}
@@ -127,7 +131,7 @@ class TopicsComponent extends Component {
           drawerType={'topic'}
 
           handleDrawerVisible={this.handleDrawerVisible}
-          handleSubmit={this.submitDrawer}
+          submitDrawer={this.submitDrawer}
         />
       </div>
 
