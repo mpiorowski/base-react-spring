@@ -46,12 +46,27 @@ class PostComponent extends Component {
         console.log('get posts', response);
 
         let mapPosts = new Map();
+        let replies;
 
         response.posts.forEach(post => {
-          mapPosts.set(post.uid, {...post})
+          replies = new Map();
+          post.postReplies.forEach(reply => {
+            replies.set(reply.uid, {...reply})
+          });
+
+          let data = {
+            uid: post.uid,
+            postContent: post.postContent,
+            postAuthor: post.postAuthor,
+            createdAt: post.createdAt,
+            updatedAt: post.updatedAt,
+            postReplies: replies
+          };
+          mapPosts.set(post.uid, data)
         });
 
         console.log('mapPosts', mapPosts);
+        // console.log('replies', replies);
 
         this.setState({
           topic: response.topic,
@@ -64,57 +79,64 @@ class PostComponent extends Component {
 
   submitDrawer = (post) => {
 
-    console.log('submit', post);
+    // return;
 
     const topicUid = this.state.topicUid;
     const mapPosts = this.state.mapPosts;
-    submitPost(post, topicUid, mapPosts).then(response => {
+    submitPost(post, topicUid, mapPosts).then(postUid => {
+
+      console.log(postUid);
+      console.log(post);
 
         let data = {
-          uid: response,
+          uid: postUid,
           postContent: post.postContent,
           postAuthor: this.state.currentUser.userName,
           createdAt: moment.now(),
         };
 
         let newPosts;
-        //reply
-        if (post.replyUid) {
+        //edit reply
+        if (postUid && post.replyUid) {
+          data = {
+            ...data,
+            updatedAt: moment.now(),
+          };
+          newPosts = mapPosts.get(post.replyUid).postReplies.set(postUid, data);
+          // newPosts.postReplies.set(post.uid, data);
+          // mapPosts.set(post.replyUid, data);
+          this.openReply(post.replyUid);
+        }
+        //new reply
+        else if (post.replyUid) {
           newPosts = mapPosts.get(post.replyUid);
           newPosts.postReplies.push(data);
           mapPosts.set(post.replyUid, newPosts);
           this.openReply(post.replyUid);
         }
-        //edit
-        else if (post.uid) {
-          data = {
-            ...data,
-            updatedAt: moment.now(),
-          };
-          mapPosts.set(response, data);
-        }
-        //new
+        //edit post
         else {
           data = {
             ...data,
             postReplies: []
           };
-          mapPosts.set(response, data);
+          mapPosts.set(postUid, data);
           this.goToLast();
         }
 
         this.setState({
-          mapPosts: mapPosts
+          mapPosts: newPosts
         });
         this.handleDrawerVisible(false, {});
 
         // TODO - choose scrolling position
-        const element = document.getElementById(response);
+        const element = document.getElementById(postUid);
         if (element) {
           const elementRect = element.getBoundingClientRect();
           const absoluteElementTop = elementRect.top + window.pageYOffset;
-          // const middle = absoluteElementTop - (window.innerHeight / 2);
-          window.scrollTo(0, absoluteElementTop);
+          // const middle = absoluteElementTop - (window.innerHeight / 4);
+          const middle = absoluteElementTop - 50;
+          window.scrollTo(0, middle);
           // window.scrollTop(0);
         }
       }
@@ -177,7 +199,9 @@ class PostComponent extends Component {
 
     const header =
       <div>
-        <Dropdown overlay={() => createDropdownMenu(topic)} placement="bottomRight" trigger={['click']}>
+        <Dropdown overlay={
+          <Menu><Menu.Item onClick={() => this.editTopic(topic)} key="1">Edytuj</Menu.Item></Menu>
+        } placement="bottomRight" trigger={['click']}>
           <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
         </Dropdown>
         <div className={"post-header"}>
@@ -188,12 +212,6 @@ class PostComponent extends Component {
         </div>
       </div>
     ;
-    const createDropdownMenu = (data) => {
-      return (
-        <Menu><Menu.Item onClick={() => this.editTopic(data)} key="1">Edytuj</Menu.Item></Menu>
-      )
-    };
-
 
     return (
       <div>

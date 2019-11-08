@@ -52,7 +52,7 @@ class LoginForm extends Component {
         <Form.Item>
           {getFieldDecorator('userNameOrEmail', {
             rules: [{required: true, message: 'Podaj nazwę użytkownika lub email.'}],
-            initialValue: 'user'
+            initialValue: 'admin'
           })(
             <Input prefix={<Icon type={"user"}/>} className={'login-input'}
                    placeholder={"Nazwa użytkownika lub email"} onFocus={this.handleFocus}/>
