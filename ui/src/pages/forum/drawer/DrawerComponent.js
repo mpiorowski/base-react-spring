@@ -19,16 +19,6 @@ class DrawerComponent extends Component {
     console.log(info.fileList);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
-        this.props.submitDrawer(values);
-      }
-    });
-  };
-
   render() {
     const {visibility, record, type} = this.props.drawerData;
 
@@ -49,6 +39,7 @@ class DrawerComponent extends Component {
           <WrappedDrawerForm
             record={record}
             type={type}
+            submitDrawer={this.props.submitDrawer}
             handleDrawerVisible={this.props.handleDrawerVisible}
             onChildrenDrawerClose={this.onChildrenDrawerClose}
           />

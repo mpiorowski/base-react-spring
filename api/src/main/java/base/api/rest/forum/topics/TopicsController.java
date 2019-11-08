@@ -1,7 +1,6 @@
 package base.api.rest.forum.topics;
 
 import base.api.domain.forum.categories.CategoryEntity;
-import base.api.domain.forum.posts.PostEntity;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.logging.LogExecutionTime;
 import base.api.rest.forum.categories.CategoryMapper;
@@ -11,7 +10,7 @@ import base.api.rest.forum.topics.dto.*;
 import base.api.services.forum.CategoryService;
 import base.api.services.forum.PostService;
 import base.api.services.forum.TopicService;
-import base.api.utils.UtilsStringConversions;
+import base.api.utils.UtilsUid;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,10 +147,10 @@ public class TopicsController {
       Optional<CategoryEntity> category = categoryService.findByUid(categoryUid);
       if (category.isPresent()) {
         TopicEntity topic = topicMapper.dtoToEntity2(editTopicRequestDto);
-        topic.setUid(UtilsStringConversions.uidDecode(topicUid));
-        if (topicService.edit(topic)) {
+        topic.setUid(UtilsUid.uidDecode(topicUid));
+//        if (topicService.edit(topic)) {
           return new ResponseEntity<>(HttpStatus.OK);
-        }
+//        }
       }
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } catch (Exception e) {

@@ -5,7 +5,7 @@ import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.categories.CategoryNewestEntity;
 import base.api.domain.generic.ResponseDao;
 import base.api.services.generic.GenericService;
-import base.api.utils.UtilsStringConversions;
+import base.api.utils.UtilsUid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,24 +28,24 @@ public class CategoryService extends GenericService<CategoryEntity> {
 
   @Override
   public Optional<CategoryEntity> findByUid(String huid) {
-    UUID uid = UtilsStringConversions.uidDecode(huid);
+    UUID uid = UtilsUid.uidDecode(huid);
     return dao.findByUid(uid);
   }
 
   @Override
   public String add(CategoryEntity entity) {
     ResponseDao responseDao = dao.add(entity);
-    return UtilsStringConversions.uidEncode(responseDao.getUid());
+    return UtilsUid.uidEncode(responseDao.getUid());
   }
 
   @Override
-  public boolean edit(CategoryEntity entity) {
-    return dao.edit(entity) == 1;
+  public ResponseDao edit(CategoryEntity entity) {
+    return dao.edit(entity);
   }
 
   @Override
   public boolean delete(String uid) {
-    UUID uuid = UtilsStringConversions.uidDecode(uid);
+    UUID uuid = UtilsUid.uidDecode(uid);
     return dao.delete(uuid) == 1;
   }
 

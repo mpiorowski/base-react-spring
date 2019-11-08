@@ -1,9 +1,7 @@
 package base.api.rest.forum.posts;
 
-import base.api.annotations.CurrentUser;
 import base.api.domain.forum.posts.PostEntity;
 import base.api.domain.forum.topics.TopicEntity;
-import base.api.domain.user.UserEntity;
 import base.api.logging.LogExecutionTime;
 import base.api.rest.RestResponse;
 import base.api.rest.forum.posts.dto.PostDataDto;
@@ -12,10 +10,10 @@ import base.api.rest.forum.posts.dto.PostRequestDto;
 import base.api.rest.forum.posts.dto.PostsResponseDto;
 import base.api.rest.forum.topics.TopicMapper;
 import base.api.rest.forum.topics.dto.TopicDataDto;
-import base.api.security.SystemUser;
 import base.api.services.forum.PostService;
 import base.api.services.forum.TopicService;
-import base.api.utils.UtilsStringConversions;
+import base.api.utils.Utils;
+import base.api.utils.UtilsUid;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,7 +155,7 @@ public class PostsController {
    * @return void
    */
   @PutMapping("/{postUid}")
-  public ResponseEntity editPost(
+  public ResponseEntity<RestResponse<String>> editPost(
       @Valid @PathVariable("postUid") String postUid,
       @Valid @PathVariable("topicUid") String topicUid,
       @Valid @RequestBody PostRequestDto postRequestDto) {
@@ -165,13 +163,16 @@ public class PostsController {
     Optional<TopicEntity> topic = topicService.findByUid(topicUid);
     if (topic.isPresent()) {
       PostEntity postEntity = postMapper.requestDtoToEntity(postRequestDto);
-      postEntity.setUid(UtilsStringConversions.uidDecode(postUid));
+      postEntity.setUid(UtilsUid.uidDecode(postUid));
       postEntity.setTopicId(topic.get().getId());
-      if (postService.edit(postEntity)) {
-        return new ResponseEntity(HttpStatus.OK);
+      var responseDao = postService.edit(postEntity);
+      if (Utils.isNotEmpty(responseDao.getUid())) {
+        String responseUid = UtilsUid.uidEncode(responseDao.getUid());
+        RestResponse<String> restResponse = new RestResponse<>(responseUid);
+        return new ResponseEntity<>(restResponse, HttpStatus.OK);
       }
     }
-    return new ResponseEntity(HttpStatus.NOT_FOUND);
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   /**

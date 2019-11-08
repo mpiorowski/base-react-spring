@@ -23,7 +23,7 @@ public interface GenericDao<E> {
 
   ResponseDao add(E entity);
 
-  int edit(E entity);
+  ResponseDao edit(E entity);
 
   int delete(UUID uuid);
 }

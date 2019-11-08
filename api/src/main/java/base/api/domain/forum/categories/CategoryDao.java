@@ -38,9 +38,10 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
     "set category_title = #{categoryTitle},",
     "category_description = #{categoryDescription},",
     "fk_user_id = 1",
-    "where uid = #{uid} and deleted is false"
+    "where uid = #{uid} and deleted is false",
+    "returning id, uid"
   })
-  int edit(CategoryEntity entity);
+  ResponseDao edit(CategoryEntity entity);
 
   @Override
   @Delete({"update " + Table.NAME + " set deleted = true where uid = #{uid}"})

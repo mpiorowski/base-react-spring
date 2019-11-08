@@ -104,10 +104,10 @@ public class CategoriesController {
       @RequestBody CategoryRequestDto categoryRequestDto) {
     categoryRequestDto.setUid(categoryUid);
     CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
-    if (categoryService.edit(categoryEntity)) {
+//    if (categoryService.edit(categoryEntity)) {
       return new ResponseEntity<>(HttpStatus.OK);
-    }
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//    }
+//    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   /**

@@ -1,5 +1,6 @@
 package base.api.services.generic;
 
+import base.api.domain.generic.ResponseDao;
 import base.api.domain.user.UserEntity;
 import base.api.security.SystemUser;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,7 +36,7 @@ public abstract class GenericService<E> {
   public abstract String add(E entity);
 
   @Transactional
-  public abstract boolean edit(E entity);
+  public abstract ResponseDao edit(E entity);
 
   @Transactional
   public abstract boolean delete(String uid);

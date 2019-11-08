@@ -63,6 +63,9 @@ class PostComponent extends Component {
   }
 
   submitDrawer = (post) => {
+
+    console.log('submit', post);
+
     const topicUid = this.state.topicUid;
     const mapPosts = this.state.mapPosts;
     submitPost(post, topicUid, mapPosts).then(response => {
@@ -72,29 +75,37 @@ class PostComponent extends Component {
           postContent: post.postContent,
           postAuthor: this.state.currentUser.userName,
           createdAt: moment.now(),
-          updatedAt: moment.now()
         };
 
         let newPosts;
+        //reply
         if (post.replyUid) {
           newPosts = mapPosts.get(post.replyUid);
           newPosts.postReplies.push(data);
           mapPosts.set(post.replyUid, newPosts);
           this.openReply(post.replyUid);
-        } else {
+        }
+        //edit
+        else if (post.uid) {
+          data = {
+            ...data,
+            updatedAt: moment.now(),
+          };
+          mapPosts.set(response, data);
+        }
+        //new
+        else {
           data = {
             ...data,
             postReplies: []
           };
           mapPosts.set(response, data);
+          this.goToLast();
         }
-
-        console.log('mapPosts', mapPosts);
 
         this.setState({
           mapPosts: mapPosts
         });
-        this.goToLast();
         this.handleDrawerVisible(false, {});
 
         // TODO - choose scrolling position
@@ -164,17 +175,19 @@ class PostComponent extends Component {
     const {drawerData, topic, mapPosts, loading} = this.state;
     const {pageSize, currentPage} = this.state;
 
-    const header = [
-      <Dropdown overlay={() => createDropdownMenu(topic)} placement="bottomRight" trigger={['click']}>
-        <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
-      </Dropdown>,
-      <div className={"post-header"}>
-        {topic.topicTitle}
-        <div className={"post-header-description"}>
-          {topic.topicDescription}
+    const header =
+      <div>
+        <Dropdown overlay={() => createDropdownMenu(topic)} placement="bottomRight" trigger={['click']}>
+          <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
+        </Dropdown>
+        <div className={"post-header"}>
+          {topic.topicTitle}
+          <div className={"post-header-description"}>
+            {topic.topicDescription}
+          </div>
         </div>
       </div>
-    ];
+    ;
     const createDropdownMenu = (data) => {
       return (
         <Menu><Menu.Item onClick={() => this.editTopic(data)} key="1">Edytuj</Menu.Item></Menu>

@@ -5,7 +5,7 @@ import base.api.domain.forum.topics.TopicDao;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.domain.generic.ResponseDao;
 import base.api.services.generic.GenericService;
-import base.api.utils.UtilsStringConversions;
+import base.api.utils.UtilsUid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +31,7 @@ public class TopicService extends GenericService<TopicEntity> {
 
   @Override
   public Optional<TopicEntity> findByUid(String uid) {
-    UUID uuid = UtilsStringConversions.uidDecode(uid);
+    UUID uuid = UtilsUid.uidDecode(uid);
     return dao.findByUid(uuid);
   }
 
@@ -42,7 +42,7 @@ public class TopicService extends GenericService<TopicEntity> {
   @Override
   public String add(TopicEntity entity) {
     ResponseDao responseDao = dao.add(entity);
-    return UtilsStringConversions.uidEncode(responseDao.getUid());
+    return UtilsUid.uidEncode(responseDao.getUid());
   }
 
   @Transactional
@@ -52,23 +52,23 @@ public class TopicService extends GenericService<TopicEntity> {
     topicEntity.setTopicAuthor(currentUserEntity());
     ResponseDao responseDao = dao.add(topicEntity);
 
-    return UtilsStringConversions.uidEncode(responseDao.getUid());
+    return UtilsUid.uidEncode(responseDao.getUid());
   }
 
   @Override
-  public boolean edit(TopicEntity entity) {
-    return dao.edit(entity) == 1;
+  public ResponseDao edit(TopicEntity entity) {
+    return dao.edit(entity);
   }
 
   @Override
   public boolean delete(String uid) {
-    UUID uuid = UtilsStringConversions.uidDecode(uid);
+    UUID uuid = UtilsUid.uidDecode(uid);
     return dao.delete(uuid) == 1;
   }
 
   public boolean changeStatus(String uid) {
 
-    UUID uuid = UtilsStringConversions.uidDecode(uid);
+    UUID uuid = UtilsUid.uidDecode(uid);
     return dao.changeStatus(uuid) == 1;
   }
 }

@@ -16,6 +16,16 @@ class DrawerForm extends Component {
     });
   };
 
+  submitDrawer = e => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+        this.props.submitDrawer(values);
+      }
+    });
+  };
+
   render() {
     const {record, type} = this.props;
     const {getFieldDecorator} = this.props.form;
@@ -28,7 +38,7 @@ class DrawerForm extends Component {
     }
 
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form onSubmit={this.submitDrawer}>
         <div>
 
           <FormItem style={{display: "none"}}>
@@ -119,7 +129,9 @@ class DrawerForm extends Component {
           {/*    <Icon type="plus"/> Dodaj załączniki*/}
           {/*  </Button> : ''}*/}
           <Button htmlType={"submit"} type="primary" style={{marginRight: 8}}>
-            <Icon type="plus"/> Dodaj
+            {type === 'editTopic' || type === 'editPost'
+              ? <span><Icon type="edit"/> Edytuj</span>
+              : <span><Icon type="plus"/> Dodaj</span>}
           </Button>
         </div>
       </Form>

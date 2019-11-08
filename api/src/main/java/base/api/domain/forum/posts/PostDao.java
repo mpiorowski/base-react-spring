@@ -57,9 +57,13 @@ public interface PostDao extends GenericDao<PostEntity> {
   ResponseDao add(PostEntity entity);
 
   @Override
-  @Update(
-      "update forum_posts set post_content = #{postContent} where uid = #{uid} and fk_user_id = #{postAuthor.id} and is_deleted is false")
-  int edit(PostEntity entity);
+  @Select({
+    "update forum_posts set",
+    "post_content = #{postContent}",
+    "where uid = #{uid} and fk_user_id = #{postAuthor.id} and is_deleted is false",
+    "returning id, uid"
+  })
+  ResponseDao edit(PostEntity entity);
 
   @Override
   @Delete("update forum_posts set is_deleted = true where uid = #{uid}")

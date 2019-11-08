@@ -5,7 +5,7 @@ import base.api.domain.forum.posts.PostDao;
 import base.api.domain.forum.posts.PostEntity;
 import base.api.domain.generic.ResponseDao;
 import base.api.services.generic.GenericService;
-import base.api.utils.UtilsStringConversions;
+import base.api.utils.UtilsUid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class PostService extends GenericService<PostEntity> {
   @Override
   public Optional<PostEntity> findByUid(String uid) {
 
-    return dao.findByUid(UtilsStringConversions.uidDecode(uid));
+    return dao.findByUid(UtilsUid.uidDecode(uid));
   }
 
   public List<PostEntity> findPostsByTopicId(long id) {
@@ -49,23 +49,24 @@ public class PostService extends GenericService<PostEntity> {
   public String add(PostEntity entity) {
     entity.setPostAuthor(currentUserEntity());
     ResponseDao responseDao = dao.add(entity);
-    return UtilsStringConversions.uidEncode(responseDao.getUid());
+    return UtilsUid.uidEncode(responseDao.getUid());
   }
 
   @Override
-  public boolean edit(PostEntity entity) {
+  public ResponseDao edit(PostEntity entity) {
     entity.setPostAuthor(currentUserEntity());
-    return dao.edit(entity) == 1;
+    ResponseDao responseDao = dao.edit(entity);
+    return responseDao;
   }
 
   @Override
   public boolean delete(String uid) {
-    UUID uuid = UtilsStringConversions.uidDecode(uid);
+    UUID uuid = UtilsUid.uidDecode(uid);
     return dao.delete(uuid) == 1;
   }
 
   public boolean changeStatus(String uid) {
-    UUID uuid = UtilsStringConversions.uidDecode(uid);
+    UUID uuid = UtilsUid.uidDecode(uid);
     return dao.changeStatus(uuid) == 1;
   }
 }

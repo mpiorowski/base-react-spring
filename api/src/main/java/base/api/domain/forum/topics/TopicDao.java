@@ -23,16 +23,17 @@ public interface TopicDao extends GenericDao<TopicEntity> {
 
   @Results({
     @Result(
-      property = "topicAuthor",
-      column = "fk_user_id",
-      javaType = UserEntity.class,
-      one = @One(select = "selectUser"))
+        property = "topicAuthor",
+        column = "fk_user_id",
+        javaType = UserEntity.class,
+        one = @One(select = "selectUser"))
   })
   default Optional<TopicEntity> findByUid(UUID uid) {
     return findByUid(TopicDao.Table.NAME, uid);
   }
 
-  @Select("select * from forum_topics where fk_category_id = #{id} and is_deleted is false order by created_at desc")
+  @Select(
+      "select * from forum_topics where fk_category_id = #{id} and is_deleted is false order by created_at desc")
   List<TopicEntity> findTopicsByCategoryId(Integer id);
 
   @Override
@@ -44,9 +45,13 @@ public interface TopicDao extends GenericDao<TopicEntity> {
   ResponseDao add(TopicEntity entity);
 
   @Override
-  @Update(
-      "update forum_topics set topic_title = #{topicTitle} where uid = #{uid} and is_deleted is false")
-  int edit(TopicEntity entity);
+  @Update({
+    "update forum_topics",
+    "set topic_title = #{topicTitle}",
+    "where uid = #{uid} and is_deleted is false",
+    "returning id, uid"
+  })
+  ResponseDao edit(TopicEntity entity);
 
   @Override
   @Delete("update forum_topics set is_deleted = true where uid = #{uid}")
