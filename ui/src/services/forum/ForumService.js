@@ -7,48 +7,47 @@ export function serviceGetCategories() {
   })
 }
 
-export function serviceGetTopics(categoryId) {
+export function serviceGetTopics(categoryUid) {
   return apiRequest({
-    url: '/api/forum/categories/' + categoryId + '/topics',
+    url: '/api/forum/categories/' + categoryUid + '/topics',
     method: 'GET'
   })
 }
 
-export function serviceAddTopic(categoryId, data) {
+export function serviceAddTopic(categoryUid, data) {
   return apiRequest({
-    url: '/api/forum/categories/' + categoryId + '/topics',
+    url: '/api/forum/categories/' + categoryUid + '/topics',
     method: 'POST',
     body: JSON.stringify(data)
   })
 }
 
-
-export function serviceEditTopic(categoryId, topicId, data) {
+export function serviceEditTopic(categoryUid, topicUid, data) {
   return apiRequest({
-    url: '/api/forum/categories/' + categoryId + '/topics/' + topicId,
+    url: '/api/forum/categories/' + categoryUid + 'topics/' + topicUid,
     method: 'PUT',
     body: JSON.stringify(data)
   })
 }
 
-export function serviceGetPosts(topicId) {
+export function serviceGetPosts(topicUid) {
   return apiRequest({
-    url: '/api/forum/topics/' + topicId + '/posts',
+    url: '/api/forum/topics/' + topicUid + '/posts',
     method: 'GET'
   })
 }
 
-export function serviceAddPost(topicId, data) {
+export function serviceAddPost(topicUid, data) {
   return apiRequest({
-    url: '/api/forum/topics/' + topicId + '/posts',
+    url: '/api/forum/topics/' + topicUid + '/posts',
     method: 'POST',
     body: JSON.stringify(data)
   })
 }
 
-export function serviceEditPost(topicId, postId, data) {
+export function serviceEditPost(topicUid, postUid, data) {
   return apiRequest({
-    url: '/api/forum/topics/' + topicId + '/posts/' + postId,
+    url: '/api/forum/topics/' + topicUid + '/posts/' + postUid,
     method: 'PUT',
     body: JSON.stringify(data)
   })

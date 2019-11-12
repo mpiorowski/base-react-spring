@@ -1,19 +1,33 @@
-import {serviceAddPost, serviceEditPost} from "../../../services/forum/ForumService";
+import {serviceAddPost, serviceEditPost, serviceEditTopic} from "../../../services/forum/ForumService";
 
-export const submitPost = (post, topicUid) => {
+export const submitForumDrawer = (formData, categoryUid, topicUid) => {
 
   return new Promise((resolve, reject) => {
 
-      console.log('submit post', post);
+      console.log('formData', formData);
 
-      const postUid = post.postUid || null;
-      const serviceData = {
-        postContent: post.postContent,
-        replyUid: post.replyUid || null
+      const topicData = {
+        topicTitle: formData.topicTitle,
+        topicDescription: formData.content || null
       };
-      if (postUid === null) {
 
-        serviceAddPost(topicUid, serviceData).then(response => {
+      const postUid = formData.postUid || null;
+      const postData = {
+        postContent: formData.content,
+        replyUid: formData.replyUid || null
+      };
+
+      if (formData.topicTitle) {
+        serviceEditTopic(categoryUid, topicUid, topicData).then(response => {
+          if (response) {
+            resolve(response.data);
+          }
+        }).catch(error => {
+          console.log(error);
+          reject(false);
+        });
+      } else if (postUid === null) {
+        serviceAddPost(topicUid, postData).then(response => {
           if (response) {
             resolve(response.data);
           }
@@ -22,7 +36,7 @@ export const submitPost = (post, topicUid) => {
           reject(false);
         });
       } else {
-        serviceEditPost(topicUid, postUid, serviceData).then(response => {
+        serviceEditPost(topicUid, postUid, postData).then(response => {
           if (response) {
             resolve(response.data);
           }

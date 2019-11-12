@@ -40,10 +40,6 @@ class DrawerForm extends Component {
     return (
       <Form onSubmit={this.submitDrawer}>
         <div>
-
-          <FormItem style={{display: "none"}}>
-            {getFieldDecorator('topicUid', {initialValue: record.topicUid || null})(<Input/>)}
-          </FormItem>
           <FormItem style={{display: "none"}}>
             {getFieldDecorator('postUid', {initialValue: record.uid || null})(<Input/>)}
           </FormItem>
@@ -53,7 +49,7 @@ class DrawerForm extends Component {
 
           {drawer === 'topic' ?
             <FormItem>
-              {getFieldDecorator('title', {
+              {getFieldDecorator('topicTitle', {
                   rules: [{
                     required: true,
                     message: validationErrorMsg.empty,
@@ -67,7 +63,7 @@ class DrawerForm extends Component {
           }
 
           <FormItem>
-            {getFieldDecorator('postContent', {
+            {getFieldDecorator('content', {
                 initialValue: record.postContent || record.topicDescription || '',
                 rules: [
                   {

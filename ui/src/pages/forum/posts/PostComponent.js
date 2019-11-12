@@ -4,9 +4,10 @@ import "./PostComponent.less";
 import "react-quill/dist/quill.snow.css";
 import {serviceGetPosts} from "../../../services/forum/ForumService";
 import PostContent from "./PostContent";
-import {submitPost} from "./PostSubmit";
+import {submitForumDrawer} from "./PostSubmit";
 import * as moment from "moment";
 import DrawerComponent from "../drawer/DrawerComponent";
+import {scrollToElementId} from "../../../utils/UtilsApp";
 
 class PostComponent extends Component {
 
@@ -16,6 +17,7 @@ class PostComponent extends Component {
       currentUser: props.currentUser,
       loading: true,
 
+      categoryUid: props.match.params.categoryUid,
       topicUid: props.match.params.topicUid,
       drawerData: {
         visibility: false,
@@ -78,37 +80,40 @@ class PostComponent extends Component {
   }
 
   //TODO - optimize
-  submitDrawer = (post) => {
+  submitDrawer = (formData) => {
 
+    const categoryUid = this.state.categoryUid;
     const topicUid = this.state.topicUid;
     const mapPosts = this.state.mapPosts;
-    const postUid = post.postUid;
-    submitPost(post, topicUid, mapPosts).then(response => {
+    const postUid = formData.postUid;
+    const replyUid = formData.replyUid;
+
+    submitForumDrawer(formData, categoryUid, topicUid).then(response => {
 
         let data = {
           uid: response,
-          postContent: post.postContent,
+          postContent: formData.content,
           postAuthor: this.state.currentUser.userName,
         };
         //edit reply
-        if (postUid && post.replyUid) {
+        if (postUid && data.replyUid) {
           data = {
             ...data,
-            createdAt: mapPosts.get(post.replyUid).postReplies.get(response).createdAt,
+            createdAt: mapPosts.get(data.replyUid).postReplies.get(response).createdAt,
             updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
           };
-          mapPosts.get(post.replyUid).postReplies.set(response, data);
-          this.openReply(post.replyUid);
+          mapPosts.get(replyUid).postReplies.set(response, data);
+          this.openReply(replyUid);
         }
         //new reply
-        else if (post.replyUid) {
+        else if (replyUid) {
           data = {
             ...data,
             createdAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
             updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
           };
-          mapPosts.get(post.replyUid).postReplies.set(response, data);
-          this.openReply(post.replyUid);
+          mapPosts.get(replyUid).postReplies.set(response, data);
+          this.openReply(replyUid);
         }
         //edit post
         else if (postUid) {
@@ -119,7 +124,9 @@ class PostComponent extends Component {
             postReplies: mapPosts.get(postUid).postReplies,
           };
           mapPosts.set(response, data);
-        } else {
+        }
+        //new post
+        else {
           data = {
             ...data,
             createdAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
@@ -134,17 +141,7 @@ class PostComponent extends Component {
           mapPosts: mapPosts
         });
         this.handleDrawerVisible(false, {});
-
-        // TODO - choose scrolling position
-        const element = document.getElementById(response);
-        if (element) {
-          const elementRect = element.getBoundingClientRect();
-          const absoluteElementTop = elementRect.top + window.pageYOffset;
-          const middle = absoluteElementTop - (window.innerHeight / 4);
-          // const middle = absoluteElementTop - 50;
-          window.scrollTo(0, middle);
-          // window.scrollTop(0);
-        }
+        scrollToElementId(response);
       }
     );
   };
@@ -179,6 +176,10 @@ class PostComponent extends Component {
   editPost = (post) => {
     this.handleDrawerVisible(true, post, 'editPost');
   };
+  editTopic = (topic) => {
+    this.handleDrawerVisible(true, topic, 'editTopic');
+  };
+
   handleMouseHover = (postId) => {
     this.setState({
       hoverCommentId: postId,
@@ -187,9 +188,6 @@ class PostComponent extends Component {
   onPaginationChange = (page, pageSize) => {
     window.scrollTo(0, 0);
     this.setState({currentPage: page});
-  };
-  editTopic = (topic) => {
-    this.handleDrawerVisible(true, topic, 'editTopic', 'Edytuj temat');
   };
 
   goToLast = () => {

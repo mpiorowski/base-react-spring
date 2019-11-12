@@ -10,8 +10,6 @@ class PostContent extends Component {
 
     const {openReplyArray, hoverCommentId, currentUser, post} = this.props;
 
-    // console.log('content post', post);
-
     let postCreated = moment(post.createdAt);
     let postUpdated = moment(post.updatedAt);
     let actions = [
