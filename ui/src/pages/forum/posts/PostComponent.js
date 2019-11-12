@@ -65,7 +65,7 @@ class PostComponent extends Component {
           mapPosts.set(post.uid, data)
         });
 
-        console.log('mapPosts', mapPosts);
+        // console.log('mapPosts', mapPosts);
         // console.log('replies', replies);
 
         this.setState({
@@ -77,65 +77,71 @@ class PostComponent extends Component {
     );
   }
 
+  //TODO - optimize
   submitDrawer = (post) => {
-
-    // return;
 
     const topicUid = this.state.topicUid;
     const mapPosts = this.state.mapPosts;
-    submitPost(post, topicUid, mapPosts).then(postUid => {
-
-      console.log(postUid);
-      console.log(post);
+    const postUid = post.postUid;
+    submitPost(post, topicUid, mapPosts).then(response => {
 
         let data = {
-          uid: postUid,
+          uid: response,
           postContent: post.postContent,
           postAuthor: this.state.currentUser.userName,
-          createdAt: moment.now(),
         };
-
-        let newPosts;
         //edit reply
         if (postUid && post.replyUid) {
           data = {
             ...data,
-            updatedAt: moment.now(),
+            createdAt: mapPosts.get(post.replyUid).postReplies.get(response).createdAt,
+            updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
           };
-          newPosts = mapPosts.get(post.replyUid).postReplies.set(postUid, data);
-          // newPosts.postReplies.set(post.uid, data);
-          // mapPosts.set(post.replyUid, data);
+          mapPosts.get(post.replyUid).postReplies.set(response, data);
           this.openReply(post.replyUid);
         }
         //new reply
         else if (post.replyUid) {
-          newPosts = mapPosts.get(post.replyUid);
-          newPosts.postReplies.push(data);
-          mapPosts.set(post.replyUid, newPosts);
+          data = {
+            ...data,
+            createdAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+            updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+          };
+          mapPosts.get(post.replyUid).postReplies.set(response, data);
           this.openReply(post.replyUid);
         }
         //edit post
-        else {
+        else if (postUid) {
           data = {
             ...data,
-            postReplies: []
+            createdAt: mapPosts.get(postUid).createdAt,
+            updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+            postReplies: mapPosts.get(postUid).postReplies,
           };
-          mapPosts.set(postUid, data);
+          mapPosts.set(response, data);
+        } else {
+          data = {
+            ...data,
+            createdAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+            updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+            postReplies: new Map()
+          };
+          mapPosts.set(response, data);
           this.goToLast();
         }
 
         this.setState({
-          mapPosts: newPosts
+          mapPosts: mapPosts
         });
         this.handleDrawerVisible(false, {});
 
         // TODO - choose scrolling position
-        const element = document.getElementById(postUid);
+        const element = document.getElementById(response);
         if (element) {
           const elementRect = element.getBoundingClientRect();
           const absoluteElementTop = elementRect.top + window.pageYOffset;
-          // const middle = absoluteElementTop - (window.innerHeight / 4);
-          const middle = absoluteElementTop - 50;
+          const middle = absoluteElementTop - (window.innerHeight / 4);
+          // const middle = absoluteElementTop - 50;
           window.scrollTo(0, middle);
           // window.scrollTop(0);
         }
@@ -188,8 +194,8 @@ class PostComponent extends Component {
 
   goToLast = () => {
     let {pageSize, mapPosts} = this.state;
-    const current = Math.ceil(mapPosts.size / pageSize);
-    this.setState({current: current});
+    const currentPage = Math.ceil(mapPosts.size / pageSize);
+    this.setState({currentPage: currentPage});
   };
 
   render() {

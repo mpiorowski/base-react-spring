@@ -20,7 +20,7 @@ datasources:
   migration:
     locations: ["classpath:/db/migration", "classpath:/db/mock"]
     cleanOnValidationError: true
-    cleanOnStart: false
+    cleanOnStart: true
 
 spring:
   profiles:
