@@ -62,28 +62,45 @@ class DrawerForm extends Component {
             </FormItem> : ''
           }
 
-          <FormItem>
-            {getFieldDecorator('content', {
-                initialValue: record.postContent || record.topicDescription || '',
-                rules: [
-                  {
-                    required: true,
-                    message: validationErrorMsg.empty,
-                  },
-                  {
-                    max: 10000,
-                    message: validationErrorMsg.maxSize10000
-                  }
-                ]
-              }
-            )(
-              <Input.TextArea rows={8} maxLength={1000}
-                              placeholder={drawer === 'topic' ? "Opis (opcjonalnie)" : "Komentarz"}
-              />,
-            )}
-          </FormItem>
+          {drawer === 'topic'
 
-
+            ? <FormItem>
+              {getFieldDecorator('content', {
+                  initialValue: record.postContent || record.topicDescription || '',
+                  rules: [
+                    {
+                      max: 10000,
+                      message: validationErrorMsg.maxSize10000
+                    }
+                  ]
+                }
+              )(
+                <Input.TextArea rows={8} maxLength={1000}
+                                placeholder={"Opis (opcjonalnie)"}
+                />,
+              )}
+            </FormItem>
+            : <FormItem>
+              {getFieldDecorator('content', {
+                  initialValue: record.postContent || record.topicDescription || '',
+                  rules: [
+                    {
+                      required: true,
+                      message: validationErrorMsg.empty,
+                    },
+                    {
+                      max: 10000,
+                      message: validationErrorMsg.maxSize10000
+                    }
+                  ]
+                }
+              )(
+                <Input.TextArea rows={8} maxLength={1000}
+                                placeholder={"Komentarz"}
+                />,
+              )}
+            </FormItem>
+          }
           <br/>
 
           {/* TODO - attachments*/}

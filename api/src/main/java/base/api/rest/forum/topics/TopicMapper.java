@@ -7,6 +7,7 @@ import base.api.rest.forum.topics.dto.NewTopicRequestDto;
 import base.api.rest.forum.topics.dto.TopicDataDto;
 import base.api.rest.forum.topics.dto.TopicResponseDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 
 @Mapper(config = MappersConfig.class)
@@ -19,5 +20,5 @@ public interface TopicMapper {
 
   TopicEntity newDtoToEntity(NewTopicRequestDto dto);
 
-  TopicEntity dtoToEntity2(EditTopicRequestDto dto);
+  TopicEntity editDtoToEntity(EditTopicRequestDto dto);
 }

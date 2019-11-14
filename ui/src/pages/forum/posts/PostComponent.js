@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, Dropdown, Icon, List, Menu} from "antd";
+import {Button, Dropdown, Icon, List, Menu, Tooltip} from "antd";
 import "./PostComponent.less";
 import "react-quill/dist/quill.snow.css";
 import {serviceGetPosts} from "../../../services/forum/ForumService";
@@ -25,7 +25,13 @@ class PostComponent extends Component {
         type: ''
       },
 
-      topic: {},
+      topic: {
+        topicTitle: '',
+        topicDescription: '',
+        createdAt: '',
+        updatedAt: '',
+        topicAuthor: {}
+      },
 
       mapPosts: new Map(),
       response: {
@@ -90,56 +96,70 @@ class PostComponent extends Component {
 
     submitForumDrawer(formData, categoryUid, topicUid).then(response => {
 
-        let data = {
-          uid: response,
-          postContent: formData.content,
-          postAuthor: this.state.currentUser.userName,
-        };
-        //edit reply
-        if (postUid && data.replyUid) {
-          data = {
-            ...data,
-            createdAt: mapPosts.get(data.replyUid).postReplies.get(response).createdAt,
-            updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+        //edit topic
+        if (formData.topicTitle) {
+          let topic = {
+            topicTitle: formData.topicTitle,
+            topicDescription: formData.content,
           };
-          mapPosts.get(replyUid).postReplies.set(response, data);
-          this.openReply(replyUid);
-        }
-        //new reply
-        else if (replyUid) {
-          data = {
-            ...data,
-            createdAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
-            updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+          this.setState({
+            topic: topic
+          });
+        } else {
+
+          let data = {
+            uid: response,
+            postContent: formData.content,
+            postAuthor: this.state.currentUser.userName,
           };
-          mapPosts.get(replyUid).postReplies.set(response, data);
-          this.openReply(replyUid);
-        }
-        //edit post
-        else if (postUid) {
-          data = {
-            ...data,
-            createdAt: mapPosts.get(postUid).createdAt,
-            updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
-            postReplies: mapPosts.get(postUid).postReplies,
-          };
-          mapPosts.set(response, data);
-        }
-        //new post
-        else {
-          data = {
-            ...data,
-            createdAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
-            updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
-            postReplies: new Map()
-          };
-          mapPosts.set(response, data);
-          this.goToLast();
+
+          //edit reply
+          if (postUid && replyUid) {
+            data = {
+              ...data,
+              createdAt: mapPosts.get(replyUid).postReplies.get(response).createdAt,
+              updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+            };
+            mapPosts.get(replyUid).postReplies.set(response, data);
+            this.openReply(replyUid);
+          }
+          //new reply
+          else if (replyUid) {
+            data = {
+              ...data,
+              createdAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+              updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+            };
+            mapPosts.get(replyUid).postReplies.set(response, data);
+            this.openReply(replyUid);
+          }
+          //edit post
+          else if (postUid) {
+            data = {
+              ...data,
+              createdAt: mapPosts.get(postUid).createdAt,
+              updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+              postReplies: mapPosts.get(postUid).postReplies,
+            };
+            mapPosts.set(response, data);
+          }
+          //new post
+          else {
+            data = {
+              ...data,
+              createdAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+              updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
+              postReplies: new Map()
+            };
+            mapPosts.set(response, data);
+            this.goToLast();
+          }
+
+          this.setState({
+            mapPosts: mapPosts
+          });
         }
 
-        this.setState({
-          mapPosts: mapPosts
-        });
         this.handleDrawerVisible(false, {});
         scrollToElementId(response);
       }
@@ -201,6 +221,17 @@ class PostComponent extends Component {
     const {drawerData, topic, mapPosts, loading} = this.state;
     const {pageSize, currentPage} = this.state;
 
+    let topicCreated = moment(topic.createdAt);
+    let topicUpdated = moment(topic.updatedAt);
+    const topicDatetime =
+      <div>
+        Autor: {topic.topicAuthor.userName} |
+        Stworzono: {topicCreated.format('YYYY-MM-DD HH:mm:ss')}
+        {topicUpdated.isSame(topicCreated) ? '' :
+          <span> | <span
+            className={'topic-updated'}>Edytowano: {topicUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
+        }
+      </div>;
     const header =
       <div>
         <Dropdown overlay={
@@ -208,6 +239,7 @@ class PostComponent extends Component {
         } placement="bottomRight" trigger={['click']}>
           <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
         </Dropdown>
+        <div className={"topic-datetime"}>{topicDatetime}</div>
         <div className={"post-header"}>
           {topic.topicTitle}
           <div className={"post-header-description"}>

@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface GenericDao<E> {
 
-  @Select("select * from sys_users where deleted is false and id = #{id}")
+  @Select("select * from sys_users where is_deleted is false and id = #{id}")
   UserEntity selectUser(Long id);
 
   @SelectProvider(type = SqLBuilder.class, method = "selectAll")
@@ -20,6 +20,8 @@ public interface GenericDao<E> {
 
   @SelectProvider(type = SqLBuilder.class, method = "selectByUid")
   Optional<E> findByUid(String table, @Param("uid") UUID uid);
+
+  Optional<E> findByUid1(@Param("uid") UUID uid);
 
   ResponseDao add(E entity);
 

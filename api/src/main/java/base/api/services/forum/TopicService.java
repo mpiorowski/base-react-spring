@@ -32,7 +32,7 @@ public class TopicService extends GenericService<TopicEntity> {
   @Override
   public Optional<TopicEntity> findByUid(String uid) {
     UUID uuid = UtilsUid.uidDecode(uid);
-    return dao.findByUid(uuid);
+    return dao.findByUid1(uuid);
   }
 
   public List<TopicEntity> findTopicsByCategoryId(Integer id) {
@@ -55,6 +55,7 @@ public class TopicService extends GenericService<TopicEntity> {
     return UtilsUid.uidEncode(responseDao.getUid());
   }
 
+  //TODO - validate user
   @Override
   public ResponseDao edit(TopicEntity entity) {
     return dao.edit(entity);

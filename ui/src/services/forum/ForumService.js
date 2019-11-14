@@ -24,7 +24,7 @@ export function serviceAddTopic(categoryUid, data) {
 
 export function serviceEditTopic(categoryUid, topicUid, data) {
   return apiRequest({
-    url: '/api/forum/categories/' + categoryUid + 'topics/' + topicUid,
+    url: '/api/forum/categories/' + categoryUid + '/topics/' + topicUid,
     method: 'PUT',
     body: JSON.stringify(data)
   })

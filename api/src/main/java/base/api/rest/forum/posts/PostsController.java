@@ -55,18 +55,22 @@ public class PostsController {
     Optional<TopicEntity> topic = topicService.findByUid(topicUid);
 
     if (topic.isPresent()) {
+      logger.info(topic.toString());
       TopicDataDto topicDataDto = topicMapper.entityToDataDto(topic.get());
-      List<PostEntity> postsEnitity = postService.findPostsByTopicId(topic.get().getId());
+
+      logger.info(topicDataDto.toString());
+
+      List<PostEntity> postsEntity = postService.findPostsByTopicId(topic.get().getId());
 
       List<PostDataDto> postDataDtoList = new ArrayList<>();
 
-      postsEnitity.forEach(
+      postsEntity.forEach(
           postEntity -> {
             logger.info(postEntity.toString());
             if (postEntity.getReplyId() == null || postEntity.getReplyId() == 0) {
               PostDataDto postDataDto = postMapper.entityToDataDto(postEntity);
               List<PostReplyDto> replies =
-                  postsEnitity.stream()
+                  postsEntity.stream()
                       .filter(reply -> postEntity.getId().equals(reply.getReplyId()))
                       //                      .filter(reply -> Objects.nonNull(reply))
                       .map(reply -> postMapper.entityToReplyDto(reply))

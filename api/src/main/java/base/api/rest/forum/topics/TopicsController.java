@@ -3,6 +3,7 @@ package base.api.rest.forum.topics;
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.logging.LogExecutionTime;
+import base.api.rest.RestResponse;
 import base.api.rest.forum.categories.CategoryMapper;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import base.api.rest.forum.posts.PostMapper;
@@ -10,6 +11,7 @@ import base.api.rest.forum.topics.dto.*;
 import base.api.services.forum.CategoryService;
 import base.api.services.forum.PostService;
 import base.api.services.forum.TopicService;
+import base.api.utils.Utils;
 import base.api.utils.UtilsUid;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
@@ -139,24 +141,23 @@ public class TopicsController {
    * @return void
    */
   @PutMapping("/{topicUid}")
-  public ResponseEntity editTopic(
+  public ResponseEntity<RestResponse<String>> editTopic(
       @PathVariable("categoryUid") String categoryUid,
       @PathVariable("topicUid") String topicUid,
       @Valid @RequestBody EditTopicRequestDto editTopicRequestDto) {
-    try {
-      Optional<CategoryEntity> category = categoryService.findByUid(categoryUid);
-      if (category.isPresent()) {
-        TopicEntity topic = topicMapper.dtoToEntity2(editTopicRequestDto);
-        topic.setUid(UtilsUid.uidDecode(topicUid));
-//        if (topicService.edit(topic)) {
-          return new ResponseEntity<>(HttpStatus.OK);
-//        }
+
+    Optional<CategoryEntity> category = categoryService.findByUid(categoryUid);
+    if (category.isPresent()) {
+      TopicEntity topic = topicMapper.editDtoToEntity(editTopicRequestDto);
+      topic.setUid(UtilsUid.uidDecode(topicUid));
+      var responseDao = topicService.edit(topic);
+      if (Utils.isNotEmpty(responseDao.getUid())) {
+        String responseUid = UtilsUid.uidEncode(responseDao.getUid());
+        RestResponse<String> restResponse = new RestResponse<>(responseUid);
+        return new ResponseEntity<>(restResponse, HttpStatus.OK);
       }
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    } catch (Exception e) {
-      logger.error("edit topic error: ", e);
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   /**

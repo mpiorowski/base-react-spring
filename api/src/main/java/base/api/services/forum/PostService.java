@@ -52,6 +52,7 @@ public class PostService extends GenericService<PostEntity> {
     return UtilsUid.uidEncode(responseDao.getUid());
   }
 
+  //TODO - validate user
   @Override
   public ResponseDao edit(PostEntity entity) {
     entity.setPostAuthor(currentUserEntity());

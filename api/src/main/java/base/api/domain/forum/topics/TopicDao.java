@@ -6,6 +6,7 @@ import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,6 +22,7 @@ public interface TopicDao extends GenericDao<TopicEntity> {
     return findAll(TopicDao.Table.NAME);
   }
 
+  @Select({"select * from forum_topics where uid = #{uid}"})
   @Results({
     @Result(
         property = "topicAuthor",
@@ -28,9 +30,11 @@ public interface TopicDao extends GenericDao<TopicEntity> {
         javaType = UserEntity.class,
         one = @One(select = "selectUser"))
   })
-  default Optional<TopicEntity> findByUid(UUID uid) {
-    return findByUid(TopicDao.Table.NAME, uid);
-  }
+  Optional<TopicEntity> findByUid1(UUID uid);
+
+//  default Optional<TopicEntity> findByUid(UUID uid) {
+//    return findByUid(TopicDao.Table.NAME, uid);
+//  }
 
   @Select(
       "select * from forum_topics where fk_category_id = #{id} and is_deleted is false order by created_at desc")
@@ -45,11 +49,12 @@ public interface TopicDao extends GenericDao<TopicEntity> {
   ResponseDao add(TopicEntity entity);
 
   @Override
-  @Update({
-    "update forum_topics",
-    "set topic_title = #{topicTitle}",
+  @Select({
+    "update forum_topics set",
+    "topic_title = #{topicTitle},",
+    "topic_description = #{topicDescription}",
     "where uid = #{uid} and is_deleted is false",
-    "returning id, uid"
+    "returning *"
   })
   ResponseDao edit(TopicEntity entity);
 
