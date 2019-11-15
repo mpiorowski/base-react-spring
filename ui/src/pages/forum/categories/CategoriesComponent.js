@@ -17,17 +17,19 @@ class CategoriesComponent extends Component {
       categoryDescription: '',
       categoryTopicsNumber: '',
       categoryPostsNumber: '',
-      categoryNewestPost: '',
-      categoryNewestTopic: '',
-      categoryNewestPostAuthor: '',
-      categoryNewestPostDate: '',
+      categoryLatestTopicUid: '',
+      categoryLatestTopic: '',
+      categoryLatestPostUid: '',
+      categoryLatestPost: '',
+      categoryLatestPostAuthor: '',
+      categoryLatestPostDate: '',
     }],
     loading: true
   };
 
   componentDidMount() {
     serviceGetCategories().then(response => {
-      console.log(response);
+      console.log('category response', response);
       this.setState({
         categories: response,
         loading: false,
@@ -43,16 +45,15 @@ class CategoriesComponent extends Component {
       <div>
         <div className={"cat-header"}>Kategorie</div>
         <List
-          // bordered={true}
           header={""}
           itemLayout="horizontal"
           loading={loading}
-          pagination={{
-            onChange: (page) => {
-              console.log(page);
-            },
-            pageSize: 16,
-          }}
+          // pagination={{
+          //   onChange: (page) => {
+          //     console.log(page);
+          //   },
+          //   pageSize: 16,
+          // }}
           dataSource={categories}
           renderItem={item => (
 
@@ -83,13 +84,17 @@ class CategoriesComponent extends Component {
 
                   {/*TODO - navlink to newest*/}
                   <Col span={4} style={{margin: "auto"}}>
-                    {item.categoryNewestPostDate
-                      ? <span style={{fontSize: 10}}><NavLink to={"/home"}>{moment(item.categoryNewestPostDate).fromNow()}</NavLink> w temacie:</span>
+                    {item.categoryLatestPostDate
+                      ? <span style={{fontSize: 10}}>
+                        <NavLink
+                          to={"/forum/categories/" + item.uid + "/topics/" + item.categoryLatestTopicUid + "/posts?latest=" + item.categoryLatestPostUid}>
+                          {moment(item.categoryLatestPostDate).fromNow()}
+                        </NavLink> w temacie:</span>
                       : "Brak postów"
                     }
                     <div style={{fontSize: 12}}>
                       <div className={"truncate"}>
-                        {htmlToText.fromString(item.categoryNewestTopic, {uppercaseHeadings: false})}
+                        {htmlToText.fromString(item.categoryLatestTopic, {uppercaseHeadings: false})}
                       </div>
                     </div>
                   </Col>

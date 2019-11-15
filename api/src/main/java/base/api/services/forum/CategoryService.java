@@ -2,7 +2,7 @@ package base.api.services.forum;
 
 import base.api.domain.forum.categories.CategoryDao;
 import base.api.domain.forum.categories.CategoryEntity;
-import base.api.domain.forum.categories.CategoryNewestEntity;
+import base.api.domain.forum.categories.CategoryLatestEntity;
 import base.api.domain.generic.ResponseDao;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsUid;
@@ -57,7 +57,7 @@ public class CategoryService extends GenericService<CategoryEntity> {
     return dao.countTopicsById(id);
   }
 
-  public Optional<CategoryNewestEntity> findNewestById(Integer id) {
-    return dao.findNewestById(id);
+  public Optional<CategoryLatestEntity> findLatestById(Integer id) {
+    return dao.findLatestById(id);
   }
 }

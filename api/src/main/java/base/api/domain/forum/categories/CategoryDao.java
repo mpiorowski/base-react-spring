@@ -49,15 +49,17 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
 
   @Select({
     "select",
-    "ft.topic_title as categoryNewestTopic,",
-    "fp.post_content as categoryNewestPost,",
-    "su.user_name as categoryNewestPostAuthor,",
-    "fp.created_at as categoryNewestPostDate",
+    "ft.uid as categoryLatestTopicUid,",
+    "ft.topic_title as categoryLatestTopic,",
+    "fp.uid as categoryLatestPostUid,",
+    "fp.post_content as categoryLatestPost,",
+    "su.user_name as categoryLatestPostAuthor,",
+    "fp.created_at as categoryLatestPostDate",
     "from forum_posts fp join forum_topics ft on fp.fk_topic_id = ft.id join sys_users su on fp.fk_user_id = su.id",
     "where fk_topic_id in (select id from forum_topics where fk_category_id = #{id})",
     "order by fp.created_at desc limit 1"
   })
-  Optional<CategoryNewestEntity> findNewestById(Integer id);
+  Optional<CategoryLatestEntity> findLatestById(Integer id);
 
   @Select({
     "select count(1)",

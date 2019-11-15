@@ -2,8 +2,7 @@ package base.api.rest.forum.categories;
 
 import base.api.config.mapper.MappersConfig;
 import base.api.domain.forum.categories.CategoryEntity;
-import base.api.domain.forum.categories.CategoryNewestEntity;
-import base.api.rest.forum.categories.dto.CategoryAdditionalDto;
+import base.api.domain.forum.categories.CategoryLatestEntity;
 import base.api.rest.forum.categories.dto.CategoryRequestDto;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import org.mapstruct.Mapper;
@@ -17,5 +16,6 @@ public interface CategoryMapper {
 
   CategoryEntity dtoToEntity(CategoryRequestDto categoryRequestDto);
 
-  CategoryRespondDto categoriesEntitiesToDto(CategoryEntity categoryEntity, CategoryNewestEntity categoryNewestEntity);
+  CategoryRespondDto categoriesEntitiesToDto(
+      CategoryEntity categoryEntity, CategoryLatestEntity categoryLatestEntity);
 }

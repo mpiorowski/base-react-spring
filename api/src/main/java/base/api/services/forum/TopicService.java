@@ -66,6 +66,8 @@ public class TopicService extends GenericService<TopicEntity> {
     return dao.edit(entity);
   }
 
+
+  //TODO - change all edit to return entity
   public Optional<TopicEntity> edit1(TopicEntity entity) {
     return dao.edit1(entity);
   }

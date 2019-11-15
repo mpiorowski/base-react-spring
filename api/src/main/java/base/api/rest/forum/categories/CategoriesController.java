@@ -6,6 +6,8 @@ import base.api.rest.forum.categories.dto.CategoryRequestDto;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import base.api.services.forum.CategoryService;
 import org.mapstruct.factory.Mappers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +20,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/forum/categories")
 public class CategoriesController {
 
+  private static final Logger logger = LoggerFactory.getLogger(CategoriesController.class);
   private final CategoryService categoryService;
-
   private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
 
   public CategoriesController(CategoryService categoryService) {
@@ -41,14 +43,18 @@ public class CategoriesController {
             .map(
                 categoryEntity -> {
                   Integer id = categoryEntity.getId();
-                  if (categoryService.findNewestById(id).isPresent()) {
-                    CategoryRespondDto categoryRespondDto = categoryMapper.categoriesEntitiesToDto(categoryEntity,
-                        categoryService.findNewestById(id).get());
-                    categoryRespondDto.setCategoryTopicsNumber(categoryService.countTopicsById(id));
-                    categoryRespondDto.setCategoryPostsNumber(categoryService.countPostsById(id));
-                    return categoryRespondDto;
+                  CategoryRespondDto categoryRespondDto;
+
+                  if (categoryService.findLatestById(id).isPresent()) {
+                    categoryRespondDto =
+                        categoryMapper.categoriesEntitiesToDto(
+                            categoryEntity, categoryService.findLatestById(id).get());
+                  } else {
+                    categoryRespondDto = categoryMapper.entityToDto(categoryEntity);
                   }
-                  return categoryMapper.entityToDto(categoryEntity);
+                  categoryRespondDto.setCategoryTopicsNumber(categoryService.countTopicsById(id));
+                  categoryRespondDto.setCategoryPostsNumber(categoryService.countPostsById(id));
+                  return categoryRespondDto;
                 })
             .collect(Collectors.toList());
 
@@ -104,10 +110,10 @@ public class CategoriesController {
       @RequestBody CategoryRequestDto categoryRequestDto) {
     categoryRequestDto.setUid(categoryUid);
     CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
-//    if (categoryService.edit(categoryEntity)) {
-      return new ResponseEntity<>(HttpStatus.OK);
-//    }
-//    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    //    if (categoryService.edit(categoryEntity)) {
+    return new ResponseEntity<>(HttpStatus.OK);
+    //    }
+    //    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   /**
