@@ -66,6 +66,10 @@ public class TopicService extends GenericService<TopicEntity> {
     return dao.edit(entity);
   }
 
+  public Optional<TopicEntity> edit1(TopicEntity entity) {
+    return dao.edit1(entity);
+  }
+
   @Override
   public boolean delete(String uid) {
     UUID uuid = UtilsUid.uidDecode(uid);

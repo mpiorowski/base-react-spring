@@ -75,9 +75,6 @@ class PostComponent extends Component {
           mapPosts.set(post.uid, data)
         });
 
-        // console.log('mapPosts', mapPosts);
-        // console.log('replies', replies);
-
         this.setState({
           topic: response.topic,
           mapPosts: mapPosts,
@@ -104,13 +101,9 @@ class PostComponent extends Component {
     submitForumDrawer(formData, categoryUid, topicUid).then(response => {
 
         //edit topic
-        if (formData.topicTitle) {
-          let topic = {
-            topicTitle: formData.topicTitle,
-            topicDescription: formData.content,
-          };
+        if (formData.title) {
           this.setState({
-            topic: topic
+            topic: {...response}
           });
         } else {
 

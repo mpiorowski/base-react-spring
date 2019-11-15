@@ -49,7 +49,7 @@ class DrawerForm extends Component {
 
           {drawer === 'topic' ?
             <FormItem>
-              {getFieldDecorator('topicTitle', {
+              {getFieldDecorator('title', {
                   rules: [{
                     required: true,
                     message: validationErrorMsg.empty,

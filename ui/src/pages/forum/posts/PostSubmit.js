@@ -7,7 +7,7 @@ export const submitForumDrawer = (formData, categoryUid, topicUid) => {
       console.log('formData', formData);
 
       const topicData = {
-        topicTitle: formData.topicTitle,
+        topicTitle: formData.title,
         topicDescription: formData.content || null
       };
 
@@ -17,10 +17,11 @@ export const submitForumDrawer = (formData, categoryUid, topicUid) => {
         replyUid: formData.replyUid || null
       };
 
-      if (formData.topicTitle) {
+      if (formData.title) {
         serviceEditTopic(categoryUid, topicUid, topicData).then(response => {
+          console.log(response);
           if (response) {
-            resolve(response.data);
+            resolve(response);
           }
         }).catch(error => {
           console.log(error);

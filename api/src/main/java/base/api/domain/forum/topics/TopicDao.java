@@ -67,6 +67,20 @@ public interface TopicDao extends GenericDao<TopicEntity> {
   })
   ResponseDao edit(TopicEntity entity);
 
+  @Select({
+    "update forum_topics ft set",
+    "topic_title = #{topicTitle},",
+    "topic_description = #{topicDescription}",
+    "from sys_users su where su.id = ft.fk_user_id",
+    "and ft.uid = #{uid} and ft.is_deleted is false",
+    "returning *"
+  })
+  @Results({
+    @Result(property = "topicAuthor.userName", column = "user_name"),
+    @Result(property = "topicAuthor.userEmail", column = "user_email")
+  })
+  Optional<TopicEntity> edit1(TopicEntity entity);
+
   @Override
   @Delete("update forum_topics set is_deleted = true where uid = #{uid}")
   int delete(UUID uid);

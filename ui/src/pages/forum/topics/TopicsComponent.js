@@ -4,7 +4,7 @@ import "./TopicsComponent.less";
 import {serviceAddTopic, serviceGetTopics} from "../../../services/forum/ForumService";
 import moment from "moment";
 import {NavLink} from "react-router-dom";
-import {WrappedTopicDrawer} from "./TopicDrawer";
+import DrawerComponent from "../drawer/DrawerComponent";
 
 
 class TopicsComponent extends Component {
@@ -24,6 +24,13 @@ class TopicsComponent extends Component {
     drawerRecord: {},
     drawerType: '',
     paginationSize: null,
+
+    drawerData: {
+      visibility: false,
+      record: {},
+      type: 'newTopic'
+    },
+
   };
 
   componentDidMount() {
@@ -57,15 +64,17 @@ class TopicsComponent extends Component {
 
   handleDrawerVisible = (flag, record, type) => {
     this.setState({
-      drawerVisible: !!flag,
-      drawerRecord: record || {},
-      drawerType: type
+      drawerData: {
+        visibility: !!flag,
+        record: record || {},
+        type: type,
+      }
     });
   };
 
   render() {
 
-    const {category, topics, loading, drawerVisible, drawerRecord} = this.state;
+    const {category, topics, loading, drawerData} = this.state;
 
     const columns = [
         {
@@ -124,19 +133,13 @@ class TopicsComponent extends Component {
           className={'topic-table'}
           rowKey={record => record.uid}
         />
-        <div className="forum-floating-drawer-btn-initial" hidden={drawerVisible}
-             onClick={() => this.handleDrawerVisible(true, {}, 'new', 'Dodaj nowy temat')}
+        <div className="forum-floating-drawer-btn-initial" hidden={drawerData.visibility}
+             onClick={() => this.handleDrawerVisible(true, {}, 'newTopic')}
         >
           <Icon type="plus"/>
         </div>
-        <WrappedTopicDrawer
-
-          drawerTitle={'Dodaj nowy temat'}
-          drawerPlaceholder={'Temat (maks 300 znaków)'}
-          drawerVisible={drawerVisible}
-          drawerRecord={drawerRecord}
-          drawerType={'topic'}
-
+        <DrawerComponent
+          drawerData={drawerData}
           handleDrawerVisible={this.handleDrawerVisible}
           submitDrawer={this.submitDrawer}
         />

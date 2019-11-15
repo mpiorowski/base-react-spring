@@ -138,7 +138,7 @@ public class TopicsController {
    * @return void
    */
   @PutMapping("/{topicUid}")
-  public ResponseEntity<RestResponse<String>> editTopic(
+  public ResponseEntity<TopicDataDto> editTopic(
       @PathVariable("categoryUid") String categoryUid,
       @PathVariable("topicUid") String topicUid,
       @Valid @RequestBody EditTopicRequestDto editTopicRequestDto) {
@@ -147,11 +147,10 @@ public class TopicsController {
     if (category.isPresent()) {
       TopicEntity topic = topicMapper.editDtoToEntity(editTopicRequestDto);
       topic.setUid(UtilsUid.uidDecode(topicUid));
-      var responseDao = topicService.edit(topic);
-      if (Utils.isNotEmpty(responseDao.getUid())) {
-        String responseUid = UtilsUid.uidEncode(responseDao.getUid());
-        RestResponse<String> restResponse = new RestResponse<>(responseUid);
-        return new ResponseEntity<>(restResponse, HttpStatus.OK);
+      var topicEntity = topicService.edit1(topic);
+      if (topicEntity.isPresent()) {
+        TopicDataDto topicDataDto = topicMapper.entityToDataDto(topicEntity.get());
+        return new ResponseEntity<>(topicDataDto, HttpStatus.OK);
       }
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
