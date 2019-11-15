@@ -71,10 +71,6 @@ public class TopicsController {
                     int postsCount = postService.countPostsByTopicId(topicId);
                     TopicResponseDto topicResponseDto = topicMapper.topicEntityWithPostToDto(topic);
                     topicResponseDto.setPostsCount(postsCount);
-//                    if (postService.findNewestByTopicId(topicId).isPresent()) {
-//                      topicResponseDto.setNewestPost(
-//                          postService.findNewestByTopicId(topicId).get());
-//                    }
                     return topicResponseDto;
                   })
               .collect(Collectors.toList());

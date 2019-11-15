@@ -97,7 +97,12 @@ class TopicsComponent extends Component {
             return startDate.diff(endDate);
           },
           render: (text, row, index) => {
-            return text ? moment(text).fromNow() : 'Brak postów'
+            return text
+              ? <NavLink
+                to={"/forum/categories/" + this.state.categoryUid + "/topics/" + row.uid + "/posts?latest=" + row.latestPostUid}>
+                {moment(text).fromNow()}
+              </NavLink>
+              : 'Brak postów'
           }
         },
       ]

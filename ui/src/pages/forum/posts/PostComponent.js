@@ -50,6 +50,8 @@ class PostComponent extends Component {
   componentDidMount() {
 
     const {match: {params}} = this.props;
+    const search = new URLSearchParams(this.props.location.search);
+
     serviceGetPosts(params.topicUid).then(response => {
         console.log('get posts', response);
 
@@ -81,6 +83,11 @@ class PostComponent extends Component {
           mapPosts: mapPosts,
           loading: false
         });
+
+        if (search.get('latest')) {
+          this.goToLast();
+          scrollToElementId(search.get('latest'));
+        }
       }
     );
   }
