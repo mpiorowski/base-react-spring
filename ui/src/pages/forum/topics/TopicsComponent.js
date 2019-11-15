@@ -15,6 +15,8 @@ class TopicsComponent extends Component {
       topicTitle: '',
       topicViews: '',
       postsCount: '',
+      latestPostUid: '',
+      latestPostDate: ''
     }],
     loading: true,
     categoryUid: null,
@@ -30,7 +32,7 @@ class TopicsComponent extends Component {
     let paginationSize = Math.round((window.innerHeight - 280) / 60);
 
     serviceGetTopics(params.categoryUid).then(response => {
-      console.log(response);
+      console.log('topic response', response);
       this.setState({
         topics: response.topics,
         category: response.category,
@@ -86,12 +88,12 @@ class TopicsComponent extends Component {
         },
         {
           title: 'Najnowszy',
-          dataIndex: 'newestPost.newestDate',
+          dataIndex: 'latestPostDate',
           key: 'newest',
           align: 'center',
           sorter: (a, b) => {
-            let startDate = a.newestPost ? moment(a.newestPost.newestDate) : moment(0);
-            let endDate = b.newestPost ? moment(b.newestPost.newestDate) : moment(0);
+            let startDate = a.latestPostDate ? moment(a.latestPostDate) : moment(0);
+            let endDate = b.latestPostDate ? moment(b.latestPostDate) : moment(0);
             return startDate.diff(endDate);
           },
           render: (text, row, index) => {

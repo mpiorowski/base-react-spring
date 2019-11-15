@@ -5,6 +5,8 @@ import base.api.rest.generic.GenericResponseDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.UUID;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class TopicResponseDto extends GenericResponseDto {
@@ -13,6 +15,8 @@ public class TopicResponseDto extends GenericResponseDto {
   private String topicDescription;
   private int topicViews;
   private int postsCount;
-  private NewestEntity newestPost;
+
+  private String latestPostUid;
+  private String latestPostDate;
 
 }

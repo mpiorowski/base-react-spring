@@ -3,6 +3,7 @@ package base.api.services.forum;
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.topics.TopicDao;
 import base.api.domain.forum.topics.TopicEntity;
+import base.api.domain.forum.topics.TopicWithPostsEntity;
 import base.api.domain.generic.ResponseDao;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsUid;
@@ -33,6 +34,10 @@ public class TopicService extends GenericService<TopicEntity> {
   public Optional<TopicEntity> findByUid(String uid) {
     UUID uuid = UtilsUid.uidDecode(uid);
     return dao.findByUid1(uuid);
+  }
+
+  public List<TopicWithPostsEntity> findTopicsWithPostsByCategoryId(Integer id) {
+    return dao.findTopicsWithPostsByCategoryId(id);
   }
 
   public List<TopicEntity> findTopicsByCategoryId(Integer id) {

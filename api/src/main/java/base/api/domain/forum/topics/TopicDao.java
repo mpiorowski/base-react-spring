@@ -40,6 +40,15 @@ public interface TopicDao extends GenericDao<TopicEntity> {
       "select * from forum_topics where fk_category_id = #{id} and is_deleted is false order by created_at desc")
   List<TopicEntity> findTopicsByCategoryId(Integer id);
 
+  @Select({
+    "select ft.*, fp.uid as latestPostUid, fp.created_at as latestPostDate from forum_topics ft",
+    "left join forum_posts fp on ft.id = fp.fk_topic_id",
+    "and fp.created_at = (select max(created_at) from forum_posts fp2 where fp2.fk_topic_id = ft.id)",
+    "where ft.fk_category_id = #{id}",
+    "order by fp.created_at desc"
+  })
+  List<TopicWithPostsEntity> findTopicsWithPostsByCategoryId(Integer id);
+
   @Override
   @Select({
     "insert into forum_topics (topic_title, topic_description, fk_category_id, fk_user_id) ",

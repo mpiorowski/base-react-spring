@@ -2,6 +2,7 @@ package base.api.rest.forum.topics;
 
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.topics.TopicEntity;
+import base.api.domain.forum.topics.TopicWithPostsEntity;
 import base.api.logging.LogExecutionTime;
 import base.api.rest.RestResponse;
 import base.api.rest.forum.categories.CategoryMapper;
@@ -60,7 +61,7 @@ public class TopicsController {
 
     if (category.isPresent()) {
       CategoryRespondDto categoryRespondDto = categoryMapper.entityToDto(category.get());
-      List<TopicEntity> topics = topicService.findTopicsByCategoryId(category.get().getId());
+      List<TopicWithPostsEntity> topics = topicService.findTopicsWithPostsByCategoryId(category.get().getId());
 
       List<TopicResponseDto> topicsDto =
           topics.stream()
@@ -68,12 +69,12 @@ public class TopicsController {
                   topic -> {
                     Integer topicId = topic.getId();
                     int postsCount = postService.countPostsByTopicId(topicId);
-                    TopicResponseDto topicResponseDto = topicMapper.entityToDto(topic);
+                    TopicResponseDto topicResponseDto = topicMapper.topicEntityWithPostToDto(topic);
                     topicResponseDto.setPostsCount(postsCount);
-                    if (postService.findNewestByTopicId(topicId).isPresent()) {
-                      topicResponseDto.setNewestPost(
-                          postService.findNewestByTopicId(topicId).get());
-                    }
+//                    if (postService.findNewestByTopicId(topicId).isPresent()) {
+//                      topicResponseDto.setNewestPost(
+//                          postService.findNewestByTopicId(topicId).get());
+//                    }
                     return topicResponseDto;
                   })
               .collect(Collectors.toList());

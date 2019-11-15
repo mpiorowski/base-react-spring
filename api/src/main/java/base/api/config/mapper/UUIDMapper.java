@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class UUIDMapper {
   public String map(UUID uid) {
-    return UtilsUid.uidEncode(uid);
+    return uid != null ? UtilsUid.uidEncode(uid) : null;
   }
 
   public UUID map(String uid) {
