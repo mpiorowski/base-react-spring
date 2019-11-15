@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Col, List, Row, Skeleton} from "antd";
+import {Col, Icon, List, Row, Skeleton} from "antd";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome/index";
 import {faBullhorn, faComment, faPencilAlt} from "@fortawesome/free-solid-svg-icons/index";
 import "./CategoriesComponent.less";
@@ -7,6 +7,7 @@ import {NavLink} from "react-router-dom";
 import {serviceGetCategories} from "../../../services/forum/ForumService";
 import * as htmlToText from "html-to-text";
 import moment from "moment";
+import DrawerComponent from "../drawer/DrawerComponent";
 
 class CategoriesComponent extends Component {
 
@@ -24,7 +25,12 @@ class CategoriesComponent extends Component {
       categoryLatestPostAuthor: '',
       categoryLatestPostDate: '',
     }],
-    loading: true
+    loading: true,
+    drawerData: {
+      visibility: false,
+      record: {},
+      type: ''
+    },
   };
 
   componentDidMount() {
@@ -37,9 +43,19 @@ class CategoriesComponent extends Component {
     })
   }
 
+  handleDrawerVisible = (flag, record, type) => {
+    this.setState({
+      drawerData: {
+        visibility: !!flag,
+        record: record || {},
+        type: type,
+      }
+    });
+  };
+
   //TODO - add option to choose icon, dynamic pagination
   render() {
-    const {categories, loading} = this.state;
+    const {categories, loading, drawerData} = this.state;
 
     return (
       <div>
@@ -82,7 +98,6 @@ class CategoriesComponent extends Component {
                     <Col span={24}><FontAwesomeIcon icon={faComment}/> {item.categoryPostsNumber || 0} postów</Col>
                   </Col>
 
-                  {/*TODO - navlink to newest*/}
                   <Col span={4} style={{margin: "auto"}}>
 
                     {item.categoryLatestPostDate
@@ -92,7 +107,7 @@ class CategoriesComponent extends Component {
                           {moment(item.categoryLatestPostDate).fromNow()}
                         </NavLink> w temacie:
                         <div className={"truncate"} style={{fontSize: 12}}>
-                        {htmlToText.fromString(item.categoryLatestTopic, {uppercaseHeadings: false})}
+                          {htmlToText.fromString(item.categoryLatestTopic, {uppercaseHeadings: false})}
                         </div>
                       </span>
                       : "Brak postów"
@@ -103,6 +118,16 @@ class CategoriesComponent extends Component {
             </List.Item>
 
           )}
+        />
+        <div className="forum-floating-drawer plus" hidden={drawerData.visibility}
+             onClick={() => this.handleDrawerVisible(true, {}, 'newCategory')}
+        >
+          <Icon type="plus"/>
+        </div>
+        <DrawerComponent
+          drawerData={drawerData}
+          handleDrawerVisible={this.handleDrawerVisible}
+          submitDrawer={this.submitDrawer}
         />
       </div>
     );

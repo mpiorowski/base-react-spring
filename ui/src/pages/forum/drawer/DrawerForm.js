@@ -31,7 +31,9 @@ class DrawerForm extends Component {
     const {getFieldDecorator} = this.props.form;
 
     let drawer;
-    if (type === 'newTopic' || type === 'editTopic') {
+    if (type === 'newCategory' || type === 'editCategory') {
+      drawer = 'category';
+    } else if (type === 'newTopic' || type === 'editTopic') {
       drawer = 'topic';
     } else if (type === 'newPost' || type === 'editPost' || type === 'replyPost') {
       drawer = 'post';
@@ -47,7 +49,7 @@ class DrawerForm extends Component {
             {getFieldDecorator('replyUid', {initialValue: record.replyUid || null})(<Input/>)}
           </FormItem>
 
-          {drawer === 'topic' ?
+          {drawer === 'topic' || drawer === 'category' ?
             <FormItem>
               {getFieldDecorator('title', {
                   rules: [{
@@ -61,44 +63,26 @@ class DrawerForm extends Component {
               )}
             </FormItem> : ''
           }
-
-          {drawer === 'topic'
-
+          {drawer === 'topic' || drawer === 'category'
             ? <FormItem>
               {getFieldDecorator('content', {
                   initialValue: record.postContent || record.topicDescription || '',
                   rules: [
-                    {
-                      max: 10000,
-                      message: validationErrorMsg.maxSize10000
-                    }
-                  ]
+                    {required: (drawer === 'category'), message: validationErrorMsg.empty},
+                    {max: 10000, message: validationErrorMsg.maxSize10000}
+                    ]
                 }
-              )(
-                <Input.TextArea rows={8} maxLength={1000}
-                                placeholder={"Opis (opcjonalnie)"}
-                />,
-              )}
+              )(<Input.TextArea rows={8} maxLength={1000} placeholder={"Opis" + (drawer === 'topic' ? " (opcjonalnie)" : "") }/>)}
             </FormItem>
             : <FormItem>
               {getFieldDecorator('content', {
                   initialValue: record.postContent || record.topicDescription || '',
                   rules: [
-                    {
-                      required: true,
-                      message: validationErrorMsg.empty,
-                    },
-                    {
-                      max: 10000,
-                      message: validationErrorMsg.maxSize10000
-                    }
+                    {required: true, message: validationErrorMsg.empty},
+                    {max: 10000, message: validationErrorMsg.maxSize10000}
                   ]
                 }
-              )(
-                <Input.TextArea rows={8} maxLength={1000}
-                                placeholder={"Komentarz"}
-                />,
-              )}
+              )(<Input.TextArea rows={8} maxLength={1000} placeholder={"Komentarz"}/>)}
             </FormItem>
           }
           <br/>

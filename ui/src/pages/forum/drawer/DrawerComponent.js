@@ -6,11 +6,12 @@ import {WrappedDrawerForm} from "./DrawerForm";
 
 
 const drawerHeader = {
+  newCategory: 'Nowa kategoria',
   newPost: 'Dodaj nowy komentarz',
   editPost: 'Edytuj komentarz',
   replyPost: 'Odpowiedz na komentarz',
   newTopic: 'Dodaj nowy temat',
-  editTopic: 'Edytuj temat'
+  editTopic: 'Edytuj temat',
 };
 
 class DrawerComponent extends Component {
@@ -26,14 +27,14 @@ class DrawerComponent extends Component {
       <div>
         <Drawer
           title={drawerHeader[type]}
-          height={500}
+          height={420}
           placement="bottom"
           closable={true}
           onClose={() => this.props.handleDrawerVisible(false, {}, type)}
           visible={visibility}
           destroyOnClose={true}
         >
-          <div className="forum-floating-drawer-btn" onClick={() => this.props.handleDrawerVisible(false, {}, type)}>
+          <div className="forum-floating-drawer minus" onClick={() => this.props.handleDrawerVisible(false, {}, type)}>
             {visibility ? <Icon type="minus"/> : <Icon type="plus"/>}
           </div>
           <WrappedDrawerForm
