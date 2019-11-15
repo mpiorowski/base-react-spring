@@ -1,5 +1,6 @@
 import ContactComponent from "../pages/header/ContactComponent";
 import ForumComponent from "../pages/forum/ForumComponent";
+import TestComponent from "../pages/test/TestComponent";
 
 export const routes =
   {
@@ -18,11 +19,21 @@ export const routes =
           component: ForumComponent,
           exact: false
         },
+        {
+          url: '/test/clean',
+          component: TestComponent,
+          exact: true
+        },
       ],
       headers: [
         {
           url: '/forum/categories',
           headerName: 'Admin',
+          headerIcon: 'book',
+        },
+        {
+          url: '/test/clean',
+          headerName: 'Clean',
           headerIcon: 'book',
         },
       ],

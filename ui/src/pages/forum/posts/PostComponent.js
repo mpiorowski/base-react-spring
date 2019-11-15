@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, Dropdown, Icon, List, Menu, Tooltip} from "antd";
+import {Button, Dropdown, Icon, List, Menu} from "antd";
 import "./PostComponent.less";
 import "react-quill/dist/quill.snow.css";
 import {serviceGetPosts} from "../../../services/forum/ForumService";
@@ -81,6 +81,7 @@ class PostComponent extends Component {
           loading: false
         });
 
+        //TODO - open reply
         if (search.get('latest')) {
           this.goToLast();
           scrollToElementId(search.get('latest'));

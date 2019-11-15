@@ -84,19 +84,19 @@ class CategoriesComponent extends Component {
 
                   {/*TODO - navlink to newest*/}
                   <Col span={4} style={{margin: "auto"}}>
+
                     {item.categoryLatestPostDate
-                      ? <span style={{fontSize: 10}}>
+                      ? <span style={{fontSize: 12}}>
                         <NavLink
                           to={"/forum/categories/" + item.uid + "/topics/" + item.categoryLatestTopicUid + "/posts?latest=" + item.categoryLatestPostUid}>
                           {moment(item.categoryLatestPostDate).fromNow()}
-                        </NavLink> w temacie:</span>
+                        </NavLink> w temacie:
+                        <div className={"truncate"} style={{fontSize: 12}}>
+                        {htmlToText.fromString(item.categoryLatestTopic, {uppercaseHeadings: false})}
+                        </div>
+                      </span>
                       : "Brak postów"
                     }
-                    <div style={{fontSize: 12}}>
-                      <div className={"truncate"}>
-                        {htmlToText.fromString(item.categoryLatestTopic, {uppercaseHeadings: false})}
-                      </div>
-                    </div>
                   </Col>
                 </Row>
               </Skeleton>
