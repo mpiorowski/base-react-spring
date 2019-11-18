@@ -19,5 +19,4 @@ public class CategoryRespondDto extends GenericResponseDto {
   private String categoryLatestPostAuthor;
   private String categoryLatestPostDate;
 
-
 }

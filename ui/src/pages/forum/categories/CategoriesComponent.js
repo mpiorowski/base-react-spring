@@ -4,7 +4,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome/index";
 import {faBullhorn, faComment, faPencilAlt} from "@fortawesome/free-solid-svg-icons/index";
 import "./CategoriesComponent.less";
 import {NavLink} from "react-router-dom";
-import {serviceGetCategories} from "../../../services/forum/ForumService";
+import {serviceAddCategory, serviceAddTopic, serviceGetCategories} from "../../../services/forum/ForumService";
 import * as htmlToText from "html-to-text";
 import moment from "moment";
 import DrawerComponent from "../drawer/DrawerComponent";
@@ -43,6 +43,20 @@ class CategoriesComponent extends Component {
     })
   }
 
+  submitDrawer = (data) => {
+    const categoryData = {categoryTitle: data.title, categoryDescription: data.content};
+    serviceAddCategory(categoryData).then(response => {
+      if (response) {
+        let categories = this.state.categories;
+        categories.push(response);
+        this.setState({categories:categories});
+        this.handleDrawerVisible(false)
+      }
+    }).catch(error => {
+      console.log(error);
+    });
+  };
+
   handleDrawerVisible = (flag, record, type) => {
     this.setState({
       drawerData: {
@@ -52,6 +66,7 @@ class CategoriesComponent extends Component {
       }
     });
   };
+
 
   //TODO - add option to choose icon, dynamic pagination
   render() {

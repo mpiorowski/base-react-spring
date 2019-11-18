@@ -133,7 +133,7 @@ class TopicsComponent extends Component {
           className={'topic-table'}
           rowKey={record => record.uid}
         />
-        <div className="forum-floating-drawer-btn-initial" hidden={drawerData.visibility}
+        <div className="forum-floating-drawer plus" hidden={drawerData.visibility}
              onClick={() => this.handleDrawerVisible(true, {}, 'newTopic')}
         >
           <Icon type="plus"/>

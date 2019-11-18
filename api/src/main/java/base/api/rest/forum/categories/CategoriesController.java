@@ -50,7 +50,7 @@ public class CategoriesController {
                         categoryMapper.categoriesEntitiesToDto(
                             categoryEntity, categoryService.findLatestById(id).get());
                   } else {
-                    categoryRespondDto = categoryMapper.entityToDto(categoryEntity);
+                    categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity);
                   }
                   categoryRespondDto.setCategoryTopicsNumber(categoryService.countTopicsById(id));
                   categoryRespondDto.setCategoryPostsNumber(categoryService.countPostsById(id));
@@ -74,7 +74,7 @@ public class CategoriesController {
     Optional<CategoryEntity> categoryEntity = categoryService.findByUid(categoryUid);
 
     if (categoryEntity.isPresent()) {
-      CategoryRespondDto categoryRespondDto = categoryMapper.entityToDto(categoryEntity.get());
+      CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity.get());
       return ResponseEntity.ok(categoryRespondDto);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -88,12 +88,13 @@ public class CategoriesController {
    */
   @LogExecutionTime
   @PostMapping
-  public ResponseEntity<String> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
+  public ResponseEntity<CategoryRespondDto> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
 
     CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
-    String uid = categoryService.add(categoryEntity);
+    categoryEntity = categoryService.add2(categoryEntity);
+    CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity);
 
-    return new ResponseEntity<>(uid, HttpStatus.CREATED);
+    return new ResponseEntity<>(categoryRespondDto, HttpStatus.CREATED);
   }
 
   /**
@@ -108,7 +109,6 @@ public class CategoriesController {
   public ResponseEntity editCategory(
       @PathVariable("categoryUid") String categoryUid,
       @RequestBody CategoryRequestDto categoryRequestDto) {
-    categoryRequestDto.setUid(categoryUid);
     CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
     //    if (categoryService.edit(categoryEntity)) {
     return new ResponseEntity<>(HttpStatus.OK);

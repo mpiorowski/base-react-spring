@@ -113,7 +113,7 @@ class App extends Component {
     let routerKey = 0;
 
     // ROUTER CONFIG
-    // const router = new Map();
+    let addedRoutes = [];
     const router = [
       routes.main.paths.map(path => {
         return (
@@ -125,12 +125,16 @@ class App extends Component {
         )
       }),
       currentUser.userRoles.map(role =>
-        routes[role].paths.map(path =>
-          <PrivateRoute path={path.url}
-                        component={path.component}
-                        currentUser={this.state.currentUser}
-                        key={routerKey++}/>
-        )
+        routes[role].paths.map(route => {
+          if (addedRoutes.includes(route.key)) {return '';}
+          addedRoutes.push(route.key);
+          return (
+            <PrivateRoute path={route.path.url}
+                          component={route.path.component}
+                          currentUser={this.state.currentUser}
+                          key={routerKey++}/>
+          )
+        })
       ),
       <Route path='*' render={() => <Redirect to={routes[currentUser.userRoles[0]].redirect}/>}
              key={routerKey++}/>

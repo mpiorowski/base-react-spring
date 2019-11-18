@@ -60,7 +60,7 @@ public class TopicsController {
     Optional<CategoryEntity> category = categoryService.findByUid(categoryUid);
 
     if (category.isPresent()) {
-      CategoryRespondDto categoryRespondDto = categoryMapper.entityToDto(category.get());
+      CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(category.get());
       List<TopicWithPostsEntity> topics = topicService.findTopicsWithPostsByCategoryId(category.get().getId());
 
       List<TopicResponseDto> topicsDto =

@@ -34,8 +34,13 @@ public class CategoryService extends GenericService<CategoryEntity> {
 
   @Override
   public String add(CategoryEntity entity) {
-    ResponseDao responseDao = dao.add(entity);
-    return UtilsUid.uidEncode(responseDao.getUid());
+    return null;
+  }
+
+  public CategoryEntity add2(CategoryEntity entity) {
+    entity.setCategoryAuthor(currentUserEntity());
+    CategoryEntity response = dao.add2(entity);
+    return response;
   }
 
   @Override

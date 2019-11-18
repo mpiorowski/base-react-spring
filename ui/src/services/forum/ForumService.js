@@ -7,6 +7,14 @@ export function serviceGetCategories() {
   })
 }
 
+export function serviceAddCategory(data) {
+  return apiRequest({
+    url: '/api/forum/categories',
+    method: 'POST',
+    body: JSON.stringify(data)
+  })
+}
+
 export function serviceGetTopics(categoryUid) {
   return apiRequest({
     url: '/api/forum/categories/' + categoryUid + '/topics',

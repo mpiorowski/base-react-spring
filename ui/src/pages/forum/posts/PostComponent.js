@@ -281,7 +281,7 @@ class PostComponent extends Component {
         >
         </List>
         <div>
-          <div className="forum-floating-drawer-btn-initial" hidden={drawerData.visibility}
+          <div className="forum-floating-drawer plus" hidden={drawerData.visibility}
                onClick={() => this.handleDrawerVisible(true, {}, 'newPost')}
           >
             <Icon type="plus"/>

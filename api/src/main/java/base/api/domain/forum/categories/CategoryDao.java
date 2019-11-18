@@ -26,10 +26,20 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
     Table.NAME,
     "(category_title, category_description, fk_user_id)",
     "values",
-    "(#{categoryTitle}, #{categoryDescription}, 1)",
-    "returning uid"
+    "(#{categoryTitle}, #{categoryDescription}, #{categoryAuthor.id})",
+    "returning *"
   })
   ResponseDao add(CategoryEntity entity);
+
+  @Select({
+    "insert into",
+    Table.NAME,
+    "(category_title, category_description, fk_user_id)",
+    "values",
+    "(#{categoryTitle}, #{categoryDescription}, #{categoryAuthor.id})",
+    "returning *"
+  })
+  CategoryEntity add2(CategoryEntity entity);
 
   @Override
   @Update({

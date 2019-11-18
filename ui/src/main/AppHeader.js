@@ -30,14 +30,22 @@ class AppHeader extends Component {
       </Menu>
     );
 
+    let addedRoutes = [];
     const routeHeader = [
       userRoles.map(role =>
-        routes[role].headers.map(header =>
-          <Link to={header.url} className={'header-submenu-link'} key={i++}>
-            {header.headerIcon !== '' ? <Icon type={header.headerIcon} className={'header-submenu-icon'}/> : ''}
-            <h2>{header.headerName}</h2>
-          </Link>
-        )
+        routes[role].paths.map(route => {
+          if (addedRoutes.includes(route.key)) {
+            return '';
+          }
+          addedRoutes.push(route.key);
+          return (
+            <Link to={route.header.url} className={'header-submenu-link'} key={i++}>
+              {route.header.headerIcon !== '' ?
+                <Icon type={route.header.headerIcon} className={'header-submenu-icon'}/> : ''}
+              <h2>{route.header.headerName}</h2>
+            </Link>
+          )
+        })
       )
     ];
 

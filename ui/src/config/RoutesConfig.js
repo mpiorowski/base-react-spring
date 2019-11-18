@@ -2,6 +2,35 @@ import ContactComponent from "../pages/header/ContactComponent";
 import ForumComponent from "../pages/forum/ForumComponent";
 import TestComponent from "../pages/test/TestComponent";
 
+const pathsData = {
+  forum: {
+    key: 1,
+    path: {
+      url: '/forum',
+      component: ForumComponent,
+      exact: false
+    },
+    header: {
+      url: '/forum/categories',
+      headerName: 'Forum',
+      headerIcon: 'book',
+    }
+  },
+  clean: {
+    key: 2,
+    path: {
+      url: '/test/clean',
+      component: TestComponent,
+      exact: true
+    },
+    header: {
+      url: '/test/clean',
+      headerName: 'Clean',
+      headerIcon: 'book',
+    }
+  }
+};
+
 export const routes =
   {
     main: {
@@ -14,46 +43,16 @@ export const routes =
     },
     ROLE_ADMIN: {
       paths: [
-        {
-          url: '/forum',
-          component: ForumComponent,
-          exact: false
-        },
-        {
-          url: '/test/clean',
-          component: TestComponent,
-          exact: true
-        },
-      ],
-      headers: [
-        {
-          url: '/forum/categories',
-          headerName: 'Admin',
-          headerIcon: 'book',
-        },
-        {
-          url: '/test/clean',
-          headerName: 'Clean',
-          headerIcon: 'book',
-        },
+        pathsData.forum,
+        pathsData.clean
       ],
       redirect: '/forum/categories'
     },
     ROLE_USER: {
       paths: [
-        {
-          url: '/forum',
-          component: ForumComponent,
-          exact: false
-        },
-      ],
-      headers: [
-        {
-          url: '/forum/categories',
-          headerName: 'Forum',
-          headerIcon: 'book',
-        },
+        pathsData.forum,
       ],
       redirect: '/forum/categories'
     }
   };
+

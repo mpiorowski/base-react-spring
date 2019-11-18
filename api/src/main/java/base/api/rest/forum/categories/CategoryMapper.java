@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface CategoryMapper {
 
-  CategoryRespondDto entityToDto(CategoryEntity categoryEntity);
+  CategoryRespondDto entityToRespondDto(CategoryEntity categoryEntity);
 
   CategoryEntity dtoToEntity(CategoryRequestDto categoryRequestDto);
 
