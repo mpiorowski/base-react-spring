@@ -219,7 +219,7 @@ class PostComponent extends Component {
 
   render() {
 
-    const {drawerData, topic, mapPosts, loading} = this.state;
+    const {drawerData, topic, mapPosts, loading, currentUser} = this.state;
     const {pageSize, currentPage} = this.state;
 
     let topicCreated = moment(topic.createdAt);
@@ -235,11 +235,17 @@ class PostComponent extends Component {
       </div>;
     const header =
       <div>
-        <Dropdown overlay={
-          <Menu><Menu.Item onClick={() => this.editTopic(topic)} key="1">Edytuj</Menu.Item></Menu>
-        } placement="bottomRight" trigger={['click']}>
-          <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
-        </Dropdown>
+
+        {currentUser.userName === topic.topicAuthor.userName
+          ? <Dropdown placement="bottomRight" trigger={['click']}
+                      overlay={
+                        <Menu><Menu.Item onClick={() => this.editTopic(topic)} key="1">Edytuj</Menu.Item></Menu>
+                      }
+          >
+            <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
+          </Dropdown>
+          : ''}
+
         <div className={"topic-datetime"}>{topicDatetime}</div>
         <div className={"post-header"}>
           {topic.topicTitle}

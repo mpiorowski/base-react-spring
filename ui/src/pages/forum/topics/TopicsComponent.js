@@ -122,6 +122,7 @@ class TopicsComponent extends Component {
 
         <div
           className={'cat-header'}>{category ? category.categoryTitle : ''}
+
         </div>
 
         <Table

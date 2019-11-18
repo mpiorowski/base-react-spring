@@ -1,10 +1,15 @@
 import React, {Component} from 'react';
-import {Col, Icon, List, Row, Skeleton} from "antd";
+import {Button, Col, Dropdown, Icon, List, Menu, Row, Skeleton} from "antd";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome/index";
 import {faBullhorn, faComment, faPencilAlt} from "@fortawesome/free-solid-svg-icons/index";
 import "./CategoriesComponent.less";
 import {NavLink} from "react-router-dom";
-import {serviceAddCategory, serviceAddTopic, serviceGetCategories} from "../../../services/forum/ForumService";
+import {
+  serviceAddCategory,
+  serviceAddTopic,
+  serviceEditCategory,
+  serviceGetCategories
+} from "../../../services/forum/ForumService";
 import * as htmlToText from "html-to-text";
 import moment from "moment";
 import DrawerComponent from "../drawer/DrawerComponent";
@@ -44,17 +49,30 @@ class CategoriesComponent extends Component {
   }
 
   submitDrawer = (data) => {
-    const categoryData = {categoryTitle: data.title, categoryDescription: data.content};
-    serviceAddCategory(categoryData).then(response => {
-      if (response) {
-        let categories = this.state.categories;
-        categories.push(response);
-        this.setState({categories:categories});
-        this.handleDrawerVisible(false)
-      }
-    }).catch(error => {
-      console.log(error);
-    });
+
+    console.log(data);
+
+    const categoryData = {categoryUid: data.uid || null, categoryTitle: data.title, categoryDescription: data.content};
+    let service;
+    if (data.type === 'newCategory') {
+      service = serviceAddCategory;
+    } else if (data.type === 'editCategory') {
+      service = serviceEditCategory;
+    }
+
+    service(categoryData, data.uid || null).then(response => {
+      console.log(response);
+    })
+
+  };
+
+  editCategory = (category) => {
+    const record = {
+      uid: category.uid,
+      title: category.categoryTitle,
+      content: category.categoryDescription
+    };
+    this.handleDrawerVisible(true, record, 'editCategory');
   };
 
   handleDrawerVisible = (flag, record, type) => {
@@ -92,8 +110,8 @@ class CategoriesComponent extends Component {
               key={item.categoryTitle}
             >
               <Skeleton title={false} loading={loading} active>
-                <Row gutter={16} type="flex" justify="space-between" style={{width: "100%"}}>
-                  <Col span={14} style={{margin: 'auto', marginLeft: 0}}>
+                <Row gutter={16} type="flex" justify="space-between" style={{width: "100%"}} align="middle">
+                  <Col span={14} style={{marginLeft: 0}}>
                     <List.Item.Meta
                       title={
                         <div style={{fontSize: 18}} className={"cat-topic-header"}>
@@ -108,12 +126,12 @@ class CategoriesComponent extends Component {
                     />
                   </Col>
 
-                  <Col span={6} style={{margin: "auto"}}>
+                  <Col span={5}>
                     <Col span={24}><FontAwesomeIcon icon={faPencilAlt}/> {item.categoryTopicsNumber || 0} tematy</Col>
                     <Col span={24}><FontAwesomeIcon icon={faComment}/> {item.categoryPostsNumber || 0} postów</Col>
                   </Col>
 
-                  <Col span={4} style={{margin: "auto"}}>
+                  <Col span={4}>
 
                     {item.categoryLatestPostDate
                       ? <span style={{fontSize: 12}}>
@@ -121,12 +139,21 @@ class CategoriesComponent extends Component {
                           to={"/forum/categories/" + item.uid + "/topics/" + item.categoryLatestTopicUid + "/posts?latest=" + item.categoryLatestPostUid}>
                           {moment(item.categoryLatestPostDate).fromNow()}
                         </NavLink> w temacie:
-                        <div className={"truncate"} style={{fontSize: 12}}>
+                        <div className={"category-latest truncate"} style={{fontSize: 12}}>
                           {htmlToText.fromString(item.categoryLatestTopic, {uppercaseHeadings: false})}
                         </div>
                       </span>
                       : "Brak postów"
                     }
+                  </Col>
+                  <Col span={1}>
+                    <Dropdown placement="bottomRight" trigger={['click']}
+                              overlay={
+                                <Menu><Menu.Item onClick={() => this.editCategory(item)} key="1">Edytuj</Menu.Item></Menu>
+                              }
+                    >
+                      <Button className={'category-more-btn'} type={'link'}><Icon type="more"/></Button>
+                    </Dropdown>
                   </Col>
                 </Row>
               </Skeleton>

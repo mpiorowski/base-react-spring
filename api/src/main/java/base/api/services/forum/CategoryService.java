@@ -48,6 +48,10 @@ public class CategoryService extends GenericService<CategoryEntity> {
     return dao.edit(entity);
   }
 
+  public CategoryEntity edit2(CategoryEntity entity) {
+    return dao.edit2(entity);
+  }
+
   @Override
   public boolean delete(String uid) {
     UUID uuid = UtilsUid.uidDecode(uid);

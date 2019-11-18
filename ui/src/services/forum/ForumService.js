@@ -15,6 +15,14 @@ export function serviceAddCategory(data) {
   })
 }
 
+export function serviceEditCategory(data, categoryUid) {
+  return apiRequest({
+    url: '/api/forum/categories/' + categoryUid,
+    method: 'PUT',
+    body: JSON.stringify(data)
+  })
+}
+
 export function serviceGetTopics(categoryUid) {
   return apiRequest({
     url: '/api/forum/categories/' + categoryUid + '/topics',

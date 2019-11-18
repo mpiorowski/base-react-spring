@@ -5,6 +5,7 @@ import base.api.logging.LogExecutionTime;
 import base.api.rest.forum.categories.dto.CategoryRequestDto;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import base.api.services.forum.CategoryService;
+import base.api.utils.UtilsUid;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,14 +107,14 @@ public class CategoriesController {
    */
   @LogExecutionTime
   @PutMapping("/{categoryUid}")
-  public ResponseEntity editCategory(
+  public ResponseEntity<CategoryRespondDto> editCategory(
       @PathVariable("categoryUid") String categoryUid,
       @RequestBody CategoryRequestDto categoryRequestDto) {
     CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
-    //    if (categoryService.edit(categoryEntity)) {
-    return new ResponseEntity<>(HttpStatus.OK);
-    //    }
-    //    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    categoryEntity.setUid(UtilsUid.uidDecode(categoryUid));
+    categoryEntity = categoryService.edit2(categoryEntity);
+    CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity);
+    return new ResponseEntity<>(categoryRespondDto, HttpStatus.OK);
   }
 
   /**

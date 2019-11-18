@@ -7,6 +7,7 @@ import {WrappedDrawerForm} from "./DrawerForm";
 
 const drawerHeader = {
   newCategory: 'Nowa kategoria',
+  editCategory: 'Edytuj kategorię',
   newPost: 'Dodaj nowy komentarz',
   editPost: 'Edytuj komentarz',
   replyPost: 'Odpowiedz na komentarz',

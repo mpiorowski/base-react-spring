@@ -43,10 +43,10 @@ class DrawerForm extends Component {
       <Form onSubmit={this.submitDrawer}>
         <div>
           <FormItem style={{display: "none"}}>
-            {getFieldDecorator('postUid', {initialValue: record.uid || null})(<Input/>)}
+            {getFieldDecorator('type', {initialValue: type})(<Input/>)}
           </FormItem>
           <FormItem style={{display: "none"}}>
-            {getFieldDecorator('replyUid', {initialValue: record.replyUid || null})(<Input/>)}
+            {getFieldDecorator('uid', {initialValue: record.uid || null})(<Input/>)}
           </FormItem>
 
           {drawer === 'topic' || drawer === 'category' ?
@@ -56,7 +56,7 @@ class DrawerForm extends Component {
                     required: true,
                     message: validationErrorMsg.empty,
                   }],
-                  initialValue: record.topicTitle || ''
+                  initialValue: record.title || ''
                 }
               )(
                 <Input placeholder={"Temat"} size={"large"} allowClear/>,
@@ -66,7 +66,7 @@ class DrawerForm extends Component {
           {drawer === 'topic' || drawer === 'category'
             ? <FormItem>
               {getFieldDecorator('content', {
-                  initialValue: record.postContent || record.topicDescription || '',
+                  initialValue: record.content || '',
                   rules: [
                     {required: (drawer === 'category'), message: validationErrorMsg.empty},
                     {max: 10000, message: validationErrorMsg.maxSize10000}
@@ -126,7 +126,7 @@ class DrawerForm extends Component {
           {/*    <Icon type="plus"/> Dodaj załączniki*/}
           {/*  </Button> : ''}*/}
           <Button htmlType={"submit"} type="primary" style={{marginRight: 8}}>
-            {type === 'editTopic' || type === 'editPost'
+            {type === 'editTopic' || type === 'editPost' || type === 'editCategory'
               ? <span><Icon type="edit"/> Edytuj</span>
               : <span><Icon type="plus"/> Dodaj</span>}
           </Button>
