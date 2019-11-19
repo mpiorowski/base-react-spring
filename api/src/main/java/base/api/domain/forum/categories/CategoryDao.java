@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface CategoryDao extends GenericDao<CategoryEntity> {
 
   @Override
-  @Select({"select * from", Table.NAME, "where is_deleted is false"})
+  @Select({"select * from", Table.NAME, "where is_deleted is false", "order by created_at desc"})
   List<CategoryEntity> findAll();
 
   @Override
@@ -25,11 +25,10 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
   Optional<CategoryEntity> add(CategoryEntity entity);
 
   @Override
-  @Update({
+  @Select({
     "update",
     Table.NAME,
-    "set category_title = #{categoryTitle},",
-    "category_description = #{categoryDescription},",
+    Table.UPDATE,
     "where uid = #{uid} and is_deleted is false",
     "returning *"
   })
@@ -80,7 +79,7 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
     private static final String INSERT =
         "(" + COL1 + "," + COL2 + "," + COL3 + ") values (" + VAL1 + "," + VAL2 + "," + VAL3 + ")";
     private static final String UPDATE =
-        COL1 + "=" + VAL1 + "," + COL2 + "=" + VAL2 + "," + COL3 + "=" + VAL3;
+        "set " + COL1 + "=" + VAL1 + "," + COL2 + "=" + VAL2;
 
     private Table() {}
   }

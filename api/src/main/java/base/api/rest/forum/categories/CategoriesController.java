@@ -75,7 +75,8 @@ public class CategoriesController {
     Optional<CategoryEntity> categoryEntity = categoryService.findByUid(categoryUid);
 
     if (categoryEntity.isPresent()) {
-      CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity.get());
+      CategoryRespondDto categoryRespondDto =
+          categoryMapper.entityToRespondDto(categoryEntity.get());
       return ResponseEntity.ok(categoryRespondDto);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -89,13 +90,17 @@ public class CategoriesController {
    */
   @LogExecutionTime
   @PostMapping
-  public ResponseEntity<CategoryRespondDto> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
+  public ResponseEntity<CategoryRespondDto> addCategory(
+      @RequestBody CategoryRequestDto categoryRequestDto) {
 
     CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
     Optional<CategoryEntity> category = categoryService.add(categoryEntity);
-    CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity);
 
-    return new ResponseEntity<>(categoryRespondDto, HttpStatus.CREATED);
+    if (category.isPresent()) {
+      CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(category.get());
+      return new ResponseEntity<>(categoryRespondDto, HttpStatus.CREATED);
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   /**

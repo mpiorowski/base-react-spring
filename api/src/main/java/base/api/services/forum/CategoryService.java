@@ -26,9 +26,8 @@ public class CategoryService extends GenericService<CategoryEntity> {
   }
 
   @Override
-  public Optional<CategoryEntity> findByUid(String huid) {
-    UUID uid = UtilsUid.uidDecode(huid);
-    return dao.findByUid(uid);
+  public Optional<CategoryEntity> findByUid(String uid) {
+    return dao.findByUid(UtilsUid.uidDecode(uid));
   }
 
   @Override

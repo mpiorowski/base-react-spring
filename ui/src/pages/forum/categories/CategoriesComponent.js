@@ -6,7 +6,6 @@ import "./CategoriesComponent.less";
 import {NavLink} from "react-router-dom";
 import {
   serviceAddCategory,
-  serviceAddTopic,
   serviceEditCategory,
   serviceGetCategories
 } from "../../../services/forum/ForumService";
@@ -17,19 +16,21 @@ import DrawerComponent from "../drawer/DrawerComponent";
 class CategoriesComponent extends Component {
 
   state = {
-    categories: [{
-      uid: '',
-      categoryTitle: '',
-      categoryDescription: '',
-      categoryTopicsNumber: '',
-      categoryPostsNumber: '',
-      categoryLatestTopicUid: '',
-      categoryLatestTopic: '',
-      categoryLatestPostUid: '',
-      categoryLatestPost: '',
-      categoryLatestPostAuthor: '',
-      categoryLatestPostDate: '',
-    }],
+    categories: new Map()
+    //   [{
+    //   uid: '',
+    //   categoryTitle: '',
+    //   categoryDescription: '',
+    //   categoryTopicsNumber: '',
+    //   categoryPostsNumber: '',
+    //   categoryLatestTopicUid: '',
+    //   categoryLatestTopic: '',
+    //   categoryLatestPostUid: '',
+    //   categoryLatestPost: '',
+    //   categoryLatestPostAuthor: '',
+    //   categoryLatestPostDate: '',
+    // }]
+    ,
     loading: true,
     drawerData: {
       visibility: false,
@@ -41,8 +42,13 @@ class CategoriesComponent extends Component {
   componentDidMount() {
     serviceGetCategories().then(response => {
       console.log('category response', response);
+      let categoriesMap = new Map();
+      response.forEach(category => {
+        categoriesMap.set(category.uid, category);
+      });
+      console.log(categoriesMap);
       this.setState({
-        categories: response,
+        categories: categoriesMap,
         loading: false,
       });
     })
@@ -61,7 +67,12 @@ class CategoriesComponent extends Component {
     }
 
     service(categoryData, data.uid || null).then(response => {
-      console.log(response);
+      let categories = this.state.categories;
+      categories.set(response.uid, response);
+      this.setState({categories: categories});
+      this.handleDrawerVisible(false);
+    }).catch(err => {
+      console.log(err);
     })
 
   };
@@ -90,6 +101,8 @@ class CategoriesComponent extends Component {
   render() {
     const {categories, loading, drawerData} = this.state;
 
+    console.log(categories);
+
     return (
       <div>
         <div className={"cat-header"}>Kategorie</div>
@@ -97,13 +110,7 @@ class CategoriesComponent extends Component {
           header={""}
           itemLayout="horizontal"
           loading={loading}
-          // pagination={{
-          //   onChange: (page) => {
-          //     console.log(page);
-          //   },
-          //   pageSize: 16,
-          // }}
-          dataSource={categories}
+          dataSource={[...categories.values()]}
           renderItem={item => (
 
             <List.Item
