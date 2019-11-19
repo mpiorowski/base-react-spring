@@ -4,7 +4,6 @@ import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.topics.TopicDao;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.domain.forum.topics.TopicWithPostsEntity;
-import base.api.domain.generic.ResponseDao;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsUid;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ public class TopicService extends GenericService<TopicEntity> {
   @Override
   public Optional<TopicEntity> findByUid(String uid) {
     UUID uuid = UtilsUid.uidDecode(uid);
-    return dao.findByUid1(uuid);
+    return dao.findByUid(uuid);
   }
 
   public List<TopicWithPostsEntity> findTopicsWithPostsByCategoryId(Integer id) {
@@ -45,31 +44,22 @@ public class TopicService extends GenericService<TopicEntity> {
   }
 
   @Override
-  public String add(TopicEntity entity) {
-    ResponseDao responseDao = dao.add(entity);
-    return UtilsUid.uidEncode(responseDao.getUid());
+  public Optional<TopicEntity> add(TopicEntity entity) {
+    return dao.add(entity);
   }
 
   @Transactional
-  public String add(CategoryEntity categoryEntity, TopicEntity topicEntity) {
+  public Optional<TopicEntity> add(CategoryEntity categoryEntity, TopicEntity topicEntity) {
 
     topicEntity.setTopicCategory(categoryEntity.getId());
     topicEntity.setTopicAuthor(currentUserEntity());
-    ResponseDao responseDao = dao.add(topicEntity);
-
-    return UtilsUid.uidEncode(responseDao.getUid());
+    return dao.add(topicEntity);
   }
 
-  //TODO - validate user
+  // TODO - validate user
   @Override
-  public ResponseDao edit(TopicEntity entity) {
+  public Optional<TopicEntity> edit(TopicEntity entity) {
     return dao.edit(entity);
-  }
-
-
-  //TODO - change all edit to return entity
-  public Optional<TopicEntity> edit1(TopicEntity entity) {
-    return dao.edit1(entity);
   }
 
   @Override

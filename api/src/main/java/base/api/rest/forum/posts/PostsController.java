@@ -125,7 +125,7 @@ public class PostsController {
    * @return postUid
    */
   @PostMapping()
-  public ResponseEntity<RestResponse<String>> addPost(
+  public ResponseEntity<PostEntity> addPost(
       @Valid @PathVariable("topicUid") String topicUid,
       @Valid @RequestBody PostRequestDto postRequestDto) {
 
@@ -141,10 +141,10 @@ public class PostsController {
         replyEntity.ifPresent(entity -> postEntity.setReplyId(entity.getId()));
       }
       postEntity.setTopicId(topic.get().getId());
-      String postUid = postService.add(postEntity);
+      Optional<PostEntity> post = postService.add(postEntity);
 
-      RestResponse<String> restResponse = new RestResponse<>(postUid);
-      return new ResponseEntity<>(restResponse, HttpStatus.CREATED);
+      return post.map(val -> new ResponseEntity<>(val, HttpStatus.CREATED))
+          .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -159,7 +159,7 @@ public class PostsController {
    * @return void
    */
   @PutMapping("/{postUid}")
-  public ResponseEntity<RestResponse<String>> editPost(
+  public ResponseEntity<PostEntity> editPost(
       @Valid @PathVariable("postUid") String postUid,
       @Valid @PathVariable("topicUid") String topicUid,
       @Valid @RequestBody PostRequestDto postRequestDto) {
@@ -169,12 +169,9 @@ public class PostsController {
       PostEntity postEntity = postMapper.requestDtoToEntity(postRequestDto);
       postEntity.setUid(UtilsUid.uidDecode(postUid));
       postEntity.setTopicId(topic.get().getId());
-      var responseDao = postService.edit(postEntity);
-      if (Utils.isNotEmpty(responseDao.getUid())) {
-        String responseUid = UtilsUid.uidEncode(responseDao.getUid());
-        RestResponse<String> restResponse = new RestResponse<>(responseUid);
-        return new ResponseEntity<>(restResponse, HttpStatus.OK);
-      }
+      Optional<PostEntity> post = postService.edit(postEntity);
+      return post.map(val -> new ResponseEntity<>(val, HttpStatus.CREATED))
+        .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }

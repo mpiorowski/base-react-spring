@@ -46,18 +46,16 @@ public class PostService extends GenericService<PostEntity> {
   }
 
   @Override
-  public String add(PostEntity entity) {
+  public Optional<PostEntity> add(PostEntity entity) {
     entity.setPostAuthor(currentUserEntity());
-    ResponseDao responseDao = dao.add(entity);
-    return UtilsUid.uidEncode(responseDao.getUid());
+    return dao.add(entity);
   }
 
   //TODO - validate user
   @Override
-  public ResponseDao edit(PostEntity entity) {
+  public Optional<PostEntity> edit(PostEntity entity) {
     entity.setPostAuthor(currentUserEntity());
-    ResponseDao responseDao = dao.edit(entity);
-    return responseDao;
+    return dao.edit(entity);
   }
 
   @Override

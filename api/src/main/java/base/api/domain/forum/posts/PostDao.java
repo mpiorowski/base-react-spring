@@ -2,7 +2,6 @@ package base.api.domain.forum.posts;
 
 import base.api.domain.forum.NewestEntity;
 import base.api.domain.generic.GenericDao;
-import base.api.domain.generic.ResponseDao;
 import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
@@ -15,13 +14,13 @@ import java.util.UUID;
 @Component
 public interface PostDao extends GenericDao<PostEntity> {
 
-  default List<PostEntity> findAll() {
-    return findAll(PostDao.Table.NAME);
-  }
+  @Override
+  @Select({"select * from", Table.NAME, "where is_deleted is false"})
+  List<PostEntity> findAll();
 
-  default Optional<PostEntity> findByUid(UUID uid) {
-    return findByUid(PostDao.Table.NAME, uid);
-  }
+  @Override
+  @Select({"select * from", Table.NAME, "where is_deleted is false and uid = #{uid}"})
+  Optional<PostEntity> findByUid(UUID uid);
 
   @Select("select count(*) from forum_posts where fk_topic_id = #{topicId}")
   int countPostsByTopicId(@Param("topicId") long topicId);
@@ -54,7 +53,7 @@ public interface PostDao extends GenericDao<PostEntity> {
           + "values "
           + "(#{postContent}, #{replyId}, #{topicId}, #{postAuthor.id}) "
           + "returning id, uid")
-  ResponseDao add(PostEntity entity);
+  Optional<PostEntity> add(PostEntity entity);
 
   @Override
   @Select({
@@ -63,7 +62,7 @@ public interface PostDao extends GenericDao<PostEntity> {
     "where uid = #{uid} and fk_user_id = #{postAuthor.id} and is_deleted is false",
     "returning id, uid"
   })
-  ResponseDao edit(PostEntity entity);
+  Optional<PostEntity> edit(PostEntity entity);
 
   @Override
   @Delete("update forum_posts set is_deleted = true where uid = #{uid}")

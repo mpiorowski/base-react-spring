@@ -92,7 +92,7 @@ public class CategoriesController {
   public ResponseEntity<CategoryRespondDto> addCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
 
     CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
-    categoryEntity = categoryService.add2(categoryEntity);
+    Optional<CategoryEntity> category = categoryService.add(categoryEntity);
     CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity);
 
     return new ResponseEntity<>(categoryRespondDto, HttpStatus.CREATED);
@@ -112,9 +112,13 @@ public class CategoriesController {
       @RequestBody CategoryRequestDto categoryRequestDto) {
     CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
     categoryEntity.setUid(UtilsUid.uidDecode(categoryUid));
-    categoryEntity = categoryService.edit2(categoryEntity);
-    CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity);
-    return new ResponseEntity<>(categoryRespondDto, HttpStatus.OK);
+    Optional<CategoryEntity> category = categoryService.edit(categoryEntity);
+
+    if (category.isPresent()) {
+      CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity);
+      return new ResponseEntity<>(categoryRespondDto, HttpStatus.OK);
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   /**

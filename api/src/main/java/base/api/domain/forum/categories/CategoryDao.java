@@ -1,7 +1,6 @@
 package base.api.domain.forum.categories;
 
 import base.api.domain.generic.GenericDao;
-import base.api.domain.generic.ResponseDao;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -12,34 +11,18 @@ import java.util.UUID;
 @Repository
 @Mapper
 public interface CategoryDao extends GenericDao<CategoryEntity> {
-  default List<CategoryEntity> findAll() {
-    return findAll(Table.NAME);
-  }
-
-  default Optional<CategoryEntity> findByUid(UUID uid) {
-    return findByUid(Table.NAME, uid);
-  }
 
   @Override
-  @Select({
-    "insert into",
-    Table.NAME,
-    "(category_title, category_description, fk_user_id)",
-    "values",
-    "(#{categoryTitle}, #{categoryDescription}, #{categoryAuthor.id})",
-    "returning *"
-  })
-  ResponseDao add(CategoryEntity entity);
+  @Select({"select * from", Table.NAME, "where is_deleted is false"})
+  List<CategoryEntity> findAll();
 
-  @Select({
-    "insert into",
-    Table.NAME,
-    "(category_title, category_description, fk_user_id)",
-    "values",
-    "(#{categoryTitle}, #{categoryDescription}, #{categoryAuthor.id})",
-    "returning *"
-  })
-  CategoryEntity add2(CategoryEntity entity);
+  @Override
+  @Select({"select * from", Table.NAME, "where is_deleted is false and uid = #{uid}"})
+  Optional<CategoryEntity> findByUid(UUID uid);
+
+  @Override
+  @Select({"insert into", Table.NAME, Table.INSERT, "returning *"})
+  Optional<CategoryEntity> add(CategoryEntity entity);
 
   @Override
   @Update({
@@ -47,21 +30,10 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
     Table.NAME,
     "set category_title = #{categoryTitle},",
     "category_description = #{categoryDescription},",
-    "fk_user_id = 1",
-    "where uid = #{uid} and is_deleted is false",
-    "returning id, uid"
-  })
-  ResponseDao edit(CategoryEntity entity);
-
-  @Select({
-    "update",
-    Table.NAME,
-    "set category_title = #{categoryTitle},",
-    "category_description = #{categoryDescription}",
     "where uid = #{uid} and is_deleted is false",
     "returning *"
   })
-  CategoryEntity edit2(CategoryEntity entity);
+  Optional<CategoryEntity> edit(CategoryEntity entity);
 
   @Override
   @Delete({"update " + Table.NAME + " set is_deleted = true where uid = #{uid}"})
@@ -99,6 +71,16 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
 
   class Table {
     private static final String NAME = "forum_categories";
+    private static final String COL1 = "category_title";
+    private static final String VAL1 = "#{categoryTitle}";
+    private static final String COL2 = "category_description";
+    private static final String VAL2 = "#{categoryDescription}";
+    private static final String COL3 = "fk_user_id";
+    private static final String VAL3 = "#{categoryAuthor.id}";
+    private static final String INSERT =
+        "(" + COL1 + "," + COL2 + "," + COL3 + ") values (" + VAL1 + "," + VAL2 + "," + VAL3 + ")";
+    private static final String UPDATE =
+        COL1 + "=" + VAL1 + "," + COL2 + "=" + VAL2 + "," + COL3 + "=" + VAL3;
 
     private Table() {}
   }

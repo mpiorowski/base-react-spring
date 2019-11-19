@@ -1,12 +1,10 @@
 package base.api.domain.forum.topics;
 
 import base.api.domain.generic.GenericDao;
-import base.api.domain.generic.ResponseDao;
 import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,23 +16,20 @@ public interface TopicDao extends GenericDao<TopicEntity> {
   @Select("update forum_topics set topic_views = topic_views + 1 where topic_id = #{topicId}")
   void increaseTopicView(@Param("topicId") int topicId);
 
-  default List<TopicEntity> findAll() {
-    return findAll(TopicDao.Table.NAME);
-  }
+  @Override
+  @Select({"select * from", Table.NAME, "where is_deleted is false"})
+  List<TopicEntity> findAll();
 
-  @Select({"select * from forum_topics where uid = #{uid}"})
+  @Override
+  @Select({"select * from", Table.NAME, "where is_deleted is false and uid = #{uid}"})
   @Results({
     @Result(
-        property = "topicAuthor",
-        column = "fk_user_id",
-        javaType = UserEntity.class,
-        one = @One(select = "selectUser"))
+      property = "topicAuthor",
+      column = "fk_user_id",
+      javaType = UserEntity.class,
+      one = @One(select = "selectUser"))
   })
-  Optional<TopicEntity> findByUid1(UUID uid);
-
-//  default Optional<TopicEntity> findByUid(UUID uid) {
-//    return findByUid(TopicDao.Table.NAME, uid);
-//  }
+  Optional<TopicEntity> findByUid(UUID uid);
 
   @Select(
       "select * from forum_topics where fk_category_id = #{id} and is_deleted is false order by created_at desc")
@@ -55,18 +50,9 @@ public interface TopicDao extends GenericDao<TopicEntity> {
     "values (#{topicTitle}, #{topicDescription}, #{topicCategory}, #{topicAuthor.id}) ",
     "returning id, uid"
   })
-  ResponseDao add(TopicEntity entity);
+  Optional<TopicEntity> add(TopicEntity entity);
 
   @Override
-  @Select({
-    "update forum_topics set",
-    "topic_title = #{topicTitle},",
-    "topic_description = #{topicDescription}",
-    "where uid = #{uid} and is_deleted is false",
-    "returning *"
-  })
-  ResponseDao edit(TopicEntity entity);
-
   @Select({
     "update forum_topics ft set",
     "topic_title = #{topicTitle},",
@@ -79,7 +65,7 @@ public interface TopicDao extends GenericDao<TopicEntity> {
     @Result(property = "topicAuthor.userName", column = "user_name"),
     @Result(property = "topicAuthor.userEmail", column = "user_email")
   })
-  Optional<TopicEntity> edit1(TopicEntity entity);
+  Optional<TopicEntity> edit(TopicEntity entity);
 
   @Override
   @Delete("update forum_topics set is_deleted = true where uid = #{uid}")

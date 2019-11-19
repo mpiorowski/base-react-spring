@@ -114,17 +114,22 @@ public class TopicsController {
    * @return NewTopicResponseDto object with the uid of both the topic and post
    */
   @PostMapping()
-  public ResponseEntity<NewTopicResponseDto> addTopic(
+  public ResponseEntity<TopicDataDto> addTopic(
       @PathVariable("categoryUid") String categoryUid,
       @Valid @RequestBody NewTopicRequestDto newTopicRequestDto) {
 
     Optional<CategoryEntity> categoryEntity = categoryService.findByUid(categoryUid);
     if (categoryEntity.isPresent()) {
       TopicEntity topicEntity = topicMapper.newDtoToEntity(newTopicRequestDto);
-      String topicUid = topicService.add(categoryEntity.get(), topicEntity);
-      var responseDto = new NewTopicResponseDto(topicUid);
+      Optional<TopicEntity> topic = topicService.add(categoryEntity.get(), topicEntity);
 
-      return new ResponseEntity<>(responseDto, HttpStatus.OK);
+      if (topic.isPresent()) {
+        TopicDataDto topicDataDto = topicMapper.entityToDataDto(topic.get());
+        return new ResponseEntity<>(topicDataDto, HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      }
+
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -147,7 +152,7 @@ public class TopicsController {
     if (category.isPresent()) {
       TopicEntity topic = topicMapper.editDtoToEntity(editTopicRequestDto);
       topic.setUid(UtilsUid.uidDecode(topicUid));
-      var topicEntity = topicService.edit1(topic);
+      var topicEntity = topicService.edit(topic);
       if (topicEntity.isPresent()) {
         TopicDataDto topicDataDto = topicMapper.entityToDataDto(topicEntity.get());
         return new ResponseEntity<>(topicDataDto, HttpStatus.OK);

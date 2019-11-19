@@ -33,10 +33,10 @@ public abstract class GenericService<E> {
   public abstract Optional<E> findByUid(String uid);
 
   @Transactional
-  public abstract String add(E entity);
+  public abstract Optional<E> add(E entity);
 
   @Transactional
-  public abstract ResponseDao edit(E entity);
+  public abstract Optional<E> edit(E entity);
 
   @Transactional
   public abstract boolean delete(String uid);

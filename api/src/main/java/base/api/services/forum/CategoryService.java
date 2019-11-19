@@ -3,7 +3,6 @@ package base.api.services.forum;
 import base.api.domain.forum.categories.CategoryDao;
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.categories.CategoryLatestEntity;
-import base.api.domain.generic.ResponseDao;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsUid;
 import org.springframework.stereotype.Service;
@@ -33,23 +32,14 @@ public class CategoryService extends GenericService<CategoryEntity> {
   }
 
   @Override
-  public String add(CategoryEntity entity) {
-    return null;
-  }
-
-  public CategoryEntity add2(CategoryEntity entity) {
+  public Optional<CategoryEntity> add(CategoryEntity entity) {
     entity.setCategoryAuthor(currentUserEntity());
-    CategoryEntity response = dao.add2(entity);
-    return response;
+    return dao.add(entity);
   }
 
   @Override
-  public ResponseDao edit(CategoryEntity entity) {
+  public Optional<CategoryEntity> edit(CategoryEntity entity) {
     return dao.edit(entity);
-  }
-
-  public CategoryEntity edit2(CategoryEntity entity) {
-    return dao.edit2(entity);
   }
 
   @Override
