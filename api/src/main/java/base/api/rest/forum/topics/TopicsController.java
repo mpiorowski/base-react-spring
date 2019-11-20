@@ -6,15 +6,15 @@ import base.api.domain.forum.topics.TopicWithPostsEntity;
 import base.api.logging.LogExecutionTime;
 import base.api.rest.forum.categories.CategoryMapper;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
-import base.api.rest.forum.posts.PostMapper;
-import base.api.rest.forum.topics.dto.*;
+import base.api.rest.forum.topics.dto.TopicDataDto;
+import base.api.rest.forum.topics.dto.TopicRequestDto;
+import base.api.rest.forum.topics.dto.TopicResponseDto;
+import base.api.rest.forum.topics.dto.TopicsResponseDto;
 import base.api.services.forum.CategoryService;
 import base.api.services.forum.PostService;
 import base.api.services.forum.TopicService;
 import base.api.utils.UtilsUid;
 import org.mapstruct.factory.Mappers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +56,8 @@ public class TopicsController {
 
     if (category.isPresent()) {
       CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(category.get());
-      List<TopicWithPostsEntity> topics = topicService.findTopicsWithPostsByCategoryId(category.get().getId());
+      List<TopicWithPostsEntity> topics =
+          topicService.findTopicsWithPostsByCategoryId(category.get().getId());
 
       List<TopicResponseDto> topicsDto =
           topics.stream()
@@ -124,7 +125,6 @@ public class TopicsController {
       } else {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
       }
-
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }

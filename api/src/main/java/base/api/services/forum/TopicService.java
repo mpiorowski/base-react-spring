@@ -1,6 +1,5 @@
 package base.api.services.forum;
 
-import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.topics.TopicDao;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.domain.forum.topics.TopicWithPostsEntity;
@@ -8,7 +7,6 @@ import base.api.domain.user.UserEntity;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsUid;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,11 +16,9 @@ import java.util.UUID;
 public class TopicService extends GenericService<TopicEntity> {
 
   private TopicDao dao;
-  private PostService postService;
 
-  public TopicService(TopicDao dao, PostService postService) {
+  public TopicService(TopicDao dao) {
     this.dao = dao;
-    this.postService = postService;
   }
 
   @Override
@@ -45,11 +41,10 @@ public class TopicService extends GenericService<TopicEntity> {
     topicEntity.setTopicAuthor(currentUserEntity());
     Optional<TopicEntity> addEntity = dao.add(topicEntity);
     addEntity.ifPresent(
-      entity -> {
-        UserEntity userEntity = dao.selectUser(entity.getTopicAuthor().getId());
-        entity.setTopicAuthor(userEntity);
-      }
-    );
+        entity -> {
+          UserEntity userEntity = dao.selectUser(entity.getTopicAuthor().getId());
+          entity.setTopicAuthor(userEntity);
+        });
     return addEntity;
   }
 
@@ -58,11 +53,10 @@ public class TopicService extends GenericService<TopicEntity> {
   public Optional<TopicEntity> edit(TopicEntity topicEntity) {
     Optional<TopicEntity> editEntity = dao.edit(topicEntity);
     editEntity.ifPresent(
-      entity -> {
-        UserEntity userEntity = dao.selectUser(entity.getTopicAuthor().getId());
-        entity.setTopicAuthor(userEntity);
-      }
-    );
+        entity -> {
+          UserEntity userEntity = dao.selectUser(entity.getTopicAuthor().getId());
+          entity.setTopicAuthor(userEntity);
+        });
     return editEntity;
   }
 
@@ -73,7 +67,6 @@ public class TopicService extends GenericService<TopicEntity> {
   }
 
   public boolean changeStatus(String uid) {
-
     UUID uuid = UtilsUid.uidDecode(uid);
     return dao.changeStatus(uuid) == 1;
   }
