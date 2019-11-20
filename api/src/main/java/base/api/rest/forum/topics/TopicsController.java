@@ -4,7 +4,6 @@ import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.domain.forum.topics.TopicWithPostsEntity;
 import base.api.logging.LogExecutionTime;
-import base.api.rest.RestResponse;
 import base.api.rest.forum.categories.CategoryMapper;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import base.api.rest.forum.posts.PostMapper;
@@ -12,7 +11,6 @@ import base.api.rest.forum.topics.dto.*;
 import base.api.services.forum.CategoryService;
 import base.api.services.forum.PostService;
 import base.api.services.forum.TopicService;
-import base.api.utils.Utils;
 import base.api.utils.UtilsUid;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
@@ -30,15 +28,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/forum/categories/{categoryUid}/topics")
 public class TopicsController {
 
-  private static final Logger logger = LoggerFactory.getLogger(TopicsController.class);
-
   private final CategoryService categoryService;
   private final TopicService topicService;
   private final PostService postService;
 
   private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
   private TopicMapper topicMapper = Mappers.getMapper(TopicMapper.class);
-  private PostMapper postMapper = Mappers.getMapper(PostMapper.class);
 
   public TopicsController(
       CategoryService categoryService, TopicService topicService, PostService postService) {
@@ -116,13 +111,13 @@ public class TopicsController {
   @PostMapping()
   public ResponseEntity<TopicDataDto> addTopic(
       @PathVariable("categoryUid") String categoryUid,
-      @Valid @RequestBody NewTopicRequestDto newTopicRequestDto) {
+      @Valid @RequestBody TopicRequestDto topicRequestDto) {
 
     Optional<CategoryEntity> categoryEntity = categoryService.findByUid(categoryUid);
     if (categoryEntity.isPresent()) {
-      TopicEntity topicEntity = topicMapper.newDtoToEntity(newTopicRequestDto);
-      Optional<TopicEntity> topic = topicService.add(categoryEntity.get(), topicEntity);
-
+      TopicEntity topicEntity = topicMapper.requestDtoToEntity(topicRequestDto);
+      topicEntity.setTopicCategory(categoryEntity.get().getId());
+      Optional<TopicEntity> topic = topicService.add(topicEntity);
       if (topic.isPresent()) {
         TopicDataDto topicDataDto = topicMapper.entityToDataDto(topic.get());
         return new ResponseEntity<>(topicDataDto, HttpStatus.OK);
@@ -139,18 +134,18 @@ public class TopicsController {
    *
    * @param categoryUid uid of the parent category
    * @param topicUid uid of the topic
-   * @param editTopicRequestDto object with topic data
+   * @param topicRequestDto object with topic data
    * @return void
    */
   @PutMapping("/{topicUid}")
   public ResponseEntity<TopicDataDto> editTopic(
       @PathVariable("categoryUid") String categoryUid,
       @PathVariable("topicUid") String topicUid,
-      @Valid @RequestBody EditTopicRequestDto editTopicRequestDto) {
+      @Valid @RequestBody TopicRequestDto topicRequestDto) {
 
     Optional<CategoryEntity> category = categoryService.findByUid(categoryUid);
     if (category.isPresent()) {
-      TopicEntity topic = topicMapper.editDtoToEntity(editTopicRequestDto);
+      TopicEntity topic = topicMapper.requestDtoToEntity(topicRequestDto);
       topic.setUid(UtilsUid.uidDecode(topicUid));
       var topicEntity = topicService.edit(topic);
       if (topicEntity.isPresent()) {

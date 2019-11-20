@@ -25,9 +25,6 @@ public interface PostDao extends GenericDao<PostEntity> {
   @Select("select count(*) from forum_posts where fk_topic_id = #{topicId}")
   int countPostsByTopicId(@Param("topicId") long topicId);
 
-  @Select("SELECT * from sys_users where id = #{id} and is_deleted is false")
-  UserEntity selectUser(Long id);
-
   @Select(
       "select * from forum_posts fp "
           + "join sys_users su on fk_user_id = su.id "

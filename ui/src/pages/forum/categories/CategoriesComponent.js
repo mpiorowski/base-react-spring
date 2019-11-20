@@ -55,9 +55,6 @@ class CategoriesComponent extends Component {
   }
 
   submitDrawer = (data) => {
-
-    console.log(data);
-
     const categoryData = {categoryUid: data.uid || null, categoryTitle: data.title, categoryDescription: data.content};
     let service;
     if (data.type === 'newCategory') {
@@ -67,6 +64,8 @@ class CategoriesComponent extends Component {
     }
 
     service(categoryData, data.uid || null).then(response => {
+      console.log('category submit', response);
+
       let categories = this.state.categories;
       categories.set(response.uid, response);
       this.setState({categories: categories});

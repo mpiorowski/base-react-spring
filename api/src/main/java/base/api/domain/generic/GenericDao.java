@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface GenericDao<E> {
 
   @Select("select * from sys_users where is_deleted is false and id = #{id}")
-  UserEntity selectUser(Long id);
+  UserEntity selectUser(Integer id);
 
   List<E> findAll();
 

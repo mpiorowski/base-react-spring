@@ -1,7 +1,6 @@
 package base.api.domain.forum.topics;
 
 import base.api.domain.generic.GenericDao;
-import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
@@ -21,15 +20,42 @@ public interface TopicDao extends GenericDao<TopicEntity> {
   List<TopicEntity> findAll();
 
   @Override
-  @Select({"select * from", Table.NAME, "where is_deleted is false and uid = #{uid}"})
+  @Select({
+    "select ft.*, su.user_name as userName, su.user_email as userEmail, su.uid as userUid from",
+    Table.NAME,
+    "as ft",
+    "join sys_users su on ft.fk_user_id = su.id",
+    "where ft.is_deleted is false and ft.uid = #{uid}"
+  })
   @Results({
-    @Result(
-      property = "topicAuthor",
-      column = "fk_user_id",
-      javaType = UserEntity.class,
-      one = @One(select = "selectUser"))
+    @Result(property = "topicAuthor.uid", column = "userUid"),
+    @Result(property = "topicAuthor.userName", column = "userName"),
+    @Result(property = "topicAuthor.userEmail", column = "userEmail"),
   })
   Optional<TopicEntity> findByUid(UUID uid);
+
+  @Override
+  @Select({"insert into", Table.NAME, Table.INSERT, "returning *"})
+  @Results({
+    @Result(property = "topicAuthor.id", column = "fk_user_id"),
+  })
+  Optional<TopicEntity> add(TopicEntity entity);
+
+  @Override
+  @Select({
+    "update forum_topics",
+    Table.UPDATE,
+    "where uid = #{uid} and is_deleted is false",
+    "returning *"
+  })
+  @Results({
+    @Result(property = "topicAuthor.id", column = "fk_user_id"),
+  })
+  Optional<TopicEntity> edit(TopicEntity entity);
+
+  @Override
+  @Delete("update forum_topics set is_deleted = true where uid = #{uid}")
+  int delete(UUID uid);
 
   @Select(
       "select * from forum_topics where fk_category_id = #{id} and is_deleted is false order by created_at desc")
@@ -44,38 +70,38 @@ public interface TopicDao extends GenericDao<TopicEntity> {
   })
   List<TopicWithPostsEntity> findTopicsWithPostsByCategoryId(Integer id);
 
-  @Override
-  @Select({
-    "insert into forum_topics (topic_title, topic_description, fk_category_id, fk_user_id) ",
-    "values (#{topicTitle}, #{topicDescription}, #{topicCategory}, #{topicAuthor.id}) ",
-    "returning id, uid"
-  })
-  Optional<TopicEntity> add(TopicEntity entity);
-
-  @Override
-  @Select({
-    "update forum_topics ft set",
-    "topic_title = #{topicTitle},",
-    "topic_description = #{topicDescription}",
-    "from sys_users su where su.id = ft.fk_user_id",
-    "and ft.uid = #{uid} and ft.is_deleted is false",
-    "returning *"
-  })
-  @Results({
-    @Result(property = "topicAuthor.userName", column = "user_name"),
-    @Result(property = "topicAuthor.userEmail", column = "user_email")
-  })
-  Optional<TopicEntity> edit(TopicEntity entity);
-
-  @Override
-  @Delete("update forum_topics set is_deleted = true where uid = #{uid}")
-  int delete(UUID uid);
-
   @Update("update forum_topics set active = not active where uid = #{uid} and is_deleted is false")
   int changeStatus(UUID uid);
 
   class Table {
     private static final String NAME = "forum_topics";
+    private static final String COL1 = "topic_title";
+    private static final String VAL1 = "#{topicTitle}";
+    private static final String COL2 = "topic_description";
+    private static final String VAL2 = "#{topicDescription}";
+    private static final String COL3 = "fk_category_id";
+    private static final String VAL3 = "#{topicCategory}";
+    private static final String COL4 = "fk_user_id";
+    private static final String VAL4 = "#{topicAuthor.id}";
+    private static final String INSERT =
+        "("
+            + COL1
+            + ","
+            + COL2
+            + ","
+            + COL3
+            + ","
+            + COL4
+            + ") values ("
+            + VAL1
+            + ","
+            + VAL2
+            + ","
+            + VAL3
+            + ","
+            + VAL4
+            + ")";
+    private static final String UPDATE = "set " + COL1 + "=" + VAL1 + "," + COL2 + "=" + VAL2;
 
     private Table() {}
   }

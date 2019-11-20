@@ -100,7 +100,7 @@ class PostComponent extends Component {
     const replyUid = formData.replyUid;
 
     submitForumDrawer(formData, categoryUid, topicUid).then(response => {
-
+        console.log('posts submit', response);
         //edit topic
         if (formData.title) {
           this.setState({
@@ -191,14 +191,16 @@ class PostComponent extends Component {
     });
   };
   replyPost = (post) => {
-    const replyPost = {postUid: null, postContent: '', replyUid: post.uid};
-    this.handleDrawerVisible(true, replyPost, 'replyPost');
+    const data = {postUid: null, postContent: '', replyUid: post.uid};
+    this.handleDrawerVisible(true, data, 'replyPost');
   };
   editPost = (post) => {
-    this.handleDrawerVisible(true, post, 'editPost');
+    const data = {uid: post.uid, content: post.postContent,}
+    this.handleDrawerVisible(true, data, 'editPost');
   };
   editTopic = (topic) => {
-    this.handleDrawerVisible(true, topic, 'editTopic');
+    const data = {uid: topic.uid, title: topic.topicTitle, content: topic.topicDescription};
+    this.handleDrawerVisible(true, data, 'editTopic');
   };
 
   handleMouseHover = (postId) => {

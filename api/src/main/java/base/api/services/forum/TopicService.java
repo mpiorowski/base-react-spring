@@ -4,6 +4,7 @@ import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.topics.TopicDao;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.domain.forum.topics.TopicWithPostsEntity;
+import base.api.domain.user.UserEntity;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsUid;
 import org.springframework.stereotype.Service;
@@ -39,27 +40,30 @@ public class TopicService extends GenericService<TopicEntity> {
     return dao.findTopicsWithPostsByCategoryId(id);
   }
 
-  public List<TopicEntity> findTopicsByCategoryId(Integer id) {
-    return dao.findTopicsByCategoryId(id);
-  }
-
   @Override
-  public Optional<TopicEntity> add(TopicEntity entity) {
-    return dao.add(entity);
-  }
-
-  @Transactional
-  public Optional<TopicEntity> add(CategoryEntity categoryEntity, TopicEntity topicEntity) {
-
-    topicEntity.setTopicCategory(categoryEntity.getId());
+  public Optional<TopicEntity> add(TopicEntity topicEntity) {
     topicEntity.setTopicAuthor(currentUserEntity());
-    return dao.add(topicEntity);
+    Optional<TopicEntity> addEntity = dao.add(topicEntity);
+    addEntity.ifPresent(
+      entity -> {
+        UserEntity userEntity = dao.selectUser(entity.getTopicAuthor().getId());
+        entity.setTopicAuthor(userEntity);
+      }
+    );
+    return addEntity;
   }
 
   // TODO - validate user
   @Override
-  public Optional<TopicEntity> edit(TopicEntity entity) {
-    return dao.edit(entity);
+  public Optional<TopicEntity> edit(TopicEntity topicEntity) {
+    Optional<TopicEntity> editEntity = dao.edit(topicEntity);
+    editEntity.ifPresent(
+      entity -> {
+        UserEntity userEntity = dao.selectUser(entity.getTopicAuthor().getId());
+        entity.setTopicAuthor(userEntity);
+      }
+    );
+    return editEntity;
   }
 
   @Override

@@ -54,8 +54,9 @@ class TopicsComponent extends Component {
     const categoryUid = this.state.categoryUid;
     const topicData = {topicTitle: data.title, topicDescription: data.content};
     serviceAddTopic(categoryUid, topicData).then(response => {
+      console.log('topic submit', response);
       if (response) {
-        this.props.history.push('/forum/categories/' + categoryUid + '/topics/' + response.topicUid + "/posts");
+        this.props.history.push('/forum/categories/' + categoryUid + '/topics/' + response.uid + "/posts");
       }
     }).catch(error => {
       console.log(error);
