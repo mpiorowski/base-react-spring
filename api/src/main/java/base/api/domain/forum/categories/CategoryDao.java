@@ -1,7 +1,10 @@
 package base.api.domain.forum.categories;
 
 import base.api.domain.generic.GenericDao;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,7 +16,7 @@ import java.util.UUID;
 public interface CategoryDao extends GenericDao<CategoryEntity> {
 
   @Override
-  @Select({"select * from", Table.NAME, "where is_deleted is false", "order by created_at desc"})
+  @Select({"select * from", Table.NAME, "where is_deleted is false", "order by created_at asc"})
   List<CategoryEntity> findAll();
 
   @Override
@@ -78,8 +81,7 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
     private static final String VAL3 = "#{categoryAuthor.id}";
     private static final String INSERT =
         "(" + COL1 + "," + COL2 + "," + COL3 + ") values (" + VAL1 + "," + VAL2 + "," + VAL3 + ")";
-    private static final String UPDATE =
-        "set " + COL1 + "=" + VAL1 + "," + COL2 + "=" + VAL2;
+    private static final String UPDATE = "set " + COL1 + "=" + VAL1 + "," + COL2 + "=" + VAL2;
 
     private Table() {}
   }

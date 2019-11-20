@@ -16,6 +16,6 @@ public interface CategoryMapper {
 
   CategoryEntity dtoToEntity(CategoryRequestDto categoryRequestDto);
 
-  CategoryRespondDto categoriesEntitiesToDto(
+  CategoryRespondDto entityWithLatestToDto(
       CategoryEntity categoryEntity, CategoryLatestEntity categoryLatestEntity);
 }

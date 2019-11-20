@@ -1,45 +1,39 @@
-INSERT INTO forum_categories(category_title, category_description, category_icon, fk_user_id)
+INSERT INTO forum_categories(category_title, category_description, category_icon, fk_user_id, created_at)
 VALUES ('Ogłoszenia',
         'Sprawdź tutaj najświeższe ogłoszenia',
         'default',
-        (SELECT id FROM sys_users WHERE user_name = 'admin'));
+        (SELECT id FROM sys_users WHERE user_name = 'admin'), '2019-01-06 00:01:00');
 
-INSERT INTO forum_categories(category_title, category_description, category_icon, fk_user_id)
+INSERT INTO forum_categories(category_title, category_description, category_icon, fk_user_id, created_at)
 VALUES ('Ogólna dusyksja',
         'Miejsce, gdzie możesz rozmawiać o czymkolwiek',
         'default',
-        (SELECT id FROM sys_users WHERE user_name = 'admin'));
+        (SELECT id FROM sys_users WHERE user_name = 'admin'), '2019-01-07 00:01:00');
 
-INSERT INTO forum_categories(category_title, category_description, category_icon, fk_user_id)
+INSERT INTO forum_categories(category_title, category_description, category_icon, fk_user_id, created_at)
 VALUES ('TopicDao 1',
         'Ant Design, a design language for background applications,is refined by Ant UED Team.',
         'default',
-        (SELECT id FROM sys_users WHERE user_name = 'user'));
+        (SELECT id FROM sys_users WHERE user_name = 'user'), '2019-01-08 00:01:00');
 
-INSERT INTO forum_categories(category_title, category_description, category_icon, fk_user_id)
+INSERT INTO forum_categories(category_title, category_description, category_icon, fk_user_id, created_at)
 VALUES ('TopicDao 2',
         'Ant Design, a design language for background applications,is refined by Ant UED Team.',
         'default',
-        (SELECT id FROM sys_users WHERE user_name = 'user'));
+        (SELECT id FROM sys_users WHERE user_name = 'user'), '2019-01-09 00:01:00');
 
 
 INSERT INTO forum_topics(topic_title, topic_description, fk_category_id, fk_user_id)
 VALUES ('Why would somebody use this?', 'Tristique fringilla, lacus ante sociosqu. Aliquet vel venenatis pharetra venenatis faucibus eros usertis pellentesque, curabitur tortor egestas.', 1, (SELECT id FROM sys_users WHERE user_name = 'admin'));
-
 INSERT INTO forum_topics(topic_title, fk_category_id, fk_user_id)
 VALUES ('NodeBB 1.11.0: traffic filtering, navigation improvements and more.', 1,
         (SELECT id FROM sys_users WHERE user_name = 'admin'));
-
 INSERT INTO forum_topics(topic_title, fk_category_id, fk_user_id)
 VALUES ('Ant Design Title 3.', 1, (SELECT id FROM sys_users WHERE user_name = 'admin'));
-
 INSERT INTO forum_topics(topic_title, fk_category_id, fk_user_id)
 VALUES ('Ant Design Title 4.', 1, (SELECT id FROM sys_users WHERE user_name = 'admin'));
-
-
 INSERT INTO forum_topics(topic_title, fk_category_id, fk_user_id)
 VALUES ('Second topic power.', 2, (SELECT id FROM sys_users WHERE user_name = 'user'));
-
 INSERT INTO forum_posts(post_content, reply_id, fk_topic_id, fk_user_id, created_at)
 VALUES ('<div><div><h2>Welcome to Rengorum</h2></div>' ||
         '<p>Tristique fringilla, lacus ante sociosqu. Aliquet vel venenatis pharetra venenatis faucibus eros usertis pellentesque, ' ||
@@ -62,7 +56,6 @@ VALUES ('<div><div><h2>Welcome to Rengorum</h2></div>' ||
         null,
         1,
         (SELECT id FROM sys_users WHERE user_name = 'admin'), now());
-
 INSERT INTO forum_posts(post_content, reply_id, fk_topic_id, fk_user_id, created_at)
 VALUES ('<h2>Welcome to Rengorum</h2><p><br></p><p>Tristique fringilla, lacus ante sociosqu. Aliquet vel venenatis pharetra venenatis faucibus eros ' ||
         'usertis pellentesque, curabitur tortor egestas. Ultricies ullamcorper at commodo rhoncus sit pretium leo dolor aenean conubia consequat venenatis. ' ||
@@ -81,8 +74,6 @@ VALUES ('<h2>Welcome to Rengorum</h2><p><br></p><p>Tristique fringilla, lacus an
         1,
         (SELECT id FROM sys_users WHERE user_name = 'admin'),
         '2019-01-02 00:01:00');
-
-
 INSERT INTO forum_posts(post_content, reply_id, fk_topic_id, fk_user_id, created_at)
 VALUES ('<div><p>Tristique fringilla, lacus ante sociosqu. Aliquet vel venenatis pharetra venenatis faucibus eros usertis pellentesque, curabitur tortor ' ||
         'egestas. Ultricies ullamcorper at commodo rhoncus sit pretium leo dolor aenean conubia consequat venenatis. Erat placerat magna praesent dapibus ' ||
@@ -96,7 +87,6 @@ VALUES ('<div><p>Tristique fringilla, lacus ante sociosqu. Aliquet vel venenatis
         1,
         (SELECT id FROM sys_users WHERE user_name = 'user'),
         '2019-01-03 00:01:00');
-
 INSERT INTO forum_posts(post_content, reply_id, fk_topic_id, fk_user_id, created_at)
 VALUES ('<p>At sed commodo rhoncus nascetur fames class natoque. Gravida aliquet malesuada nostra litora. Dignissim sapien duis consequat ut tortor ' ||
         'porttitor iaculis aliquam erat class. Consequat congue blandit dignissim eget velit? Egestas litora inceptos ipsum diam proin ultrices conubia' ||
@@ -109,7 +99,6 @@ VALUES ('<p>At sed commodo rhoncus nascetur fames class natoque. Gravida aliquet
         1,
         (SELECT id FROM sys_users WHERE user_name = 'admin'),
         '2019-01-04 00:01:00');
-
 INSERT INTO forum_posts(post_content, reply_id, fk_topic_id, fk_user_id, created_at)
 VALUES ('<h2>Welcome to Rengorum</h2><p><br></p><p>Tristique fringilla, lacus ante sociosqu. Aliquet vel venenatis pharetra venenatis faucibus eros ' ||
         'usertis pellentesque, curabitur tortor egestas. Ultricies ullamcorper at commodo rhoncus sit pretium leo dolor aenean conubia consequat venenatis. ' ||
@@ -118,14 +107,12 @@ VALUES ('<h2>Welcome to Rengorum</h2><p><br></p><p>Tristique fringilla, lacus an
         1,
         (SELECT id FROM sys_users WHERE user_name = 'admin'),
         '2019-01-05 00:01:00');
-
 INSERT INTO forum_posts(post_content, reply_id, fk_topic_id, fk_user_id, created_at)
 VALUES ('<h2>DZIALA</h2><p><br></p><p>Tristique fringilla, lacus ante sociosqu. Aliquet vel </p>',
         2,
         1,
         (SELECT id FROM sys_users WHERE user_name = 'admin'),
         '2019-01-06 00:01:00');
-
 INSERT INTO forum_posts(post_content, reply_id, fk_topic_id, fk_user_id, created_at)
 VALUES ('<h2>Welcome to Rengorum</h2><p><br></p><p>Tristique fringilla, lacus ante sociosqu. Aliquet vel venenatis pharetra venenatis faucibus eros ' ||
         'usertis pellentesque, curabitur tortor egestas. Ultricies ullamcorper at commodo rhoncus sit pretium leo dolor aenean conubia consequat venenatis. ' ||
@@ -144,7 +131,6 @@ VALUES ('<h2>Welcome to Rengorum</h2><p><br></p><p>Tristique fringilla, lacus an
         2,
         (SELECT id FROM sys_users WHERE user_name = 'admin'),
         '2019-01-02 00:01:00');
-
 INSERT INTO forum_posts(post_content, reply_id, fk_topic_id, fk_user_id, created_at)
 VALUES ('<h2>Welcome to Rengorum</h2><p><br></p><p>Tristique fringilla, lacus ante sociosqu. Aliquet vel venenatis pharetra venenatis faucibus eros ' ||
         'usertis pellentesque, curabitur tortor egestas. Ultricies ullamcorper at commodo rhoncus sit pretium leo dolor aenean conubia consequat venenatis. ' ||

@@ -7,8 +7,6 @@ import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import base.api.services.forum.CategoryService;
 import base.api.utils.UtilsUid;
 import org.mapstruct.factory.Mappers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +19,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/forum/categories")
 public class CategoriesController {
 
-  private static final Logger logger = LoggerFactory.getLogger(CategoriesController.class);
   private final CategoryService categoryService;
   private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
 
@@ -43,18 +40,8 @@ public class CategoriesController {
         categoryEntities.stream()
             .map(
                 categoryEntity -> {
-                  Integer id = categoryEntity.getId();
                   CategoryRespondDto categoryRespondDto;
-
-                  if (categoryService.findLatestById(id).isPresent()) {
-                    categoryRespondDto =
-                        categoryMapper.categoriesEntitiesToDto(
-                            categoryEntity, categoryService.findLatestById(id).get());
-                  } else {
-                    categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity);
-                  }
-                  categoryRespondDto.setCategoryTopicsNumber(categoryService.countTopicsById(id));
-                  categoryRespondDto.setCategoryPostsNumber(categoryService.countPostsById(id));
+                  categoryRespondDto = categoryService.setAdditionalData(categoryEntity);
                   return categoryRespondDto;
                 })
             .collect(Collectors.toList());
@@ -117,10 +104,9 @@ public class CategoriesController {
       @RequestBody CategoryRequestDto categoryRequestDto) {
     CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
     categoryEntity.setUid(UtilsUid.uidDecode(categoryUid));
-    Optional<CategoryEntity> category = categoryService.edit(categoryEntity);
-
-    if (category.isPresent()) {
-      CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity);
+    Optional<CategoryEntity> editCategory = categoryService.edit(categoryEntity);
+    if (editCategory.isPresent()) {
+      CategoryRespondDto categoryRespondDto = categoryService.setAdditionalData(editCategory.get());
       return new ResponseEntity<>(categoryRespondDto, HttpStatus.OK);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
