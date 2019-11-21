@@ -39,7 +39,7 @@ class TopicsComponent extends Component {
     let paginationSize = Math.round((window.innerHeight - 280) / 60);
 
     serviceGetTopics(params.categoryUid).then(response => {
-      console.log('topic response', response);
+      console.log('topics get', response);
       this.setState({
         topics: response.topics,
         category: response.category,

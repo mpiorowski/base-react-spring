@@ -6,14 +6,19 @@ import './PostContent.less';
 
 class PostContent extends Component {
 
+  componentDidMount() {
+    console.log(this.props.mapReplies);
+    console.log(this.props.postReplies);
+  }
+
   render() {
 
-    const {openReplyArray, hoverCommentId, currentUser, post} = this.props;
+    const {openReplyArray, hoverCommentId, currentUser, post, mapReplies, mapPosts, postReplies} = this.props;
 
     let postCreated = moment(post.createdAt);
     let postUpdated = moment(post.updatedAt);
     let actions = [
-      <span><Button type="link" size={"small"} onClick={() => this.props.replyPost(post)}>Odpowiedz</Button></span>
+      <span><Button className={'post-actions'} type="link" size={"small"} onClick={() => this.props.replyPost(post)}>Odpowiedz</Button></span>
     ];
 
     const postDatetime =
@@ -40,44 +45,57 @@ class PostContent extends Component {
     };
 
     let replies = [];
-    const repliesCount = post.postReplies.size;
-    if (repliesCount > 0) {
+    if (postReplies.get(post.uid) && postReplies.get(post.uid).length > 0) {
+      const repliesCount = postReplies.get(post.uid).length;
       if (openReplyArray.includes(post.uid)) {
-        replies = Array.from(post.postReplies, ([replyUid, reply]) => {
-          let replyCreated = moment(reply.createdAt);
-          let replyUpdated = moment(reply.updatedAt);
-          const replyDatetime =
-            <div>
-              <Tooltip title={replyCreated.format('YYYY-MM-DD HH:mm:ss')}>
-                <span>{replyCreated.fromNow()}</span>
-              </Tooltip>
-              {replyUpdated.isSame(replyCreated) ? '' :
-                <span> | <span
-                  className={'post-updated'}>Edytowano: {replyUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
-              }
-            </div>;
-          return (
-            <div className={'post-reply-comment'} key={reply.uid} id={reply.uid}>
-              {(hoverCommentId === reply.uid && currentUser.userName === reply.postAuthor) ?
-                <Dropdown overlay={() => createDropdownMenu(reply, post.uid)} placement="bottomRight"
-                          trigger={['click']}>
-                  <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
-                </Dropdown> : ''
-              }
-              <Comment
-                author={<span className={'post-author'}>{reply.postAuthor}</span>}
-                // content={ReactHtmlParser(reply.postContent)}
-                content={<span className={'post-content-span'}>{reply.postContent}</span>}
-                datetime={replyDatetime}
-                onMouseEnter={() => this.props.handleMouseHover(reply.uid)}
-              >
-              </Comment>
-            </div>)
-        });
+
+        //TODO - READY FOR MULTI RESPONSE, JUST ADD BTN
+        let createReplies = (postUid) => {
+          console.log(postUid);
+          return [...postReplies.get(postUid).values()].map((replyUid) => {
+            let moreReplies = [];
+            if (postReplies.get(replyUid)) {
+              moreReplies = createReplies(replyUid);
+            }
+            let reply = mapReplies.get(replyUid);
+            let replyCreated = moment(reply.createdAt);
+            let replyUpdated = moment(reply.updatedAt);
+            const replyDatetime =
+              <div>
+                <Tooltip title={replyCreated.format('YYYY-MM-DD HH:mm:ss')}>
+                  <span>{replyCreated.fromNow()}</span>
+                </Tooltip>
+                {replyUpdated.isSame(replyCreated) ? '' :
+                  <span> | <span
+                    className={'post-updated'}>Edytowano: {replyUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
+                }
+              </div>;
+            return (
+              <div className={'post-reply-comment'} key={reply.uid} id={reply.uid}>
+                {(hoverCommentId === reply.uid && currentUser.userName === reply.postAuthor) ?
+                  <Dropdown overlay={() => createDropdownMenu(reply, post.uid)} placement="bottomRight"
+                            trigger={['click']}>
+                    <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
+                  </Dropdown> : ''
+                }
+                <Comment
+                  author={<span className={'post-author'}>{reply.postAuthor}</span>}
+                  // content={ReactHtmlParser(reply.postContent)}
+                  content={<span className={'post-content-span'}>{reply.postContent}</span>}
+                  datetime={replyDatetime}
+                  onMouseEnter={() => this.props.handleMouseHover(reply.uid)}
+                >
+                  {moreReplies}
+                </Comment>
+              </div>)
+          });
+        };
+        replies = createReplies(post.uid);
         actions.push(
           <span>
               <Button size={"small"}
                       type="link"
+                      className={'post-actions'}
                       onClick={() => this.props.closeReply(post.uid)}>Ukryj odpowiedzi ({repliesCount}) <Icon
                 type="caret-up"/></Button>
             </span>
@@ -87,6 +105,7 @@ class PostContent extends Component {
           <span>
               <Button size={"small"}
                       type="link"
+                      className={'post-actions'}
                       onClick={() => this.props.openReply(post.uid)}>Pokaż odpowiedzi ({repliesCount}) <Icon
                 type="caret-down"/></Button>
             </span>

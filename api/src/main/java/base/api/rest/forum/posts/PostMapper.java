@@ -3,7 +3,6 @@ package base.api.rest.forum.posts;
 import base.api.config.mapper.MappersConfig;
 import base.api.domain.forum.posts.PostEntity;
 import base.api.rest.forum.posts.dto.PostDataDto;
-import base.api.rest.forum.posts.dto.PostReplyDto;
 import base.api.rest.forum.posts.dto.PostRequestDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,9 +16,6 @@ public interface PostMapper {
 
   //  TODO - use whole user object
   @Mapping(target = "postAuthor", source = "postAuthor.userName")
+  @Mapping(target = "postReply", source = "replyUid")
   PostDataDto entityToDataDto(PostEntity entity);
-
-  //  TODO - use whole user object
-  @Mapping(target = "postAuthor", source = "postAuthor.userName")
-  PostReplyDto entityToReplyDto(PostEntity entity);
 }

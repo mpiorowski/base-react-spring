@@ -10,6 +10,7 @@ import DrawerComponent from "../drawer/DrawerComponent";
 import {scrollToElementId} from "../../../utils/UtilsApp";
 
 class PostComponent extends Component {
+  postReply;
 
   constructor(props) {
     super(props);
@@ -53,31 +54,29 @@ class PostComponent extends Component {
     const search = new URLSearchParams(this.props.location.search);
 
     serviceGetPosts(params.topicUid).then(response => {
-        console.log('get posts', response);
+        console.log('posts get', response);
 
         let mapPosts = new Map();
-        let replies;
+        let mapReplies = new Map();
+        let postReplies = new Map();
 
         response.posts.forEach(post => {
-          replies = new Map();
-          post.postReplies.forEach(reply => {
-            replies.set(reply.uid, {...reply})
-          });
-
-          let data = {
-            uid: post.uid,
-            postContent: post.postContent,
-            postAuthor: post.postAuthor,
-            createdAt: post.createdAt,
-            updatedAt: post.updatedAt,
-            postReplies: replies
-          };
-          mapPosts.set(post.uid, data)
+          if (post.postReply) {
+            if (!postReplies.get(post.postReply)) {
+              postReplies.set(post.postReply, []);
+            }
+            postReplies.get(post.postReply).push(post.uid);
+            mapReplies.set(post.uid, post);
+          } else {
+            mapPosts.set(post.uid, post);
+          }
         });
 
         this.setState({
           topic: response.topic,
           mapPosts: mapPosts,
+          mapReplies: mapReplies,
+          postReplies: postReplies,
           loading: false
         });
 
@@ -264,7 +263,7 @@ class PostComponent extends Component {
           locale={{emptyText: 'Brak wpisów'}}
           loading={loading}
           header={header}
-          dataSource={Array.from(mapPosts.values())}
+          dataSource={[...mapPosts.values()]}
           pagination={{
             position: 'both',
             size: 'small',

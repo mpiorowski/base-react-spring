@@ -9,4 +9,5 @@ import java.util.List;
 public class PostsResponseDto {
   private TopicDataDto topic;
   private List<PostDataDto> posts;
+  private List<PostDataDto> replies;
 }

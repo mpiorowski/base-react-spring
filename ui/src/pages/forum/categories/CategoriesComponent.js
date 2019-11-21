@@ -41,7 +41,7 @@ class CategoriesComponent extends Component {
 
   componentDidMount() {
     serviceGetCategories().then(response => {
-      console.log('category response', response);
+      console.log('categories get', response);
       let categoriesMap = new Map();
       response.forEach(category => {
         categoriesMap.set(category.uid, category);

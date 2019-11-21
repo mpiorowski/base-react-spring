@@ -2,7 +2,6 @@ package base.api.domain.forum.posts;
 
 import base.api.domain.forum.NewestEntity;
 import base.api.domain.generic.GenericDao;
-import base.api.domain.user.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
@@ -23,19 +22,20 @@ public interface PostDao extends GenericDao<PostEntity> {
   Optional<PostEntity> findByUid(UUID uid);
 
   @Select("select count(*) from forum_posts where fk_topic_id = #{topicId}")
-  int countPostsByTopicId(@Param("topicId") long topicId);
+  int countPostsByTopicId(@Param("topicId") int topicId);
 
-  @Select(
-      "select * from forum_posts fp "
-          + "join sys_users su on fk_user_id = su.id "
-          + "where fk_topic_id = #{topicId} "
-          + "and fp.is_deleted is false "
-          + "order by fp.created_at asc")
+  @Select({
+    "select * from forum_posts fp",
+    "join sys_users su on fk_user_id = su.id",
+    "where fk_topic_id = #{topicId}",
+    "and fp.is_deleted is false",
+    "order by fp.created_at asc"
+  })
   @Results({
     @Result(property = "postAuthor.userName", column = "user_name"),
-    @Result(property = "postAuthor.userEmail", column = "user_email")
+    @Result(property = "postAuthor.userEmail", column = "user_email"),
   })
-  List<PostEntity> findPostsByTopicId(long topicId);
+  List<PostEntity> findPostsByTopicId(int topicId);
 
   @Select({
     "select created_at as newestDate, uid as newestUid from forum_posts",
@@ -46,9 +46,9 @@ public interface PostDao extends GenericDao<PostEntity> {
 
   @Override
   @Select(
-      "insert into forum_posts (post_content, reply_id, fk_topic_id, fk_user_id) "
+      "insert into forum_posts (post_content, reply_uid, fk_topic_id, fk_user_id) "
           + "values "
-          + "(#{postContent}, #{replyId}, #{topicId}, #{postAuthor.id}) "
+          + "(#{postContent}, #{replyUid}, #{topicId}, #{postAuthor.id}) "
           + "returning id, uid")
   Optional<PostEntity> add(PostEntity entity);
 

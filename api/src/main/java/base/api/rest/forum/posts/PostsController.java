@@ -17,6 +17,7 @@ import base.api.utils.UtilsUid;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.Util;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,28 +57,31 @@ public class PostsController {
 
     if (topic.isPresent()) {
       TopicDataDto topicDataDto = topicMapper.entityToDataDto(topic.get());
+
       List<PostEntity> postsEntity = postService.findPostsByTopicId(topic.get().getId());
-      List<PostDataDto> postDataDtoList = new ArrayList<>();
+
+      List<PostDataDto> postsList = new ArrayList<>();
+      List<PostDataDto> repliesList = new ArrayList<>();
+
       postsEntity.forEach(
           postEntity -> {
-            logger.info(postEntity.toString());
-            if (postEntity.getReplyId() == null || postEntity.getReplyId() == 0) {
-              PostDataDto postDataDto = postMapper.entityToDataDto(postEntity);
-              List<PostReplyDto> replies =
-                  postsEntity.stream()
-                      .filter(reply -> postEntity.getId().equals(reply.getReplyId()))
-                      //                      .filter(reply -> Objects.nonNull(reply))
-                      .map(reply -> postMapper.entityToReplyDto(reply))
-                      .collect(Collectors.toList());
 
-              postDataDto.setPostReplies(replies);
-              postDataDtoList.add(postDataDto);
-            }
+            PostDataDto postDataDto = postMapper.entityToDataDto(postEntity);
+
+            logger.info(postEntity.toString());
+            logger.info(postDataDto.toString());
+
+//            if (Utils.isNotEmpty(postDataDto.getPostReply())) {
+//              repliesList.add(postDataDto);
+//            } else {
+              postsList.add(postDataDto);
+//            }
           });
 
       PostsResponseDto response = new PostsResponseDto();
       response.setTopic(topicDataDto);
-      response.setPosts(postDataDtoList);
+      response.setPosts(postsList);
+      response.setReplies(repliesList);
 
       return ResponseEntity.ok(response);
     }
@@ -129,7 +133,7 @@ public class PostsController {
 
       if (postRequestDto.getReplyUid() != null) {
         Optional<PostEntity> replyEntity = postService.findByUid(postRequestDto.getReplyUid());
-        replyEntity.ifPresent(entity -> postEntity.setReplyId(entity.getId()));
+//        replyEntity.ifPresent(entity -> postEntity.setReplyId(entity.getId()));
       }
       postEntity.setTopicId(topic.get().getId());
       Optional<PostEntity> post = postService.add(postEntity);

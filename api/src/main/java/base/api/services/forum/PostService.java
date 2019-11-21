@@ -21,7 +21,7 @@ public class PostService extends GenericService<PostEntity> {
     this.dao = dao;
   }
 
-  public int countPostsByTopicId(long topicId) {
+  public int countPostsByTopicId(int topicId) {
     return dao.countPostsByTopicId(topicId);
   }
 
@@ -36,7 +36,7 @@ public class PostService extends GenericService<PostEntity> {
     return dao.findByUid(UtilsUid.uidDecode(uid));
   }
 
-  public List<PostEntity> findPostsByTopicId(long id) {
+  public List<PostEntity> findPostsByTopicId(int id) {
 
     return dao.findPostsByTopicId(id);
   }
