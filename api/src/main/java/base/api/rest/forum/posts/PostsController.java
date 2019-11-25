@@ -3,21 +3,17 @@ package base.api.rest.forum.posts;
 import base.api.domain.forum.posts.PostEntity;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.logging.LogExecutionTime;
-import base.api.rest.RestResponse;
 import base.api.rest.forum.posts.dto.PostDataDto;
-import base.api.rest.forum.posts.dto.PostReplyDto;
 import base.api.rest.forum.posts.dto.PostRequestDto;
 import base.api.rest.forum.posts.dto.PostsResponseDto;
 import base.api.rest.forum.topics.TopicMapper;
 import base.api.rest.forum.topics.dto.TopicDataDto;
 import base.api.services.forum.PostService;
 import base.api.services.forum.TopicService;
-import base.api.utils.Utils;
 import base.api.utils.UtilsUid;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.Util;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +22,6 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/forum/topics/{topicUid}/posts")
@@ -65,17 +60,16 @@ public class PostsController {
 
       postsEntity.forEach(
           postEntity -> {
-
             PostDataDto postDataDto = postMapper.entityToDataDto(postEntity);
 
             logger.info(postEntity.toString());
             logger.info(postDataDto.toString());
 
-//            if (Utils.isNotEmpty(postDataDto.getPostReply())) {
-//              repliesList.add(postDataDto);
-//            } else {
-              postsList.add(postDataDto);
-//            }
+            //            if (Utils.isNotEmpty(postDataDto.getPostReply())) {
+            //              repliesList.add(postDataDto);
+            //            } else {
+            postsList.add(postDataDto);
+            //            }
           });
 
       PostsResponseDto response = new PostsResponseDto();
@@ -120,25 +114,28 @@ public class PostsController {
    * @return postUid
    */
   @PostMapping()
-  public ResponseEntity<PostEntity> addPost(
+  public ResponseEntity<PostDataDto> addPost(
       @Valid @PathVariable("topicUid") String topicUid,
       @Valid @RequestBody PostRequestDto postRequestDto) {
-
-    // TODO - return postEntity
 
     Optional<TopicEntity> topic = topicService.findByUid(topicUid);
     if (topic.isPresent()) {
 
       PostEntity postEntity = postMapper.requestDtoToEntity(postRequestDto);
+      postEntity.setTopicId(topic.get().getId());
 
       if (postRequestDto.getReplyUid() != null) {
         Optional<PostEntity> replyEntity = postService.findByUid(postRequestDto.getReplyUid());
-//        replyEntity.ifPresent(entity -> postEntity.setReplyId(entity.getId()));
+        replyEntity.ifPresent(entity -> entity.setReplyUid(entity.getUid()));
       }
-      postEntity.setTopicId(topic.get().getId());
+
       Optional<PostEntity> post = postService.add(postEntity);
 
-      return post.map(val -> new ResponseEntity<>(val, HttpStatus.CREATED))
+      return post.map(
+              val -> {
+                postMapper.entityToDataDto(val);
+                return new ResponseEntity<>(postMapper.entityToDataDto(val), HttpStatus.CREATED);
+              })
           .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -154,7 +151,7 @@ public class PostsController {
    * @return void
    */
   @PutMapping("/{postUid}")
-  public ResponseEntity<PostEntity> editPost(
+  public ResponseEntity<PostDataDto> editPost(
       @Valid @PathVariable("postUid") String postUid,
       @Valid @PathVariable("topicUid") String topicUid,
       @Valid @RequestBody PostRequestDto postRequestDto) {
@@ -162,11 +159,16 @@ public class PostsController {
     Optional<TopicEntity> topic = topicService.findByUid(topicUid);
     if (topic.isPresent()) {
       PostEntity postEntity = postMapper.requestDtoToEntity(postRequestDto);
-      postEntity.setUid(UtilsUid.uidDecode(postUid));
       postEntity.setTopicId(topic.get().getId());
+      postEntity.setUid(UtilsUid.uidDecode(postUid));
+
       Optional<PostEntity> post = postService.edit(postEntity);
-      return post.map(val -> new ResponseEntity<>(val, HttpStatus.CREATED))
-        .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+      return post.map(
+              val -> {
+                postMapper.entityToDataDto(val);
+                return new ResponseEntity<>(postMapper.entityToDataDto(val), HttpStatus.OK);
+              })
+          .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }

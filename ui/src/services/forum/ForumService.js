@@ -53,7 +53,7 @@ export function serviceGetPosts(topicUid) {
   })
 }
 
-export function serviceAddPost(topicUid, data) {
+export function serviceAddPost(data, topicUid) {
   return apiRequest({
     url: '/api/forum/topics/' + topicUid + '/posts',
     method: 'POST',
@@ -61,7 +61,7 @@ export function serviceAddPost(topicUid, data) {
   })
 }
 
-export function serviceEditPost(topicUid, postUid, data) {
+export function serviceEditPost(data, topicUid, postUid) {
   return apiRequest({
     url: '/api/forum/topics/' + topicUid + '/posts/' + postUid,
     method: 'PUT',

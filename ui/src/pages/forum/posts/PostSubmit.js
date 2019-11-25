@@ -1,4 +1,4 @@
-import {serviceAddPost, serviceEditPost, serviceEditTopic} from "../../../services/forum/ForumService";
+import {serviceAddPost, serviceEditPost} from "../../../services/forum/ForumService";
 
 export const submitForumDrawer = (formData, categoryUid, topicUid) => {
 
@@ -6,47 +6,50 @@ export const submitForumDrawer = (formData, categoryUid, topicUid) => {
 
       console.log('formData', formData);
 
-      const topicData = {
-        topicTitle: formData.title,
-        topicDescription: formData.content || null
-      };
+      let data;
+      let param1;
+      let param2;
 
-      const postUid = formData.postUid || null;
-      const postData = {
-        postContent: formData.content,
-        replyUid: formData.replyUid || null
-      };
-
-      if (formData.title) {
-        serviceEditTopic(categoryUid, topicUid, topicData).then(response => {
-          console.log(response);
-          if (response) {
-            resolve(response);
-          }
-        }).catch(error => {
-          console.log(error);
-          reject(false);
-        });
-      } else if (postUid === null) {
-        serviceAddPost(topicUid, postData).then(response => {
-          if (response) {
-            resolve(response.data);
-          }
-        }).catch(error => {
-          console.log(error);
-          reject(false);
-        });
-      } else {
-        serviceEditPost(topicUid, postUid, postData).then(response => {
-          if (response) {
-            resolve(response.data);
-          }
-        }).catch(error => {
-          console.log(error);
-          reject(false);
-        });
-
+      let submitFunc;
+      switch (formData.type) {
+        case 'newPost': {
+          param1 = topicUid;
+          data = {
+            postContent: formData.content,
+          };
+          submitFunc = serviceAddPost;
+          break;
+        }
+        case 'newReply': {
+          param1 = topicUid;
+          data = {
+            postContent: formData.content,
+            replyUid: formData.uid
+          };
+          submitFunc = serviceAddPost;
+          break;
+        }
+        case 'editPost': {
+          param1 = topicUid;
+          param2 = formData.uid;
+          data = {
+            postContent: formData.content,
+          };
+          submitFunc = serviceEditPost;
+          break;
+        }
       }
+
+      submitFunc(data, param1 || null, param2 || null).then(response => {
+        console.log('posts response', response);
+        if (response) {
+          resolve(response);
+        }
+      }).catch(error => {
+        console.log(error);
+        reject(false);
+      });
+
     }
   );
 };

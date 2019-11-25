@@ -6,14 +6,9 @@ import './PostContent.less';
 
 class PostContent extends Component {
 
-  componentDidMount() {
-    console.log(this.props.mapReplies);
-    console.log(this.props.postReplies);
-  }
-
   render() {
 
-    const {openReplyArray, hoverCommentId, currentUser, post, mapReplies, mapPosts, postReplies} = this.props;
+    const {openReplyArray, hoverCommentId, currentUser, post, mapReplies, postReplies} = this.props;
 
     let postCreated = moment(post.createdAt);
     let postUpdated = moment(post.updatedAt);
@@ -51,7 +46,6 @@ class PostContent extends Component {
 
         //TODO - READY FOR MULTI RESPONSE, JUST ADD BTN
         let createReplies = (postUid) => {
-          console.log(postUid);
           return [...postReplies.get(postUid).values()].map((replyUid) => {
             let moreReplies = [];
             if (postReplies.get(replyUid)) {
@@ -72,14 +66,14 @@ class PostContent extends Component {
               </div>;
             return (
               <div className={'post-reply-comment'} key={reply.uid} id={reply.uid}>
-                {(hoverCommentId === reply.uid && currentUser.userName === reply.postAuthor) ?
+                {(hoverCommentId === reply.uid && currentUser.userName === reply.postAuthor.userName) ?
                   <Dropdown overlay={() => createDropdownMenu(reply, post.uid)} placement="bottomRight"
                             trigger={['click']}>
                     <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
                   </Dropdown> : ''
                 }
                 <Comment
-                  author={<span className={'post-author'}>{reply.postAuthor}</span>}
+                  author={<span className={'post-author'}>{reply.postAuthor.userName}</span>}
                   // content={ReactHtmlParser(reply.postContent)}
                   content={<span className={'post-content-span'}>{reply.postContent}</span>}
                   datetime={replyDatetime}
@@ -116,14 +110,14 @@ class PostContent extends Component {
 
     return (
       <div key={post.uid} id={post.uid} className={'post-content'}>
-        {(hoverCommentId === post.uid && currentUser.userName === post.postAuthor) ?
+        {(hoverCommentId === post.uid && currentUser.userName === post.postAuthor.userName) ?
           <Dropdown overlay={() => createDropdownMenu(post)} placement="bottomRight" trigger={['click']}>
             <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
           </Dropdown> : ''
         }
         <Comment
           actions={actions}
-          author={<span className={'post-author'}>{post.postAuthor}</span>}
+          author={<span className={'post-author'}>{post.postAuthor.userName}</span>}
           content={
             <span className={'post-content-span'}>{ReactHtmlParser(post.postContent)}</span>
           }

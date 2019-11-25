@@ -1,6 +1,8 @@
 package base.api.rest.forum.posts.dto;
 
+import base.api.domain.user.UserEntity;
 import base.api.rest.generic.GenericResponseDto;
+import base.api.rest.users.UserDataDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,6 +11,6 @@ import lombok.EqualsAndHashCode;
 public class PostDataDto extends GenericResponseDto {
 
   private String postContent;
-  private String postAuthor;
-  private String postReply;
+  private UserDataDto postAuthor;
+  private String replyUid;
 }

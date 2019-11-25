@@ -4,6 +4,7 @@ import base.api.domain.forum.NewestEntity;
 import base.api.domain.forum.posts.PostDao;
 import base.api.domain.forum.posts.PostEntity;
 import base.api.domain.generic.ResponseDao;
+import base.api.domain.user.UserEntity;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsUid;
 import org.springframework.stereotype.Service;
@@ -46,16 +47,20 @@ public class PostService extends GenericService<PostEntity> {
   }
 
   @Override
-  public Optional<PostEntity> add(PostEntity entity) {
-    entity.setPostAuthor(currentUserEntity());
-    return dao.add(entity);
+  public Optional<PostEntity> add(PostEntity postEntity) {
+    postEntity.setPostAuthor(currentUserEntity());
+    Optional<PostEntity> addPost = dao.add(postEntity);
+    addPost.ifPresent(e -> e.setPostAuthor(dao.selectUser(e.getPostAuthor().getId())));
+    return addPost;
   }
 
   //TODO - validate user
   @Override
-  public Optional<PostEntity> edit(PostEntity entity) {
-    entity.setPostAuthor(currentUserEntity());
-    return dao.edit(entity);
+  public Optional<PostEntity> edit(PostEntity postEntity) {
+    postEntity.setPostAuthor(currentUserEntity());
+    Optional<PostEntity> editPost = dao.edit(postEntity);
+    editPost.ifPresent(e -> e.setPostAuthor(dao.selectUser(e.getPostAuthor().getId())));
+    return editPost;
   }
 
   @Override

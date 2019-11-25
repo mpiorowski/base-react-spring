@@ -35,7 +35,7 @@ class DrawerForm extends Component {
       drawer = 'category';
     } else if (type === 'newTopic' || type === 'editTopic') {
       drawer = 'topic';
-    } else if (type === 'newPost' || type === 'editPost' || type === 'replyPost') {
+    } else if (type === 'newPost' || type === 'editPost' || type === 'newReply') {
       drawer = 'post';
     }
 
@@ -76,7 +76,7 @@ class DrawerForm extends Component {
             </FormItem>
             : <FormItem>
               {getFieldDecorator('content', {
-                  initialValue: record.postContent || record.topicDescription || '',
+                  initialValue: record.content || '',
                   rules: [
                     {required: true, message: validationErrorMsg.empty},
                     {max: 10000, message: validationErrorMsg.maxSize10000}

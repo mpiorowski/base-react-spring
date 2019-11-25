@@ -9,8 +9,9 @@ import * as moment from "moment";
 import DrawerComponent from "../drawer/DrawerComponent";
 import {scrollToElementId} from "../../../utils/UtilsApp";
 
+const { Map } = require('immutable');
+
 class PostComponent extends Component {
-  postReply;
 
   constructor(props) {
     super(props);
@@ -29,15 +30,15 @@ class PostComponent extends Component {
       topic: {
         topicTitle: '',
         topicDescription: '',
+        topicAuthor: {},
         createdAt: '',
-        updatedAt: '',
-        topicAuthor: {}
+        updatedAt: ''
       },
 
-      mapPosts: new Map(),
+      mapPosts: Map(),
       response: {
         topic: {},
-        posts: [{}],
+        posts: [],
       },
       openReplyArray: [],
 
@@ -56,19 +57,19 @@ class PostComponent extends Component {
     serviceGetPosts(params.topicUid).then(response => {
         console.log('posts get', response);
 
-        let mapPosts = new Map();
-        let mapReplies = new Map();
-        let postReplies = new Map();
+        let mapPosts = Map();
+        let mapReplies = Map();
+        let postReplies = Map();
 
         response.posts.forEach(post => {
-          if (post.postReply) {
-            if (!postReplies.get(post.postReply)) {
-              postReplies.set(post.postReply, []);
+          if (post.replyUid) {
+            if (!postReplies.get(post.replyUid)) {
+              postReplies = postReplies.set(post.replyUid, []);
             }
-            postReplies.get(post.postReply).push(post.uid);
-            mapReplies.set(post.uid, post);
+            postReplies.get(post.replyUid).push(post.uid);
+            mapReplies = mapReplies.set(post.uid, post);
           } else {
-            mapPosts.set(post.uid, post);
+            mapPosts = mapPosts.set(post.uid, post);
           }
         });
 
@@ -92,76 +93,48 @@ class PostComponent extends Component {
   //TODO - optimize
   submitDrawer = (formData) => {
 
+    const type = formData.type;
     const categoryUid = this.state.categoryUid;
     const topicUid = this.state.topicUid;
     const mapPosts = this.state.mapPosts;
-    const postUid = formData.postUid;
-    const replyUid = formData.replyUid;
+    const mapReplies = this.state.mapReplies;
+    const postReplies = this.state.postReplies;
 
     submitForumDrawer(formData, categoryUid, topicUid).then(response => {
-        console.log('posts submit', response);
-        //edit topic
-        if (formData.title) {
-          this.setState({
-            topic: {...response}
-          });
-        } else {
 
-          let data = {
-            uid: response,
-            postContent: formData.content,
-            postAuthor: this.state.currentUser.userName,
-          };
-
-          //edit reply
-          if (postUid && replyUid) {
-            data = {
-              ...data,
-              createdAt: mapPosts.get(replyUid).postReplies.get(response).createdAt,
-              updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
-            };
-            mapPosts.get(replyUid).postReplies.set(response, data);
-            this.openReply(replyUid);
-          }
-          //new reply
-          else if (replyUid) {
-            data = {
-              ...data,
-              createdAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
-              updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
-            };
-            mapPosts.get(replyUid).postReplies.set(response, data);
-            this.openReply(replyUid);
-          }
-          //edit post
-          else if (postUid) {
-            data = {
-              ...data,
-              createdAt: mapPosts.get(postUid).createdAt,
-              updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
-              postReplies: mapPosts.get(postUid).postReplies,
-            };
-            mapPosts.set(response, data);
-          }
-          //new post
-          else {
-            data = {
-              ...data,
-              createdAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
-              updatedAt: moment().format("YYYY-MM-DDTHH:mm:ssZZ"),
-              postReplies: new Map()
-            };
-            mapPosts.set(response, data);
+        switch (type) {
+          case 'newPost': {
+            const newMapPosts = mapPosts.set(response.uid, response);
             this.goToLast();
+            this.setState({
+              mapPosts: newMapPosts,
+            });
+            break;
+          }
+          case 'newReply':{
+            if (!postReplies.get(formData.uid)) {
+              postReplies.set(formData.uid, []);
+            }
+            postReplies.get(formData.uid).push(response.uid);
+            mapReplies.set(response.uid, response);
+            this.openReply(formData.uid);
+            break;
+          }
+          case 'editPost': {
+            mapPosts.set(response.uid, response);
+            break;
           }
 
-          this.setState({
-            mapPosts: mapPosts
-          });
         }
 
+        // this.setState({
+        //   mapPosts: mapPosts,
+        //   mapReplies: mapReplies
+        // });
+
+
         this.handleDrawerVisible(false, {});
-        scrollToElementId(response);
+        scrollToElementId(response.uid);
       }
     );
   };
@@ -190,8 +163,8 @@ class PostComponent extends Component {
     });
   };
   replyPost = (post) => {
-    const data = {postUid: null, postContent: '', replyUid: post.uid};
-    this.handleDrawerVisible(true, data, 'replyPost');
+    const data = {uid: post.uid, content: ''};
+    this.handleDrawerVisible(true, data, 'newReply');
   };
   editPost = (post) => {
     const data = {uid: post.uid, content: post.postContent,}
