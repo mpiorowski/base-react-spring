@@ -4,12 +4,12 @@ import "./PostComponent.less";
 import "react-quill/dist/quill.snow.css";
 import {serviceGetPosts} from "../../../services/forum/ForumService";
 import PostContent from "./PostContent";
-import {submitForumDrawer} from "./PostSubmit";
 import * as moment from "moment";
+import {submitForumDrawer} from "../drawer/DrawerSubmit";
 import DrawerComponent from "../drawer/DrawerComponent";
 import {scrollToElementId} from "../../../utils/UtilsApp";
 
-const { Map } = require('immutable');
+const {OrderedMap} = require('immutable');
 
 class PostComponent extends Component {
 
@@ -35,12 +35,15 @@ class PostComponent extends Component {
         updatedAt: ''
       },
 
-      mapPosts: Map(),
       response: {
         topic: {},
         posts: [],
       },
       openReplyArray: [],
+
+      mapPosts: OrderedMap(),
+      mapReplies: OrderedMap(),
+      postReplies: OrderedMap(),
 
       hoverCommentId: null,
 
@@ -57,9 +60,9 @@ class PostComponent extends Component {
     serviceGetPosts(params.topicUid).then(response => {
         console.log('posts get', response);
 
-        let mapPosts = Map();
-        let mapReplies = Map();
-        let postReplies = Map();
+        let mapPosts = OrderedMap();
+        let mapReplies = OrderedMap();
+        let postReplies = OrderedMap();
 
         response.posts.forEach(post => {
           if (post.replyUid) {
@@ -90,49 +93,53 @@ class PostComponent extends Component {
     );
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log('update');
+  }
+
   //TODO - optimize
   submitDrawer = (formData) => {
 
-    const type = formData.type;
-    const categoryUid = this.state.categoryUid;
-    const topicUid = this.state.topicUid;
-    const mapPosts = this.state.mapPosts;
-    const mapReplies = this.state.mapReplies;
-    const postReplies = this.state.postReplies;
+    let {categoryUid, topicUid, mapPosts, mapReplies, postReplies} = this.state;
+
+    let newMapPosts, newMapReplies, newPostReplies;
 
     submitForumDrawer(formData, categoryUid, topicUid).then(response => {
 
-        switch (type) {
+        switch (formData.type) {
           case 'newPost': {
-            const newMapPosts = mapPosts.set(response.uid, response);
-            this.goToLast();
+            if (formData.replyUid) {
+              if (!postReplies.get(formData.replyUid)) {
+                newPostReplies = postReplies.set(formData.replyUid, []);
+              } else {
+                newPostReplies = postReplies;
+              }
+              newPostReplies = newPostReplies.set(
+                formData.replyUid, newPostReplies.get(formData.replyUid).concat([response.uid])
+              );
+              newMapReplies = mapReplies.set(response.uid, response);
+              this.setState({
+                postReplies: newPostReplies,
+                mapReplies: newMapReplies,
+              });
+              this.openReply(formData.replyUid);
+            } else {
+              newMapPosts = mapPosts.set(response.uid, response);
+              this.goToLast();
+              this.setState({
+                mapPosts: newMapPosts,
+              });
+            }
+            break;
+          }
+          case 'editPost': {
+            newMapPosts = mapPosts.set(response.uid, response);
             this.setState({
               mapPosts: newMapPosts,
             });
             break;
           }
-          case 'newReply':{
-            if (!postReplies.get(formData.uid)) {
-              postReplies.set(formData.uid, []);
-            }
-            postReplies.get(formData.uid).push(response.uid);
-            mapReplies.set(response.uid, response);
-            this.openReply(formData.uid);
-            break;
-          }
-          case 'editPost': {
-            mapPosts.set(response.uid, response);
-            break;
-          }
-
         }
-
-        // this.setState({
-        //   mapPosts: mapPosts,
-        //   mapReplies: mapReplies
-        // });
-
-
         this.handleDrawerVisible(false, {});
         scrollToElementId(response.uid);
       }
@@ -140,10 +147,9 @@ class PostComponent extends Component {
   };
 
   openReply = (uid) => {
-    let openReplyArray = this.state.openReplyArray;
-    openReplyArray.push(uid);
+    let newOpenReplyArray = this.state.openReplyArray.concat(uid);
     this.setState({
-      openReplyArray: openReplyArray
+      openReplyArray: newOpenReplyArray
     })
   };
   closeReply = (uid) => {
@@ -162,13 +168,22 @@ class PostComponent extends Component {
       }
     });
   };
-  replyPost = (post) => {
+
+  newPost = (replyUid) => {
+    const data = {uid: null, replyUid: replyUid || null, content: ''};
+    this.handleDrawerVisible(true, data, 'newPost');
+  };
+  newReply = (post) => {
     const data = {uid: post.uid, content: ''};
     this.handleDrawerVisible(true, data, 'newReply');
   };
   editPost = (post) => {
-    const data = {uid: post.uid, content: post.postContent,}
+    const data = {uid: post.uid, content: post.postContent,};
     this.handleDrawerVisible(true, data, 'editPost');
+  };
+  editReply = (post) => {
+    const data = {uid: post.uid, content: post.postContent,};
+    this.handleDrawerVisible(true, data, 'editReply');
   };
   editTopic = (topic) => {
     const data = {uid: topic.uid, title: topic.topicTitle, content: topic.topicDescription};
@@ -249,10 +264,12 @@ class PostComponent extends Component {
             <li>
               <PostContent
                 post={post}
+                newPost={this.newPost}
                 editPost={this.editPost}
+                editReply={this.editReply}
                 openReply={this.openReply}
                 closeReply={this.closeReply}
-                replyPost={this.replyPost}
+                newReply={this.newReply}
                 handleMouseHover={this.handleMouseHover}
                 {...this.state}
               />
@@ -262,7 +279,7 @@ class PostComponent extends Component {
         </List>
         <div>
           <div className="forum-floating-drawer plus" hidden={drawerData.visibility}
-               onClick={() => this.handleDrawerVisible(true, {}, 'newPost')}
+               onClick={() => this.newPost(null)}
           >
             <Icon type="plus"/>
           </div>

@@ -13,7 +13,7 @@ class PostContent extends Component {
     let postCreated = moment(post.createdAt);
     let postUpdated = moment(post.updatedAt);
     let actions = [
-      <span><Button className={'post-actions'} type="link" size={"small"} onClick={() => this.props.replyPost(post)}>Odpowiedz</Button></span>
+      <span><Button className={'post-actions'} type="link" size={"small"} onClick={() => this.props.newPost(post.uid)}>Odpowiedz</Button></span>
     ];
 
     const postDatetime =
@@ -67,7 +67,18 @@ class PostContent extends Component {
             return (
               <div className={'post-reply-comment'} key={reply.uid} id={reply.uid}>
                 {(hoverCommentId === reply.uid && currentUser.userName === reply.postAuthor.userName) ?
-                  <Dropdown overlay={() => createDropdownMenu(reply, post.uid)} placement="bottomRight"
+                  <Dropdown overlay={() => {
+                    let data = {
+                      ...reply,
+                      replyUid: postUid || null,
+                    };
+                    return (
+                      <Menu>
+                        <Menu.Item onClick={() => this.props.editReply(data)} key="1">Edytuj</Menu.Item>
+                        {/*<Menu.Item key="2">Usuń</Menu.Item>*/}
+                      </Menu>
+                    )
+                  }} placement="bottomRight"
                             trigger={['click']}>
                     <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
                   </Dropdown> : ''

@@ -16,15 +16,7 @@ export const submitForumDrawer = (formData, categoryUid, topicUid) => {
           param1 = topicUid;
           data = {
             postContent: formData.content,
-          };
-          submitFunc = serviceAddPost;
-          break;
-        }
-        case 'newReply': {
-          param1 = topicUid;
-          data = {
-            postContent: formData.content,
-            replyUid: formData.uid
+            replyUid: formData.replyUid || null
           };
           submitFunc = serviceAddPost;
           break;
@@ -41,7 +33,6 @@ export const submitForumDrawer = (formData, categoryUid, topicUid) => {
       }
 
       submitFunc(data, param1 || null, param2 || null).then(response => {
-        console.log('posts response', response);
         if (response) {
           resolve(response);
         }

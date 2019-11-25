@@ -13,6 +13,7 @@ const drawerHeader = {
   newPost: 'Dodaj nowy komentarz',
   editPost: 'Edytuj komentarz',
   newReply: 'Odpowiedz na komentarz',
+  editReply: 'Edytuj odpowiedz',
 };
 
 class DrawerComponent extends Component {

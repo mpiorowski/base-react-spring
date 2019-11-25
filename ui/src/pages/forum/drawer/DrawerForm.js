@@ -35,7 +35,7 @@ class DrawerForm extends Component {
       drawer = 'category';
     } else if (type === 'newTopic' || type === 'editTopic') {
       drawer = 'topic';
-    } else if (type === 'newPost' || type === 'editPost' || type === 'newReply') {
+    } else if (type === 'newPost' || type === 'newReply' || type === 'editPost' || type === 'editReply') {
       drawer = 'post';
     }
 
@@ -44,6 +44,9 @@ class DrawerForm extends Component {
         <div>
           <FormItem style={{display: "none"}}>
             {getFieldDecorator('type', {initialValue: type})(<Input/>)}
+          </FormItem>
+          <FormItem style={{display: "none"}}>
+            {getFieldDecorator('replyUid', {initialValue: record.replyUid || null})(<Input/>)}
           </FormItem>
           <FormItem style={{display: "none"}}>
             {getFieldDecorator('uid', {initialValue: record.uid || null})(<Input/>)}
@@ -126,7 +129,7 @@ class DrawerForm extends Component {
           {/*    <Icon type="plus"/> Dodaj załączniki*/}
           {/*  </Button> : ''}*/}
           <Button htmlType={"submit"} type="primary" style={{marginRight: 8}}>
-            {type === 'editTopic' || type === 'editPost' || type === 'editCategory'
+            {type === 'editTopic' || type === 'editPost' || type === 'editReply' || type === 'editCategory'
               ? <span><Icon type="edit"/> Edytuj</span>
               : <span><Icon type="plus"/> Dodaj</span>}
           </Button>
