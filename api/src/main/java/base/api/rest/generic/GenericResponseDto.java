@@ -7,7 +7,7 @@ import java.util.Date;
 @Data
 public class GenericResponseDto {
   protected String uid;
-  protected Boolean active;
+  protected Boolean isActive;
   protected Date createdAt;
   protected Date updatedAt;
 }

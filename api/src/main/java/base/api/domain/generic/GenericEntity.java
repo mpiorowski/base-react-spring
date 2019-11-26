@@ -10,14 +10,14 @@ import java.util.UUID;
 public class GenericEntity {
 
   @NotNull
-  protected Long id;
+  protected Integer id;
   @NotNull
   protected UUID uid;
   //  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
   protected Date createdAt;
   //  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
   protected Date updatedAt;
-  protected Long version;
+  protected Integer version;
   protected Boolean isActive;
   protected Boolean isDeleted;
 }
