@@ -22,8 +22,6 @@ spring:
 mail:
   host: smtp.gmail.com
   port: 587
-  username: "piorowskiapp@gmail.com"
-  password: "matpioapp"
   from: "Aplikacja Codeito"
   debug: false
 
@@ -35,3 +33,6 @@ mybatis:
     lazy-loading-enabled: true
     lazy-load-trigger-methods: ""
   type-handlers-package: base.api.config.mybatis
+
+storage:
+  location: "./files/"

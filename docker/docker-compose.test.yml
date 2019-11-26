@@ -23,7 +23,6 @@ services:
       target: deploy
     volumes:
       - ../files:/home/app/files
-      - ../logs:/home/app/logs
     environment:
       - "SPRING_PROFILES_ACTIVE=test"
       - "DATASOURCES_DATABASE_HOST=database"

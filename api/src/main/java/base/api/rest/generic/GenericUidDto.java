@@ -6,7 +6,6 @@ import lombok.Data;
 public class GenericUidDto {
 
   private String uid;
-
   public GenericUidDto(String uid) {
     this.uid = uid;
   }

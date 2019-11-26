@@ -11,4 +11,5 @@ public class StorageConfig {
 
   /** Folder location for storing files */
   String location = "./files/";
+
 }

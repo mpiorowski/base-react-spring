@@ -11,8 +11,8 @@ create table sys_users
     version       int                   default 1,
     is_active     boolean               default true,
     is_deleted    boolean               default false,
-    created_at    timestamp    not null default now(),
-    updated_at    timestamp    not null default now()
+    created_at    timestamptz    not null default now(),
+    updated_at    timestamptz    not null default now()
 );
 
 create trigger set_timestamp

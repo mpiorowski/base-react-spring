@@ -52,6 +52,7 @@ class LoginForm extends Component {
         <Form.Item>
           {getFieldDecorator('userNameOrEmail', {
             rules: [{required: true, message: 'Podaj nazwę użytkownika lub email.'}],
+            initialValue: 'admin'
           })(
             <Input prefix={<Icon type={"user"}/>} className={'login-input'}
                    placeholder={"Nazwa użytkownika lub email"} onFocus={this.handleFocus}/>
@@ -60,6 +61,7 @@ class LoginForm extends Component {
         <Form.Item>
           {getFieldDecorator('userPassword', {
             rules: [{required: true, message: 'Podaj hasło.'}],
+            initialValue: 'pass'
           })(
             <Input prefix={<Icon type={"lock"}/>} className={"login-input"} type={"password"}
                    placeholder={"Hasło"} onFocus={this.handleFocus}/>
@@ -70,7 +72,7 @@ class LoginForm extends Component {
             <NavLink to={'/recover'}>Nie pamiętasz hasła?</NavLink>
           </div>
           <Button type="primary" htmlType="submit" className="login-form-button"
-                  loading={this.state.checking}>
+                  loading={this.state.checking} autoFocus={true}>
             <span className={'login-form-button-text'}>Zaloguj się</span>
           </Button>
           Lub <NavLink to="/register"><b>załóż nowe konto.</b></NavLink>

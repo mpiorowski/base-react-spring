@@ -1,5 +1,7 @@
 package base.api.services.generic;
 
+import base.api.domain.generic.ResponseDao;
+import base.api.domain.user.UserEntity;
 import base.api.security.SystemUser;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,12 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class GenericService<E, D> {
+public abstract class GenericService<E> {
 
-  protected D dao;
-
-  public GenericService(D dao) {
-    this.dao = dao;
+  protected UserEntity currentUserEntity() {
+    SystemUser systemUser = currentUser();
+    return systemUser.getUser();
   }
 
   protected SystemUser currentUser() {
@@ -32,10 +33,10 @@ public abstract class GenericService<E, D> {
   public abstract Optional<E> findByUid(String uid);
 
   @Transactional
-  public abstract String add(E entity);
+  public abstract Optional<E> add(E entity);
 
   @Transactional
-  public abstract boolean edit(E entity);
+  public abstract Optional<E> edit(E entity);
 
   @Transactional
   public abstract boolean delete(String uid);

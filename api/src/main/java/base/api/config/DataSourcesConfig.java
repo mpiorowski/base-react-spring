@@ -51,6 +51,7 @@ public class DataSourcesConfig {
             //            .outOfOrder(true)
             //            .schemas("public")
             .dataSource(dataSource)
+            .cleanOnValidationError(migration.cleanOnValidationError)
             .locations(migration.getLocations());
     //            .locations(migration.getLocations());
     //            .baselineOnMigrate(true)
@@ -68,6 +69,7 @@ public class DataSourcesConfig {
   private static class Migration {
     private String[] locations;
     private boolean cleanOnStart = false;
+    private boolean cleanOnValidationError = false;
   }
 
   @Data

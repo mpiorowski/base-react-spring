@@ -18,8 +18,9 @@ datasources:
     schema: app
     host: localhost
   migration:
-    locations: ["classpath:/db/migration", "classpath:/db/test"]
-    cleanOnStart: true
+    locations: ["classpath:/db/migration", "classpath:/db/mock"]
+    cleanOnValidationError: true
+    cleanOnStart: false
 
 spring:
   profiles:
@@ -31,6 +32,3 @@ spring:
       additional-paths: src/main/java
     livereload:
       enabled: true
-
-storage:
-  location: "./dev/files/"

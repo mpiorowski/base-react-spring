@@ -5,7 +5,6 @@ import {ACCESS_TOKEN} from "./config/AppConfig";
 import {momentDateTimeLanguage, setUpMomentDateTimeLanguage} from "./config/DateTimeConfig";
 import {routes} from './config/RoutesConfig';
 import AppHeader from "./main/AppHeader";
-import GlobalErrorBoundary from "./main/GlobalErrorBoundary";
 
 import './App.less';
 import './styles/global.less';
@@ -25,7 +24,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
+      loading: true,
       isAuth: false,
       currentUser: '',
       collapsed: true
@@ -33,16 +32,11 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.setState({
-      loading: true,
-      isAuth: false,
-    });
     console.log('APP');
     this.checkAuth();
   }
 
   checkAuth = () => {
-
     this.setState({
       loading: true,
       isAuth: false,
@@ -67,6 +61,7 @@ class App extends Component {
 
   loadInitData = () => {
     setUpMomentDateTimeLanguage(momentDateTimeLanguage);
+    // return initForumBreadcrumbs(this.state.breadcrumbs);
   };
 
   logout = () => {
@@ -95,7 +90,7 @@ class App extends Component {
       )
     }
 
-    if (!this.state.isAuth) {
+    if (!this.state.isAuth && !this.state.loading) {
       return (
         <AuthComponent checkAuth={this.checkAuth}/>
       )
@@ -116,44 +111,50 @@ class App extends Component {
 
     const currentUser = this.state.currentUser;
     let routerKey = 0;
+
+    // ROUTER CONFIG
+    let addedRoutes = [];
     const router = [
       routes.main.paths.map(path => {
         return (
-          <PrivateRoute path={path.url}
+          <PrivateRoute exact={path.exact || true}
+                        path={path.url}
                         component={path.component}
                         currentUser={this.state.currentUser}
                         key={routerKey++}/>
         )
       }),
       currentUser.userRoles.map(role =>
-        routes[role].paths.map(path =>
-          <PrivateRoute path={path.url}
-                        component={path.component}
-                        currentUser={this.state.currentUser}
-                        key={routerKey++}/>
-        )
+        routes[role].paths.map(route => {
+          if (addedRoutes.includes(route.key)) {return '';}
+          addedRoutes.push(route.key);
+          return (
+            <PrivateRoute path={route.path.url}
+                          component={route.path.component}
+                          currentUser={this.state.currentUser}
+                          key={routerKey++}/>
+          )
+        })
       ),
-      <Route path='*' render={() => <Redirect to={'/home'}/>}
+      <Route path='*' render={() => <Redirect to={routes[currentUser.userRoles[0]].redirect}/>}
              key={routerKey++}/>
     ];
 
     return (
       <div>
-        <GlobalErrorBoundary>
-          <Layout className={'app-layout'}>
-            <AppHeader
-              toggle={this.headerToggle}
-              logout={this.logout}
-              collapsed={this.state.collapsed}
-              currentUser={currentUser}
-            />
-            <Content className={'app-content'}>
-              <Switch>
-                {router}
-              </Switch>
-            </Content>
-          </Layout>
-        </GlobalErrorBoundary>
+        <Layout className={'app-layout'}>
+          <AppHeader
+            toggle={this.headerToggle}
+            logout={this.logout}
+            collapsed={this.state.collapsed}
+            currentUser={currentUser}
+          />
+          <Content className={'app-content'}>
+            <Switch>
+              {router}
+            </Switch>
+          </Content>
+        </Layout>
       </div>
     );
   }

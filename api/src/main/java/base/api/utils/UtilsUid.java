@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.UUID;
 
-public class UtilsStringConversions {
+public class UtilsUid {
 
-  private UtilsStringConversions() {}
+  private UtilsUid() {}
 
   public static String uidEncode(UUID uid) {
     String sUid = Base64.getUrlEncoder().encodeToString(getBytesFromUUID(uid));
