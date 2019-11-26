@@ -8,7 +8,7 @@ class PostContent extends Component {
 
   render() {
 
-    const {openReplyArray, hoverCommentId, currentUser, post, mapReplies, postReplies} = this.props;
+    const {openReplyArray, hoverCommentId, currentUser, post, mapPosts, postReplies} = this.props;
 
     let postCreated = moment(post.createdAt);
     let postUpdated = moment(post.updatedAt);
@@ -51,7 +51,7 @@ class PostContent extends Component {
             if (postReplies.get(replyUid)) {
               moreReplies = createReplies(replyUid);
             }
-            let reply = mapReplies.get(replyUid);
+            let reply = mapPosts.get(replyUid);
             let replyCreated = moment(reply.createdAt);
             let replyUpdated = moment(reply.updatedAt);
             const replyDatetime =
@@ -74,7 +74,7 @@ class PostContent extends Component {
                     };
                     return (
                       <Menu>
-                        <Menu.Item onClick={() => this.props.editReply(data)} key="1">Edytuj</Menu.Item>
+                        <Menu.Item onClick={() => this.props.editPost(data)} key="1">Edytuj</Menu.Item>
                         {/*<Menu.Item key="2">Usuń</Menu.Item>*/}
                       </Menu>
                     )

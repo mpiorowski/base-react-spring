@@ -61,7 +61,6 @@ class PostComponent extends Component {
         console.log('posts get', response);
 
         let mapPosts = OrderedMap();
-        let mapReplies = OrderedMap();
         let postReplies = OrderedMap();
 
         response.posts.forEach(post => {
@@ -70,16 +69,14 @@ class PostComponent extends Component {
               postReplies = postReplies.set(post.replyUid, []);
             }
             postReplies.get(post.replyUid).push(post.uid);
-            mapReplies = mapReplies.set(post.uid, post);
-          } else {
-            mapPosts = mapPosts.set(post.uid, post);
           }
+          mapPosts = mapPosts.set(post.uid, post);
+
         });
 
         this.setState({
           topic: response.topic,
           mapPosts: mapPosts,
-          mapReplies: mapReplies,
           postReplies: postReplies,
           loading: false
         });
@@ -100,13 +97,20 @@ class PostComponent extends Component {
   //TODO - optimize
   submitDrawer = (formData) => {
 
-    let {categoryUid, topicUid, mapPosts, mapReplies, postReplies} = this.state;
+    let {categoryUid, topicUid, mapPosts, postReplies} = this.state;
 
-    let newMapPosts, newMapReplies, newPostReplies;
+    let newMapPosts, newPostReplies;
 
     submitForumDrawer(formData, categoryUid, topicUid).then(response => {
-
         switch (formData.type) {
+
+          case 'editTopic': {
+            this.setState({
+              topic: response
+            });
+            break;
+          }
+
           case 'newPost': {
             if (formData.replyUid) {
               if (!postReplies.get(formData.replyUid)) {
@@ -117,31 +121,34 @@ class PostComponent extends Component {
               newPostReplies = newPostReplies.set(
                 formData.replyUid, newPostReplies.get(formData.replyUid).concat([response.uid])
               );
-              newMapReplies = mapReplies.set(response.uid, response);
+              newMapPosts = mapPosts.set(response.uid, response);
               this.setState({
                 postReplies: newPostReplies,
-                mapReplies: newMapReplies,
+                mapPosts: newMapPosts,
               });
               this.openReply(formData.replyUid);
             } else {
               newMapPosts = mapPosts.set(response.uid, response);
-              this.goToLast();
               this.setState({
                 mapPosts: newMapPosts,
               });
+              this.goToLast();
             }
+            scrollToElementId(response.uid);
             break;
           }
+
           case 'editPost': {
             newMapPosts = mapPosts.set(response.uid, response);
             this.setState({
               mapPosts: newMapPosts,
             });
+            scrollToElementId(response.uid);
             break;
           }
+
         }
         this.handleDrawerVisible(false, {});
-        scrollToElementId(response.uid);
       }
     );
   };
@@ -173,17 +180,9 @@ class PostComponent extends Component {
     const data = {uid: null, replyUid: replyUid || null, content: ''};
     this.handleDrawerVisible(true, data, 'newPost');
   };
-  newReply = (post) => {
-    const data = {uid: post.uid, content: ''};
-    this.handleDrawerVisible(true, data, 'newReply');
-  };
   editPost = (post) => {
     const data = {uid: post.uid, content: post.postContent,};
     this.handleDrawerVisible(true, data, 'editPost');
-  };
-  editReply = (post) => {
-    const data = {uid: post.uid, content: post.postContent,};
-    this.handleDrawerVisible(true, data, 'editReply');
   };
   editTopic = (topic) => {
     const data = {uid: topic.uid, title: topic.topicTitle, content: topic.topicDescription};
@@ -210,6 +209,10 @@ class PostComponent extends Component {
 
     const {drawerData, topic, mapPosts, loading, currentUser} = this.state;
     const {pageSize, currentPage} = this.state;
+
+    const posts = () => {
+      return [...mapPosts.values()].filter(value => value.replyUid === null);
+    };
 
     let topicCreated = moment(topic.createdAt);
     let topicUpdated = moment(topic.updatedAt);
@@ -251,7 +254,7 @@ class PostComponent extends Component {
           locale={{emptyText: 'Brak wpisów'}}
           loading={loading}
           header={header}
-          dataSource={[...mapPosts.values()]}
+          dataSource={posts()}
           pagination={{
             position: 'both',
             size: 'small',

@@ -1,4 +1,4 @@
-import {serviceAddPost, serviceEditPost} from "../../../services/forum/ForumService";
+import {serviceAddPost, serviceEditPost, serviceEditTopic} from "../../../services/forum/ForumService";
 
 export const submitForumDrawer = (formData, categoryUid, topicUid) => {
 
@@ -12,6 +12,16 @@ export const submitForumDrawer = (formData, categoryUid, topicUid) => {
 
       let submitFunc;
       switch (formData.type) {
+        case 'editTopic': {
+          param1 = categoryUid;
+          param2 = topicUid;
+          data = {
+            topicTitle: formData.title,
+            topicDescription: formData.content,
+          };
+          submitFunc = serviceEditTopic;
+          break;
+        }
         case 'newPost': {
           param1 = topicUid;
           data = {

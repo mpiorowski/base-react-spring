@@ -52,30 +52,16 @@ public class PostsController {
 
     if (topic.isPresent()) {
       TopicDataDto topicDataDto = topicMapper.entityToDataDto(topic.get());
-
       List<PostEntity> postsEntity = postService.findPostsByTopicId(topic.get().getId());
-
       List<PostDataDto> postsList = new ArrayList<>();
-      List<PostDataDto> repliesList = new ArrayList<>();
-
       postsEntity.forEach(
           postEntity -> {
             PostDataDto postDataDto = postMapper.entityToDataDto(postEntity);
-
-            logger.info(postEntity.toString());
-            logger.info(postDataDto.toString());
-
-            //            if (Utils.isNotEmpty(postDataDto.getPostReply())) {
-            //              repliesList.add(postDataDto);
-            //            } else {
             postsList.add(postDataDto);
-            //            }
           });
-
       PostsResponseDto response = new PostsResponseDto();
       response.setTopic(topicDataDto);
       response.setPosts(postsList);
-      response.setReplies(repliesList);
 
       return ResponseEntity.ok(response);
     }

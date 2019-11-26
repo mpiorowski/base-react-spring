@@ -38,7 +38,7 @@ export function serviceAddTopic(categoryUid, data) {
   })
 }
 
-export function serviceEditTopic(categoryUid, topicUid, data) {
+export function serviceEditTopic(data, categoryUid, topicUid) {
   return apiRequest({
     url: '/api/forum/categories/' + categoryUid + '/topics/' + topicUid,
     method: 'PUT',
