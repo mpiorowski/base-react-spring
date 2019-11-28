@@ -38,8 +38,8 @@ docker-compose -f ./docker/docker-compose.prod.yml run --rm --entrypoint "\
 echo
 
 
-echo "### Starting nginx ..."
-docker-compose -f ./docker/docker-compose.prod.yml up --force-recreate -d nginx
+echo "### Starting ui ..."
+docker-compose -f ./docker/docker-compose.prod.yml up --force-recreate -d ui
 echo
 
 echo "### Deleting dummy certificate for $domains ..."
@@ -76,5 +76,5 @@ docker-compose -f ./docker/docker-compose.prod.yml run --rm --entrypoint "\
     --force-renewal" certbot
 echo
 
-echo "### Reloading nginx ..."
-docker-compose -f ./docker/docker-compose.prod.yml exec nginx nginx -s reload
+echo "### Reloading ui ..."
+docker-compose -f ./docker/docker-compose.prod.yml exec ui ui -s reload

@@ -1,13 +1,15 @@
 # ===================================================================
 # Spring Boot configuration for the "prod" profile.
 # ===================================================================
+#TODO - set prod logging
 logging:
   level:
-    ROOT: WARN
-    pbs.api: DEBUG
-    pbs.api.mappers:
+    ROOT: INFO
+    web: DEBUG
+    base.api: DEBUG
+    base.api.mappers:
       AuthMapper: INFO
-    pbs.api.domain.diaries.DiaryDao.selectUser: INFO
+    base.api.domain.diaries.DiaryDao.selectUser: INFO
 
 datasources:
   database:
@@ -15,9 +17,7 @@ datasources:
     password: cderfv
     port: 5432
     schema: app
-
-
-spring:
-  flyway:
-    locations: "classpath:/db/migration, classpath:/db/prod"
-    clean-disabled: true
+  migration:
+    locations: ["classpath:/db/migration"]
+    cleanOnValidationError: false
+    cleanOnStart: false
