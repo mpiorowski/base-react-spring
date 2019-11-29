@@ -1,0 +1,7 @@
+sudo certbot-auto certonly --standalone -d test.codeito.pl  -d www.test.codeito.pl
+sudo openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
+
+sudo /usr/sbin/certbot-auto renew --dry-run
+
+crontab -e
+0 2 * * * sudo /usr/sbin/certbot-auto -q renew

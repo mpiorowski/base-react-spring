@@ -2,9 +2,19 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const WebpackBar = require("webpackbar");
 const CracoAntDesignPlugin = require("craco-antd");
 const path = require("path");
+const cspHtmlWebpackPlugin = require("csp-html-webpack-plugin");
 
 // Don't open the browser during development
 process.env.BROWSER = "none";
+
+const cspConfigPolicy = {
+  'script-src': ["'self'"]
+};
+
+if(process.env.NODE_ENV === 'production') {
+  config.plugins.push(new cspHtmlWebpackPlugin(cspConfigPolicy));
+}
+
 
 module.exports = {
   webpack: {
@@ -13,7 +23,7 @@ module.exports = {
       new WebpackBar({ profile: true }),
       ...(process.env.NODE_ENV === "development"
           ? [new BundleAnalyzerPlugin({ openAnalyzer: false })]
-          : [])
+          : [new cspHtmlWebpackPlugin(cspConfigPolicy)])
     ]
   },
 

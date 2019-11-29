@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Button, Form, Icon, Input} from "antd";
 import './LoginComponent.less';
 import {serviceLogIn} from "../services/auth/AuthService";
-import {ACCESS_TOKEN} from "../config/AppConfig";
+import {ACCESS_TOKEN, devUser} from "../config/AppConfig";
 import {openNotification} from "../common/Notifications";
 import {NavLink} from "react-router-dom";
 import {WelcomeMessages} from "../common/RandomMessages";
@@ -52,7 +52,7 @@ class LoginForm extends Component {
         <Form.Item>
           {getFieldDecorator('userNameOrEmail', {
             rules: [{required: true, message: 'Podaj nazwę użytkownika lub email.'}],
-            initialValue: 'admin'
+            initialValue: process.env.NODE_ENV === "development" ? devUser.username : ''
           })(
             <Input prefix={<Icon type={"user"}/>} className={'login-input'}
                    placeholder={"Nazwa użytkownika lub email"} onFocus={this.handleFocus}/>
@@ -61,7 +61,7 @@ class LoginForm extends Component {
         <Form.Item>
           {getFieldDecorator('userPassword', {
             rules: [{required: true, message: 'Podaj hasło.'}],
-            initialValue: 'pass'
+            initialValue: process.env.NODE_ENV === "development" ? devUser.password : ''
           })(
             <Input prefix={<Icon type={"lock"}/>} className={"login-input"} type={"password"}
                    placeholder={"Hasło"} onFocus={this.handleFocus}/>
