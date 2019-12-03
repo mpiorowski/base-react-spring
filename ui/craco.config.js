@@ -10,10 +10,10 @@ process.env.BROWSER = "none";
 const cspConfigPolicy = {
   'default-src': "'self'",
   'base-uri': "'self'",
-  'object-src': "'none'",
+  'object-src': "'self'",
   'form-action': "'self'",
-  'img-src': ["'self'", "data:image:"],
-  'script-src': ["'unsafe-inline'", "'self'", "'unsafe-eval'"],
+  'img-src': ["'self'", "data:"],
+  'script-src': ["'self'", "'unsafe-eval'"],
   'style-src': ["'unsafe-inline'", "'self'", "'unsafe-eval'"]
 };
 
@@ -26,7 +26,7 @@ const cspConfigHash = {
   },
   nonceEnabled: {
     'script-src': true,
-    'style-src': true
+    'style-src': false
   }
 };
 
@@ -38,7 +38,7 @@ module.exports = {
       new WebpackBar({ profile: true }),
       ...(process.env.NODE_ENV === "development"
           ? [new BundleAnalyzerPlugin({ openAnalyzer: false })]
-          : [new cspHtmlWebpackPlugin(cspConfigPolicy, cspConfigHash)])
+          : [])
     ]
   },
 

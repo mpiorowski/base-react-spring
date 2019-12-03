@@ -11,7 +11,7 @@ RUN npm install
 RUN npm run build
 
 # Stage 2 - Create a downsized production container
-FROM nginx:1.12-alpine as deploy
+FROM nginx:latest-alpine as deploy
 
 COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 EXPOSE 80
