@@ -11,11 +11,6 @@ const cspConfigPolicy = {
   'script-src': ["'self'"]
 };
 
-if(process.env.NODE_ENV === 'production') {
-  config.plugins.push(new cspHtmlWebpackPlugin(cspConfigPolicy));
-}
-
-
 module.exports = {
   webpack: {
     // alias: { react: 'preact-compat', 'react-dom': 'preact-compat' },
