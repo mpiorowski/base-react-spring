@@ -12,10 +12,22 @@ const cspConfigPolicy = {
   'base-uri': "'self'",
   'object-src': "'none'",
   'form-action': "'self'",
-  'script-src': ["'self'"],
-  'style-src': ["'self'"],
-  'image-src': ["'self", "'data:image:"],
-  'frame-ancestors': "'none'"
+  'img-src': ["'self'", "data:image:"],
+  'script-src': ["'unsafe-inline'", "'self'", "'unsafe-eval'"],
+  'style-src': ["'unsafe-inline'", "'self'", "'unsafe-eval'"]
+};
+
+const cspConfigHash = {
+  enabled: true,
+  hashingMethod: 'sha256',
+  hashEnabled: {
+    'script-src': true,
+    'style-src': true
+  },
+  nonceEnabled: {
+    'script-src': true,
+    'style-src': true
+  }
 };
 
 
@@ -26,7 +38,7 @@ module.exports = {
       new WebpackBar({ profile: true }),
       ...(process.env.NODE_ENV === "development"
           ? [new BundleAnalyzerPlugin({ openAnalyzer: false })]
-          : [new cspHtmlWebpackPlugin(cspConfigPolicy)])
+          : [new cspHtmlWebpackPlugin(cspConfigPolicy, cspConfigHash)])
     ]
   },
 
