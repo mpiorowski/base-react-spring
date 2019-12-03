@@ -27,6 +27,8 @@ services:
       - "SPRING_PROFILES_ACTIVE=prod"
       - "DATASOURCES_DATABASE_HOST=database"
     restart: on-failure
+    depends_on:
+      - database
 
   ui:
     container_name: prod-ui-app

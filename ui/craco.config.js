@@ -8,17 +8,23 @@ const cspHtmlWebpackPlugin = require("csp-html-webpack-plugin");
 process.env.BROWSER = "none";
 
 const cspConfigPolicy = {
-  'script-src': ["'self'"]
+  'default-src': "'none'",
+  'base-uri': "'self'",
+  'object-src': "'none'",
+  'script-src': ["'self'"],
+  'style-src': ["'self'"]
 };
+
 
 module.exports = {
   webpack: {
     // alias: { react: 'preact-compat', 'react-dom': 'preact-compat' },
     plugins: [
       new WebpackBar({ profile: true }),
+      new cspHtmlWebpackPlugin(cspConfigPolicy),
       ...(process.env.NODE_ENV === "development"
           ? [new BundleAnalyzerPlugin({ openAnalyzer: false })]
-          : [new cspHtmlWebpackPlugin(cspConfigPolicy)])
+          : [])
     ]
   },
 
