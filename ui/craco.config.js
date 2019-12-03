@@ -38,7 +38,7 @@ module.exports = {
       new WebpackBar({ profile: true }),
       ...(process.env.NODE_ENV === "development"
           ? [new BundleAnalyzerPlugin({ openAnalyzer: false })]
-          : [])
+          : [new cspHtmlWebpackPlugin(cspConfigPolicy, cspConfigHash)])
     ]
   },
 
