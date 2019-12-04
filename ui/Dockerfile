@@ -11,7 +11,7 @@ COPY package-lock.json $APP_HOME/package-lock.json
 RUN npm install
 CMD ["npm", "start"]
 
-FROM node:12.8-buster-slim as builder
+FROM dev as builder
 RUN npm run build
 
 # Stage 2 - Create a downsized production container

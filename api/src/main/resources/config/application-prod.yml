@@ -17,6 +17,7 @@ datasources:
     password: cderfv
     port: 5432
     schema: app
+    host: database
   migration:
     locations: ["classpath:/db/migration"]
     cleanOnValidationError: false

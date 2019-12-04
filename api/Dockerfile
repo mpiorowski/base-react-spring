@@ -8,7 +8,7 @@ COPY gradle $APP_HOME/gradle
 COPY . .
 CMD ["gradle", "clean", "bootRun"]
 
-FROM gradle:jdk11 as builder
+FROM dev as builder
 RUN gradle build -x test
 
 # Stage 2 - Create a downsized production container
