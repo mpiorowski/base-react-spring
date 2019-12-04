@@ -3,19 +3,20 @@
 # ===================================================================
 logging:
   level:
-    ROOT: WARN
+    ROOT: INFO
+    web: DEBUG
     base.api: DEBUG
     base.api.mappers:
       AuthMapper: INFO
+    base.api.domain.diaries.DiaryDao.selectUser: INFO
 
 datasources:
   database:
     username: admin
-    password: xswedc
+    password: cderfv
     port: 5432
     schema: app
-    host: database
-
-spring:
-  flyway:
-    locations: "classpath:/db/migration, classpath:/db/test"
+  migration:
+    locations: ["classpath:/db/migration", "classpath:/db/mock"]
+    cleanOnValidationError: false
+    cleanOnStart: false

@@ -1,17 +1,21 @@
 # Stage 1 - Create a builder container
-FROM node:12.8-buster-slim as builder
+FROM node:12.8-buster-slim as dev
 
-WORKDIR /usr/src/app
-COPY src /usr/src/app/src
-COPY public /usr/src/app/public
-COPY craco.config.js /usr/src/app/craco.config.js.js
-COPY package.json /usr/src/app/package.json
-COPY package-lock.json /usr/src/app/package-lock.json
+ENV APP_HOME=/usr/src/app/
+WORKDIR $APP_HOME
+COPY src $APP_HOME/src
+COPY public $APP_HOME/public
+COPY craco.config.js $APP_HOME/craco.config.js.js
+COPY package.json $APP_HOME/package.json
+COPY package-lock.json $APP_HOME/package-lock.json
 RUN npm install
+CMD ["npm", "start"]
+
+FROM dev as builder
 RUN npm run build
 
 # Stage 2 - Create a downsized production container
-FROM nginx:1.12-alpine as deploy
+FROM nginx:1.17-alpine as deploy
 
 COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 EXPOSE 80

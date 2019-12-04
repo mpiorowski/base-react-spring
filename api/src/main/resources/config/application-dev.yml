@@ -14,9 +14,9 @@ datasources:
   database:
     username: admin
     password: zaqwsx
-    port: 5444
+    port: 5432
     schema: app
-    host: localhost
+    host: database
   migration:
     locations: ["classpath:/db/migration", "classpath:/db/mock"]
     cleanOnValidationError: true

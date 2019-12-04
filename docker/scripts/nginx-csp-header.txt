@@ -1,0 +1,1 @@
+add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'; script-src 'unsafe-eval'; img-src 'self' data:image:; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self'; object-src: 'none'";
