@@ -1,16 +1,41 @@
-version: '3'
+version: '3.4'
 services:
+
   database:
+    container_name: dev-database-app
     build: ../database
     command: postgres -c shared_preload_libraries=pgaudit -c config_file=/etc/postgresql.conf
-    container_name: dev-database-app
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: zaqwsx
       POSTGRES_DB: app
-      PGDATA: /var/lib/postgresql/data/pgdata
+      PGDATA: /var/lib/postgresql/pgdata
     volumes:
-      - ../database/pgdata:/var/lib/postgresql/data/pgdata
+      - ../database/pgdata:/var/lib/postgresql/pgdata
       - ../database/postgresql.conf:/etc/postgresql.conf
     ports:
       - "5444:5432"
+
+  api:
+    container_name: dev-api-app
+    build:
+      context: ../api
+      dockerfile: ./Dockerfile
+      target: dev
+    volumes:
+      - ../files:/home/app/files
+    environment:
+      - "SPRING_PROFILES_ACTIVE=dev, swagger"
+    depends_on:
+      - database
+
+  ui:
+    container_name: dev-ui-app
+    build:
+      context: ../ui
+      dockerfile: ./Dockerfile
+      target: dev
+    environment:
+      - "APIPROXY=api"
+    ports:
+      - "3000:3000"

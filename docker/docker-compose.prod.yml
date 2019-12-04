@@ -25,7 +25,6 @@ services:
       - ../files:/home/app/files
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
-      - "DATASOURCES_DATABASE_HOST=database"
     restart: on-failure
     depends_on:
       - database
