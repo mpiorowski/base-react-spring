@@ -1,4 +1,4 @@
-import ContactComponent from "../pages/header/ContactComponent";
+import ContactComponent from "../pages/contact/ContactComponent";
 import ForumComponent from "../pages/forum/ForumComponent";
 import TestComponent from "../pages/test/TestComponent";
 
