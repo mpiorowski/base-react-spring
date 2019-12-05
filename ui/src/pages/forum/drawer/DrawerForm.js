@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Form, Icon, Input} from "antd";
+import {Button, Form, Icon, Input, Radio} from "antd";
 import {validationErrorMsg} from "../../../config/ErrorConfig";
 
 const FormItem = Form.Item;
@@ -40,7 +40,7 @@ class DrawerForm extends Component {
     }
 
     return (
-      <Form onSubmit={this.submitDrawer}>
+      <Form onSubmit={this.submitDrawer} layout={"horizontal"}>
         <div>
           <FormItem style={{display: "none"}}>
             {getFieldDecorator('type', {initialValue: type})(<Input/>)}
@@ -73,9 +73,10 @@ class DrawerForm extends Component {
                   rules: [
                     {required: (drawer === 'category'), message: validationErrorMsg.empty},
                     {max: 10000, message: validationErrorMsg.maxSize10000}
-                    ]
+                  ]
                 }
-              )(<Input.TextArea rows={8} maxLength={1000} placeholder={"Opis" + (drawer === 'topic' ? " (opcjonalnie)" : "") }/>)}
+              )(<Input.TextArea rows={4} maxLength={1000}
+                                placeholder={"Opis" + (drawer === 'topic' ? " (opcjonalnie)" : "")}/>)}
             </FormItem>
             : <FormItem>
               {getFieldDecorator('content', {
@@ -89,6 +90,15 @@ class DrawerForm extends Component {
             </FormItem>
           }
           <br/>
+          <Form.Item>
+            {getFieldDecorator('radio-group')(
+              <Radio.Group>
+                <Radio value="a" className={"forum-drawer-radio"}>item 1</Radio>
+                <Radio value="b" className={"forum-drawer-radio"}>item 2</Radio>
+                <Radio value="c" className={"forum-drawer-radio"}>item 3</Radio>
+              </Radio.Group>,
+            )}
+          </Form.Item>
 
           {/* TODO - attachments*/}
           {/*{type === 'newPost' ?*/}

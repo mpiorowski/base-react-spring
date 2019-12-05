@@ -23,6 +23,7 @@ services:
       dockerfile: ./Dockerfile
       target: dev
     volumes:
+      - ../api/:/home/app/
       - ../files:/home/app/files
     environment:
       - "SPRING_PROFILES_ACTIVE=dev, swagger"
@@ -35,6 +36,8 @@ services:
       context: ../ui
       dockerfile: ./Dockerfile
       target: dev
+    volumes:
+      - ../ui/:/usr/src/app/
     environment:
       - "APIPROXY=api"
     ports:
