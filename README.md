@@ -1,4 +1,4 @@
-# Base project ready for further development build using React and Spring
+# Base app with react and spring ready for further development.
 
 This application is still in progress.
 
