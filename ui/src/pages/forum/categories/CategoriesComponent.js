@@ -56,6 +56,7 @@ class CategoriesComponent extends Component {
 
   submitDrawer = (data) => {
     const categoryData = {categoryUid: data.uid || null, categoryTitle: data.title, categoryDescription: data.content};
+
     let service;
     if (data.type === 'newCategory') {
       service = serviceAddCategory;
@@ -132,7 +133,7 @@ class CategoriesComponent extends Component {
                     />
                   </Col>
 
-                  <Col span={5}>
+                  <Col span={6}>
                     <Col span={24}><FontAwesomeIcon icon={faPencilAlt}/> {item.categoryTopicsNumber || 0} tematy</Col>
                     <Col span={24}><FontAwesomeIcon icon={faComment}/> {item.categoryPostsNumber || 0} postów</Col>
                   </Col>
@@ -151,15 +152,6 @@ class CategoriesComponent extends Component {
                       </span>
                       : "Brak postów"
                     }
-                  </Col>
-                  <Col span={1}>
-                    <Dropdown placement="bottomRight" trigger={['click']}
-                              overlay={
-                                <Menu><Menu.Item onClick={() => this.editCategory(item)} key="1">Edytuj</Menu.Item></Menu>
-                              }
-                    >
-                      <Button className={'category-more-btn'} type={'link'}><Icon type="more"/></Button>
-                    </Dropdown>
                   </Col>
                 </Row>
               </Skeleton>

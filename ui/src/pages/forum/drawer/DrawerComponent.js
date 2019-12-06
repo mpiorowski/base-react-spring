@@ -23,6 +23,7 @@ class DrawerComponent extends Component {
   };
 
   render() {
+    const {categoryUid, topicUid} = this.props;
     const {visibility, record, type} = this.props.drawerData;
 
     return (
@@ -40,9 +41,12 @@ class DrawerComponent extends Component {
             {visibility ? <Icon type="minus"/> : <Icon type="plus"/>}
           </div>
           <WrappedDrawerForm
+            categoryUid={categoryUid}
+            topicUid={topicUid}
             record={record}
             type={type}
-            submitDrawer={this.props.submitDrawer}
+
+            handleSubmitDrawer={this.props.handleSubmitDrawer}
             handleDrawerVisible={this.props.handleDrawerVisible}
             onChildrenDrawerClose={this.onChildrenDrawerClose}
           />

@@ -1,3 +1,5 @@
+@import '../../../styles/variables';
+
 .forum-floating-drawer {
   right: 20%;
   z-index: 6;
@@ -40,12 +42,16 @@
   height: 30px;
   line-height: 30px;
 
+  .anticon {
+    color: @primary-color;
+  }
+
   .ant-radio-inner {
     display: flex;
     justify-content: center;
     align-items: center;
 
-    &::after{
+    &::after {
       position: initial;
     }
   }

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Button, Form, Icon, Input, Radio} from "antd";
 import {validationErrorMsg} from "../../../config/ErrorConfig";
+import {submitForumDrawer} from "./DrawerSubmit";
 
 const FormItem = Form.Item;
 
@@ -8,6 +9,8 @@ class DrawerForm extends Component {
 
   state = {
     childDrawerVisible: false,
+    categoryUid: this.props.categoryUid || null,
+    topicUid: this.props.topicUid || null,
   };
 
   toggleChildrenDrawer = (flag) => {
@@ -17,17 +20,20 @@ class DrawerForm extends Component {
   };
 
   submitDrawer = e => {
+
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        this.props.submitDrawer(values);
+        submitForumDrawer(values).then(response => {
+          this.props.handleSubmitDrawer(values, response);
+        })
       }
     });
   };
 
   render() {
-    const {record, type} = this.props;
+    const {categoryUid, topicUid, record, type} = this.props;
     const {getFieldDecorator} = this.props.form;
 
     let drawer;
@@ -42,6 +48,12 @@ class DrawerForm extends Component {
     return (
       <Form onSubmit={this.submitDrawer} layout={"horizontal"}>
         <div>
+          <FormItem style={{display: "none"}}>
+            {getFieldDecorator('categoryUid', {initialValue: categoryUid})(<Input/>)}
+          </FormItem>
+          <FormItem style={{display: "none"}}>
+            {getFieldDecorator('topicUid', {initialValue: topicUid})(<Input/>)}
+          </FormItem>
           <FormItem style={{display: "none"}}>
             {getFieldDecorator('type', {initialValue: type})(<Input/>)}
           </FormItem>
@@ -89,16 +101,21 @@ class DrawerForm extends Component {
               )(<Input.TextArea rows={8} maxLength={1000} placeholder={"Komentarz"}/>)}
             </FormItem>
           }
-          <br/>
-          <Form.Item>
-            {getFieldDecorator('radio-group')(
-              <Radio.Group>
-                <Radio value="a" className={"forum-drawer-radio"}>item 1</Radio>
-                <Radio value="b" className={"forum-drawer-radio"}>item 2</Radio>
-                <Radio value="c" className={"forum-drawer-radio"}>item 3</Radio>
-              </Radio.Group>,
-            )}
-          </Form.Item>
+          {drawer === 'category'
+            ? <Form.Item>
+              {getFieldDecorator('icon', {
+                rules: [
+                  {required: true, message: 'Wybierz ikonę kategorii'}
+                ]
+              })(
+                <Radio.Group>
+                  <Radio value="edit" className={"forum-drawer-radio"}><Icon type="edit"/></Radio>
+                  <Radio value="form" className={"forum-drawer-radio"}><Icon type="form"/></Radio>
+                  <Radio value="snippets" className={"forum-drawer-radio"}><Icon type="snippets"/></Radio>
+                  <Radio value="appstore" className={"forum-drawer-radio"}><Icon type="appstore"/></Radio>
+                </Radio.Group>,
+              )}
+            </Form.Item> : ''}
 
           {/* TODO - attachments*/}
           {/*{type === 'newPost' ?*/}

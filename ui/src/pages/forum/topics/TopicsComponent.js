@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {Icon, Table} from "antd";
+import {Button, Dropdown, Icon, Menu, Table} from "antd";
 import "./TopicsComponent.less";
-import {serviceAddTopic, serviceGetTopics} from "../../../services/forum/ForumService";
+import {serviceGetTopics} from "../../../services/forum/ForumService";
 import moment from "moment";
 import {NavLink} from "react-router-dom";
 import DrawerComponent from "../drawer/DrawerComponent";
@@ -28,7 +28,7 @@ class TopicsComponent extends Component {
     drawerData: {
       visibility: false,
       record: {},
-      type: 'newTopic'
+      type: ''
     },
 
   };
@@ -50,17 +50,11 @@ class TopicsComponent extends Component {
     });
   }
 
-  submitDrawer = (data) => {
+  handleSubmitDrawer = (formData, response) => {
     const categoryUid = this.state.categoryUid;
-    const topicData = {topicTitle: data.title, topicDescription: data.content};
-    serviceAddTopic(categoryUid, topicData).then(response => {
-      console.log('topic submit', response);
-      if (response) {
-        this.props.history.push('/forum/categories/' + categoryUid + '/topics/' + response.uid + "/posts");
-      }
-    }).catch(error => {
-      console.log(error);
-    });
+    if (response) {
+      this.props.history.push('/forum/categories/' + categoryUid + '/topics/' + response.uid + "/posts");
+    }
   };
 
   handleDrawerVisible = (flag, record, type) => {
@@ -75,7 +69,7 @@ class TopicsComponent extends Component {
 
   render() {
 
-    const {category, topics, loading, drawerData} = this.state;
+    const {category, categoryUid, topics, loading, drawerData} = this.state;
 
     const columns = [
         {
@@ -86,7 +80,7 @@ class TopicsComponent extends Component {
           sorter: (a, b) => a.topicTitle.localeCompare(b.topicTitle),
           render: (text, row, index) => {
             return <NavLink
-              to={"/forum/categories/" + this.state.categoryUid + "/topics/" + row.uid + "/posts"}>{text}</NavLink>
+              to={"/forum/categories/" + categoryUid + "/topics/" + row.uid + "/posts"}>{text}</NavLink>
           }
         },
         {
@@ -109,7 +103,7 @@ class TopicsComponent extends Component {
           render: (text, row, index) => {
             return text
               ? <NavLink
-                to={"/forum/categories/" + this.state.categoryUid + "/topics/" + row.uid + "/posts?latest=" + row.latestPostUid}>
+                to={"/forum/categories/" + categoryUid + "/topics/" + row.uid + "/posts?latest=" + row.latestPostUid}>
                 {moment(text).fromNow()}
               </NavLink>
               : 'Brak postów'
@@ -121,9 +115,16 @@ class TopicsComponent extends Component {
     return (
       <div>
 
+        {/*//todo - edit category only for author*/}
         <div
           className={'cat-header'}>{category ? category.categoryTitle : ''}
-
+          <Dropdown placement="bottomRight" trigger={['click']}
+                    overlay={
+                      <Menu><Menu.Item onClick={() => this.editCategory(category)} key="1">Edytuj</Menu.Item></Menu>
+                    }
+          >
+            <Button className={'category-more-btn'} type={'link'}><Icon type="more"/></Button>
+          </Dropdown>
         </div>
 
         <Table
@@ -142,8 +143,10 @@ class TopicsComponent extends Component {
         </div>
         <DrawerComponent
           drawerData={drawerData}
+          categoryUid={categoryUid}
+
           handleDrawerVisible={this.handleDrawerVisible}
-          submitDrawer={this.submitDrawer}
+          handleSubmitDrawer={this.handleSubmitDrawer}
         />
       </div>
 
