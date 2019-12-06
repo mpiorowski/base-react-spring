@@ -67,6 +67,15 @@ class TopicsComponent extends Component {
     });
   };
 
+  editCategory = (category) => {
+    const record = {
+      uid: category.uid,
+      title: category.categoryTitle,
+      content: category.categoryDescription
+    };
+    this.handleDrawerVisible(true, record, 'editCategory');
+  };
+
   render() {
 
     const {category, categoryUid, topics, loading, drawerData} = this.state;

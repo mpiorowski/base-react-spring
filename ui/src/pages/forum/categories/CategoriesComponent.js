@@ -77,15 +77,6 @@ class CategoriesComponent extends Component {
 
   };
 
-  editCategory = (category) => {
-    const record = {
-      uid: category.uid,
-      title: category.categoryTitle,
-      content: category.categoryDescription
-    };
-    this.handleDrawerVisible(true, record, 'editCategory');
-  };
-
   handleDrawerVisible = (flag, record, type) => {
     this.setState({
       drawerData: {
