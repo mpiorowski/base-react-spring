@@ -2,25 +2,25 @@
 insert into forum_categories(category_title, category_description, category_icon, fk_user_id, created_at)
 values ('Ogłoszenia',
         'Sprawdź tutaj najświeższe ogłoszenia',
-        'default',
+        'comment',
         (select id from sys_users where user_name = 'admin'), '2019-01-06 00:01:00');
 
 insert into forum_categories(category_title, category_description, category_icon, fk_user_id, created_at)
 values ('Ogólna dusyksja',
         'Miejsce, gdzie możesz rozmawiać o czymkolwiek',
-        'default',
+        'comment',
         (select id from sys_users where user_name = 'admin'), '2019-01-07 00:01:00');
 
 insert into forum_categories(category_title, category_description, category_icon, fk_user_id, created_at)
 values ('TopicDao 1',
         'Ant Design, a design language for background applications,is refined by Ant UED Team.',
-        'default',
+        'comment',
         (select id from sys_users where user_name = 'user'), '2019-01-08 00:01:00');
 
 insert into forum_categories(category_title, category_description, category_icon, fk_user_id, created_at)
 values ('TopicDao 2',
         'Ant Design, a design language for background applications,is refined by Ant UED Team.',
-        'default',
+        'comment',
         (select id from sys_users where user_name = 'user'), '2019-01-09 00:01:00');
 
 

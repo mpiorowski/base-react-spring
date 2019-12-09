@@ -11,6 +11,7 @@ import './styles/global.less';
 import './styles/variables.less';
 import {serviceGetUser} from "./services/auth/AuthService";
 import AuthComponent from "./auth/AuthComponent";
+import {initFontAwesomeIcons} from "./config/IconsConfig";
 
 const {Content} = Layout;
 
@@ -61,7 +62,7 @@ class App extends Component {
 
   loadInitData = () => {
     setUpMomentDateTimeLanguage(momentDateTimeLanguage);
-    // return initForumBreadcrumbs(this.state.breadcrumbs);
+    initFontAwesomeIcons();
   };
 
   logout = () => {

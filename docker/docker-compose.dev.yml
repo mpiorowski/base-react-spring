@@ -29,6 +29,7 @@ services:
       - "SPRING_PROFILES_ACTIVE=dev, swagger"
     depends_on:
       - database
+    command: ["./gradlew", "bootRun"]
 
   ui:
     container_name: dev-ui-app

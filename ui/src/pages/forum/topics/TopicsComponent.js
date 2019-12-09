@@ -5,6 +5,7 @@ import {serviceGetTopics} from "../../../services/forum/ForumService";
 import moment from "moment";
 import {NavLink} from "react-router-dom";
 import DrawerComponent from "../drawer/DrawerComponent";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 
 class TopicsComponent extends Component {
@@ -51,10 +52,18 @@ class TopicsComponent extends Component {
   }
 
   handleSubmitDrawer = (formData, response) => {
-    const categoryUid = this.state.categoryUid;
-    if (response) {
-      this.props.history.push('/forum/categories/' + categoryUid + '/topics/' + response.uid + "/posts");
+    if (formData.type === 'editCategory') {
+      this.setState({
+        category: response
+      });
+    } else if (formData.type === 'newTopic') {
+      const topics = [response].concat(this.state.topics);
+      this.setState({
+        topics: topics
+      })
     }
+
+    this.handleDrawerVisible(false);
   };
 
   handleDrawerVisible = (flag, record, type) => {
@@ -71,7 +80,8 @@ class TopicsComponent extends Component {
     const record = {
       uid: category.uid,
       title: category.categoryTitle,
-      content: category.categoryDescription
+      content: category.categoryDescription,
+      icon: category.categoryIcon
     };
     this.handleDrawerVisible(true, record, 'editCategory');
   };
@@ -125,14 +135,21 @@ class TopicsComponent extends Component {
       <div>
 
         {/*//todo - edit category only for author*/}
-        <div
-          className={'cat-header'}>{category ? category.categoryTitle : ''}
+        <div className={'topic-header'}>
+          <div className={'topic-header-text'}>
+            <div>
+              <FontAwesomeIcon icon={category ? category.categoryIcon : ''}/>&nbsp;
+              {category ? category.categoryTitle : ''}&nbsp;-&nbsp;
+            </div>
+            <div className={'topic-header-description'}>{category ? category.categoryDescription : ''}</div>
+          </div>
+
           <Dropdown placement="bottomRight" trigger={['click']}
                     overlay={
                       <Menu><Menu.Item onClick={() => this.editCategory(category)} key="1">Edytuj</Menu.Item></Menu>
                     }
           >
-            <Button className={'category-more-btn'} type={'link'}><Icon type="more"/></Button>
+            <Button className={'topic-more-btn'} type={'link'}><Icon type="more"/></Button>
           </Dropdown>
         </div>
 

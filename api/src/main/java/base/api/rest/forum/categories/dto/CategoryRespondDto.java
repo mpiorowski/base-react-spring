@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 public class CategoryRespondDto extends GenericResponseDto {
   private String categoryTitle;
   private String categoryDescription;
+  private String categoryIcon;
 
   private Integer categoryTopicsNumber;
   private Integer categoryPostsNumber;

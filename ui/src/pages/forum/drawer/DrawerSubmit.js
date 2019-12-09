@@ -1,10 +1,17 @@
-import {serviceAddPost, serviceAddTopic, serviceEditPost, serviceEditTopic} from "../../../services/forum/ForumService";
+import {
+  serviceAddCategory,
+  serviceAddPost,
+  serviceAddTopic,
+  serviceEditCategory,
+  serviceEditPost,
+  serviceEditTopic
+} from "../../../services/forum/ForumService";
 
 export const submitForumDrawer = (formData) => {
 
   return new Promise((resolve, reject) => {
 
-      console.log('formData', formData);
+      console.log('forum drawer data', formData);
 
       let data;
       let param1;
@@ -12,6 +19,25 @@ export const submitForumDrawer = (formData) => {
 
       let submitFunc;
       switch (formData.type) {
+        case 'newCategory': {
+          data = {
+            categoryTitle: formData.title,
+            categoryDescription: formData.content,
+            categoryIcon: formData.icon
+          };
+          submitFunc = serviceAddCategory;
+          break;
+        }
+        case 'editCategory': {
+          param1 = formData.uid;
+          data = {
+            categoryTitle: formData.title,
+            categoryDescription: formData.content,
+            categoryIcon: formData.icon
+          };
+          submitFunc = serviceEditCategory;
+          break;
+        }
         case 'newTopic': {
           param1 = formData.categoryUid;
           data = {
@@ -53,6 +79,7 @@ export const submitForumDrawer = (formData) => {
 
       submitFunc(data, param1 || null, param2 || null).then(response => {
         if (response) {
+          console.log("forum drawer response", response);
           resolve(response);
         }
       }).catch(error => {
