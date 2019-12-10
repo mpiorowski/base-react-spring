@@ -1,5 +1,7 @@
 import React, { createContext, useReducer, useContext } from 'react';
 
+// todo - use IT
+
 /* Action Types */
 const SET_DOGGIE = 'SET_DOGGIE';
 

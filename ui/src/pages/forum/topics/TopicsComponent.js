@@ -137,8 +137,8 @@ class TopicsComponent extends Component {
         <div className={'topic-header'}>
           <div className={'topic-header-text'}>
             <div>
-              <FontAwesomeIcon icon={category ? category.categoryIcon : ''}/>&nbsp;
-              {category ? category.categoryTitle : ''}&nbsp;-&nbsp;
+              {category ? <FontAwesomeIcon icon={category.categoryIcon}/>: ''}
+              &nbsp;{category ? category.categoryTitle : ''}&nbsp;-&nbsp;
             </div>
             <div className={'topic-header-description'}>{category ? category.categoryDescription : ''}</div>
           </div>

@@ -1,8 +1,8 @@
 import React, {Component, createContext} from 'react';
 import {Icon, Layout, Spin} from "antd";
 import {Redirect, Route, Switch, withRouter} from "react-router-dom";
-import {ACCESS_TOKEN} from "./config/AppConfig";
-import {momentDateTimeLanguage, setUpMomentDateTimeLanguage} from "./config/DateTimeConfig";
+import {ACCESS_TOKEN, initFontAwesomeIcons} from "./config/AppConfig";
+import {momentDateTimeLanguage, setUpMomentDateTimeLanguage} from "./config/AppConfig";
 import {routes} from './config/RoutesConfig';
 import AppHeader from "./main/AppHeader";
 
@@ -11,7 +11,7 @@ import './styles/global.less';
 import './styles/variables.less';
 import {serviceGetUser} from "./services/auth/AuthService";
 import AuthComponent from "./auth/AuthComponent";
-import {initFontAwesomeIcons} from "./config/IconsConfig";
+import AppBreadcrumbs from "./main/AppBreadcrumbs";
 
 const {Content} = Layout;
 export const AuthContext = createContext(null);
@@ -155,6 +155,7 @@ class App extends Component {
               currentUser={currentUser}
             />
             <Content className={'app-content'}>
+              <AppBreadcrumbs {...this.props} />
               <Switch>
                 {router}
               </Switch>
