@@ -5,7 +5,6 @@ import "react-quill/dist/quill.snow.css";
 import {serviceGetPosts} from "../../../services/forum/ForumService";
 import PostContent from "./PostContent";
 import * as moment from "moment";
-import {submitForumDrawer} from "../drawer/DrawerSubmit";
 import DrawerComponent from "../drawer/DrawerComponent";
 import {scrollToElementId} from "../../../utils/UtilsApp";
 
@@ -95,62 +94,60 @@ class PostComponent extends Component {
   }
 
   //TODO - optimize
-  submitDrawer = (formData) => {
+  handleSubmitDrawer = (formData, response) => {
 
-    let {categoryUid, topicUid, mapPosts, postReplies} = this.state;
-
+    let {mapPosts, postReplies} = this.state;
     let newMapPosts, newPostReplies;
+    switch (formData.type) {
 
-    submitForumDrawer(formData, categoryUid, topicUid).then(response => {
-        switch (formData.type) {
-
-          case 'editTopic': {
-            this.setState({
-              topic: response
-            });
-            break;
-          }
-
-          case 'newPost': {
-            if (formData.replyUid) {
-              if (!postReplies.get(formData.replyUid)) {
-                newPostReplies = postReplies.set(formData.replyUid, []);
-              } else {
-                newPostReplies = postReplies;
-              }
-              newPostReplies = newPostReplies.set(
-                formData.replyUid, newPostReplies.get(formData.replyUid).concat([response.uid])
-              );
-              newMapPosts = mapPosts.set(response.uid, response);
-              this.setState({
-                postReplies: newPostReplies,
-                mapPosts: newMapPosts,
-              });
-              this.openReply(formData.replyUid);
-            } else {
-              newMapPosts = mapPosts.set(response.uid, response);
-              this.setState({
-                mapPosts: newMapPosts,
-              });
-              this.goToLast();
-            }
-            scrollToElementId(response.uid);
-            break;
-          }
-
-          case 'editPost': {
-            newMapPosts = mapPosts.set(response.uid, response);
-            this.setState({
-              mapPosts: newMapPosts,
-            });
-            scrollToElementId(response.uid);
-            break;
-          }
-
-        }
-        this.handleDrawerVisible(false, {});
+      case 'editTopic': {
+        this.setState({
+          topic: response
+        });
+        break;
       }
-    );
+
+      case 'newPost': {
+        if (formData.replyUid) {
+          if (!postReplies.get(formData.replyUid)) {
+            newPostReplies = postReplies.set(formData.replyUid, []);
+          } else {
+            newPostReplies = postReplies;
+          }
+          newPostReplies = newPostReplies.set(
+            formData.replyUid, newPostReplies.get(formData.replyUid).concat([response.uid])
+          );
+          newMapPosts = mapPosts.set(response.uid, response);
+          this.setState({
+            postReplies: newPostReplies,
+            mapPosts: newMapPosts,
+          });
+          this.openReply(formData.replyUid);
+        } else {
+          newMapPosts = mapPosts.set(response.uid, response);
+          this.setState({
+            mapPosts: newMapPosts,
+          });
+          this.goToLast();
+        }
+        scrollToElementId(response.uid);
+        break;
+      }
+
+      case 'editPost': {
+        newMapPosts = mapPosts.set(response.uid, response);
+        this.setState({
+          mapPosts: newMapPosts,
+        });
+        scrollToElementId(response.uid);
+        break;
+      }
+      default:
+        throw new Error('Something is wrong with post submit type');
+
+    }
+    this.handleDrawerVisible(false, {});
+
   };
 
   openReply = (uid) => {
@@ -207,7 +204,7 @@ class PostComponent extends Component {
 
   render() {
 
-    const {drawerData, topic, mapPosts, loading, currentUser} = this.state;
+    const {categoryUid, topicUid, drawerData, topic, mapPosts, loading, currentUser} = this.state;
     const {pageSize, currentPage} = this.state;
 
     const posts = () => {
@@ -288,9 +285,11 @@ class PostComponent extends Component {
           </div>
           <DrawerComponent
             drawerData={drawerData}
+            categoryUid={categoryUid}
+            topicUid={topicUid}
 
             handleDrawerVisible={this.handleDrawerVisible}
-            submitDrawer={this.submitDrawer}
+            handleSubmitDrawer={this.handleSubmitDrawer}
           />
         </div>
       </div>

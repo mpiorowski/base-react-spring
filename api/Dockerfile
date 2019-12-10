@@ -6,7 +6,7 @@ WORKDIR $APP_HOME
 COPY build.gradle settings.gradle gradlew $APP_HOME
 COPY gradle $APP_HOME/gradle
 COPY . .
-CMD ["gradle", "clean", "bootRun"]
+#CMD ["gradle", "clean", "bootRun"]
 
 FROM dev as builder
 RUN gradle build -x test

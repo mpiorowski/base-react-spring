@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
-import {Button, Form, Icon, Input} from "antd";
+import {Button, Form, Icon, Input, Radio} from "antd";
 import {validationErrorMsg} from "../../../config/ErrorConfig";
+import {submitForumDrawer} from "./DrawerSubmit";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome/index";
 
 const FormItem = Form.Item;
 
@@ -8,6 +10,8 @@ class DrawerForm extends Component {
 
   state = {
     childDrawerVisible: false,
+    categoryUid: this.props.categoryUid || null,
+    topicUid: this.props.topicUid || null,
   };
 
   toggleChildrenDrawer = (flag) => {
@@ -17,17 +21,19 @@ class DrawerForm extends Component {
   };
 
   submitDrawer = e => {
+
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
-        this.props.submitDrawer(values);
+        submitForumDrawer(values).then(response => {
+          this.props.handleSubmitDrawer(values, response);
+        })
       }
     });
   };
 
   render() {
-    const {record, type} = this.props;
+    const {categoryUid, topicUid, record, type} = this.props;
     const {getFieldDecorator} = this.props.form;
 
     let drawer;
@@ -40,8 +46,14 @@ class DrawerForm extends Component {
     }
 
     return (
-      <Form onSubmit={this.submitDrawer}>
+      <Form onSubmit={this.submitDrawer} layout={"horizontal"}>
         <div>
+          <FormItem style={{display: "none"}}>
+            {getFieldDecorator('categoryUid', {initialValue: categoryUid})(<Input/>)}
+          </FormItem>
+          <FormItem style={{display: "none"}}>
+            {getFieldDecorator('topicUid', {initialValue: topicUid})(<Input/>)}
+          </FormItem>
           <FormItem style={{display: "none"}}>
             {getFieldDecorator('type', {initialValue: type})(<Input/>)}
           </FormItem>
@@ -73,9 +85,10 @@ class DrawerForm extends Component {
                   rules: [
                     {required: (drawer === 'category'), message: validationErrorMsg.empty},
                     {max: 10000, message: validationErrorMsg.maxSize10000}
-                    ]
+                  ]
                 }
-              )(<Input.TextArea rows={8} maxLength={1000} placeholder={"Opis" + (drawer === 'topic' ? " (opcjonalnie)" : "") }/>)}
+              )(<Input.TextArea rows={4} maxLength={1000}
+                                placeholder={"Opis" + (drawer === 'topic' ? " (opcjonalnie)" : "")}/>)}
             </FormItem>
             : <FormItem>
               {getFieldDecorator('content', {
@@ -88,7 +101,22 @@ class DrawerForm extends Component {
               )(<Input.TextArea rows={8} maxLength={1000} placeholder={"Komentarz"}/>)}
             </FormItem>
           }
-          <br/>
+          {drawer === 'category'
+            ? <Form.Item>
+              {getFieldDecorator('icon', {
+                initialValue: record.icon || '',
+                rules: [
+                  {required: true, message: 'Wybierz ikonę kategorii'}
+                ]
+              })(
+                <Radio.Group>
+                  <Radio value="coffee" className={"forum-drawer-radio"}><FontAwesomeIcon icon="coffee"/></Radio>
+                  <Radio value="comment" className={"forum-drawer-radio"}><FontAwesomeIcon icon="comment"/></Radio>
+                  <Radio value="pencil-alt" className={"forum-drawer-radio"}><FontAwesomeIcon icon="pencil-alt"/></Radio>
+                  <Radio value="newspaper" className={"forum-drawer-radio"}><FontAwesomeIcon icon="newspaper"/></Radio>
+                </Radio.Group>,
+              )}
+            </Form.Item> : ''}
 
           {/* TODO - attachments*/}
           {/*{type === 'newPost' ?*/}

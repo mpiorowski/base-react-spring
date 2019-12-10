@@ -79,9 +79,13 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
     private static final String VAL2 = "#{categoryDescription}";
     private static final String COL3 = "fk_user_id";
     private static final String VAL3 = "#{categoryAuthor.id}";
+    private static final String COL4 = "category_icon";
+    private static final String VAL4 = "#{categoryIcon}";
+
     private static final String INSERT =
-        "(" + COL1 + "," + COL2 + "," + COL3 + ") values (" + VAL1 + "," + VAL2 + "," + VAL3 + ")";
-    private static final String UPDATE = "set " + COL1 + "=" + VAL1 + "," + COL2 + "=" + VAL2;
+        "(" + COL1 + "," + COL2 + "," + COL3 + "," + COL4 + ") values (" + VAL1 + "," + VAL2 + "," + VAL3 + "," + VAL4 + ")";
+
+    private static final String UPDATE = "set " + COL1 + "=" + VAL1 + "," + COL2 + "=" + VAL2 + "," + COL4 + "=" + VAL4;
 
     private Table() {}
   }

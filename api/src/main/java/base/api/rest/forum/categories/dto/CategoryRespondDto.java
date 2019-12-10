@@ -1,6 +1,7 @@
 package base.api.rest.forum.categories.dto;
 
 import base.api.rest.generic.GenericResponseDto;
+import base.api.rest.users.UserDataDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,6 +10,8 @@ import lombok.EqualsAndHashCode;
 public class CategoryRespondDto extends GenericResponseDto {
   private String categoryTitle;
   private String categoryDescription;
+  private String categoryIcon;
+  private UserDataDto categoryAuthor;
 
   private Integer categoryTopicsNumber;
   private Integer categoryPostsNumber;

@@ -23,11 +23,13 @@ services:
       dockerfile: ./Dockerfile
       target: dev
     volumes:
+      - ../api/:/home/app/
       - ../files:/home/app/files
     environment:
       - "SPRING_PROFILES_ACTIVE=dev, swagger"
     depends_on:
       - database
+    command: ["./gradlew", "bootRun"]
 
   ui:
     container_name: dev-ui-app
@@ -35,6 +37,8 @@ services:
       context: ../ui
       dockerfile: ./Dockerfile
       target: dev
+    volumes:
+      - ../ui/:/usr/src/app/
     environment:
       - "APIPROXY=api"
     ports:
