@@ -6,6 +6,7 @@ import moment from "moment";
 import {NavLink} from "react-router-dom";
 import DrawerComponent from "../drawer/DrawerComponent";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {AuthContext} from "../../../App";
 
 
 class TopicsComponent extends Component {
@@ -91,46 +92,44 @@ class TopicsComponent extends Component {
     const {category, categoryUid, topics, loading, drawerData} = this.state;
 
     const columns = [
-        {
-          title: 'Temat',
-          dataIndex: 'topicTitle',
-          key: 'topicTitle',
-          width: '70%',
-          sorter: (a, b) => a.topicTitle.localeCompare(b.topicTitle),
-          render: (text, row, index) => {
-            return <NavLink
-              to={"/forum/categories/" + categoryUid + "/topics/" + row.uid + "/posts"}>{text}</NavLink>
-          }
+      {
+        title: 'Temat',
+        dataIndex: 'topicTitle',
+        key: 'topicTitle',
+        width: '70%',
+        sorter: (a, b) => a.topicTitle.localeCompare(b.topicTitle),
+        render: (text, row, index) => {
+          return <NavLink
+            to={"/forum/categories/" + categoryUid + "/topics/" + row.uid + "/posts"}>{text}</NavLink>
+        }
+      },
+      {
+        title: 'Posty',
+        dataIndex: 'postsCount',
+        key: 'postsCount',
+        align: 'center',
+        sorter: (a, b) => a.postsCount - b.postsCount,
+      },
+      {
+        title: 'Najnowszy',
+        dataIndex: 'latestPostDate',
+        key: 'newest',
+        align: 'center',
+        sorter: (a, b) => {
+          let startDate = a.latestPostDate ? moment(a.latestPostDate) : moment(0);
+          let endDate = b.latestPostDate ? moment(b.latestPostDate) : moment(0);
+          return startDate.diff(endDate);
         },
-        {
-          title: 'Posty',
-          dataIndex: 'postsCount',
-          key: 'postsCount',
-          align: 'center',
-          sorter: (a, b) => a.postsCount - b.postsCount,
-        },
-        {
-          title: 'Najnowszy',
-          dataIndex: 'latestPostDate',
-          key: 'newest',
-          align: 'center',
-          sorter: (a, b) => {
-            let startDate = a.latestPostDate ? moment(a.latestPostDate) : moment(0);
-            let endDate = b.latestPostDate ? moment(b.latestPostDate) : moment(0);
-            return startDate.diff(endDate);
-          },
-          render: (text, row, index) => {
-            return text
-              ? <NavLink
-                to={"/forum/categories/" + categoryUid + "/topics/" + row.uid + "/posts?latest=" + row.latestPostUid}>
-                {moment(text).fromNow()}
-              </NavLink>
-              : 'Brak postów'
-          }
-        },
-      ]
-    ;
-
+        render: (text, row, index) => {
+          return text
+            ? <NavLink
+              to={"/forum/categories/" + categoryUid + "/topics/" + row.uid + "/posts?latest=" + row.latestPostUid}>
+              {moment(text).fromNow()}
+            </NavLink>
+            : 'Brak postów'
+        }
+      },];
+    console.log(category);
     return (
       <div>
 
@@ -143,14 +142,18 @@ class TopicsComponent extends Component {
             </div>
             <div className={'topic-header-description'}>{category ? category.categoryDescription : ''}</div>
           </div>
-
-          <Dropdown placement="bottomRight" trigger={['click']}
-                    overlay={
-                      <Menu><Menu.Item onClick={() => this.editCategory(category)} key="1">Edytuj</Menu.Item></Menu>
-                    }
-          >
-            <Button className={'topic-more-btn'} type={'link'}><Icon type="more"/></Button>
-          </Dropdown>
+          <AuthContext.Consumer>
+            {currentUser => currentUser.userRoles.includes('ROLE_ADMIN')
+              ? <Dropdown placement="bottomRight" trigger={['click']}
+                          overlay={
+                            <Menu><Menu.Item onClick={() => this.editCategory(category)}
+                                             key="1">Edytuj</Menu.Item></Menu>
+                          }
+              >
+                <Button className={'topic-more-btn'} type={'link'}><Icon type="more"/></Button>
+              </Dropdown>
+              : ''}
+          </AuthContext.Consumer>
         </div>
 
         <Table

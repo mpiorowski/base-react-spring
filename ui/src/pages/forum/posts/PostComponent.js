@@ -142,6 +142,8 @@ class PostComponent extends Component {
         scrollToElementId(response.uid);
         break;
       }
+      default:
+        throw new Error('Something is wrong with post submit type');
 
     }
     this.handleDrawerVisible(false, {});

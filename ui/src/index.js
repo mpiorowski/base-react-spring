@@ -9,7 +9,10 @@ import GlobalErrorBoundary from "./main/GlobalErrorBoundary";
 ReactDOM.render(
   <BrowserRouter>
     <GlobalErrorBoundary>
+      {/*todo - dynamic global state with hooks*/}
+      {/*<GlobalStateProvider>*/}
       <App/>
+      {/*</GlobalStateProvider>*/}
     </GlobalErrorBoundary>
   </BrowserRouter>
   , document.getElementById('root'));

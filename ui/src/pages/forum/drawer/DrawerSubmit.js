@@ -75,6 +75,8 @@ export const submitForumDrawer = (formData) => {
           submitFunc = serviceEditPost;
           break;
         }
+        default:
+          throw new Error('Something is wrong with forum submit type');
       }
 
       submitFunc(data, param1 || null, param2 || null).then(response => {

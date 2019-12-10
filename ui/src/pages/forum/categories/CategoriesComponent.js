@@ -7,6 +7,7 @@ import {serviceGetCategories} from "../../../services/forum/ForumService";
 import * as htmlToText from "html-to-text";
 import moment from "moment";
 import DrawerComponent from "../drawer/DrawerComponent";
+import {AuthContext} from "../../../App";
 
 const {OrderedMap} = require('immutable');
 
@@ -120,11 +121,15 @@ class CategoriesComponent extends Component {
 
           )}
         />
-        <div className="forum-floating-drawer plus" hidden={drawerData.visibility}
-             onClick={() => this.handleDrawerVisible(true, {}, 'newCategory')}
-        >
-          <Icon type="plus"/>
-        </div>
+        <AuthContext.Consumer>
+          {currentUser => currentUser.userRoles.includes('ROLE_ADMIN')
+            ? <div className="forum-floating-drawer plus" hidden={drawerData.visibility}
+                   onClick={() => this.handleDrawerVisible(true, {}, 'newCategory')}
+            >
+              <Icon type="plus"/>
+            </div>
+            : ''}
+        </AuthContext.Consumer>
         <DrawerComponent
           drawerData={drawerData}
           handleDrawerVisible={this.handleDrawerVisible}

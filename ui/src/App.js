@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, createContext} from 'react';
 import {Icon, Layout, Spin} from "antd";
 import {Redirect, Route, Switch, withRouter} from "react-router-dom";
 import {ACCESS_TOKEN} from "./config/AppConfig";
@@ -14,8 +14,9 @@ import AuthComponent from "./auth/AuthComponent";
 import {initFontAwesomeIcons} from "./config/IconsConfig";
 
 const {Content} = Layout;
+export const AuthContext = createContext(null);
 
-// TODO - use or deletes
+// TODO - use or delete
 // const isMobile = window.innerWidth <= 576;
 
 class App extends Component {
@@ -127,7 +128,9 @@ class App extends Component {
       }),
       currentUser.userRoles.map(role =>
         routes[role].paths.map(route => {
-          if (addedRoutes.includes(route.key)) {return '';}
+          if (addedRoutes.includes(route.key)) {
+            return '';
+          }
           addedRoutes.push(route.key);
           return (
             <PrivateRoute path={route.path.url}
@@ -143,19 +146,21 @@ class App extends Component {
 
     return (
       <div>
-        <Layout className={'app-layout'}>
-          <AppHeader
-            toggle={this.headerToggle}
-            logout={this.logout}
-            collapsed={this.state.collapsed}
-            currentUser={currentUser}
-          />
-          <Content className={'app-content'}>
-            <Switch>
-              {router}
-            </Switch>
-          </Content>
-        </Layout>
+        <AuthContext.Provider value={{...currentUser}}>
+          <Layout className={'app-layout'}>
+            <AppHeader
+              toggle={this.headerToggle}
+              logout={this.logout}
+              collapsed={this.state.collapsed}
+              currentUser={currentUser}
+            />
+            <Content className={'app-content'}>
+              <Switch>
+                {router}
+              </Switch>
+            </Content>
+          </Layout>
+        </AuthContext.Provider>
       </div>
     );
   }
