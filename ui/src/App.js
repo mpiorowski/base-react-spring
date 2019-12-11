@@ -1,8 +1,12 @@
 import React, {Component, createContext} from 'react';
 import {Icon, Layout, Spin} from "antd";
 import {Redirect, Route, Switch, withRouter} from "react-router-dom";
-import {ACCESS_TOKEN, initFontAwesomeIcons} from "./config/AppConfig";
-import {momentDateTimeLanguage, setUpMomentDateTimeLanguage} from "./config/AppConfig";
+import {
+  ACCESS_TOKEN,
+  initFontAwesomeIcons,
+  momentDateTimeLanguage,
+  setUpMomentDateTimeLanguage
+} from "./config/AppConfig";
 import {routes} from './config/RoutesConfig';
 import AppHeader from "./main/AppHeader";
 
@@ -98,17 +102,15 @@ class App extends Component {
       )
     }
     const PrivateRoute = ({component: RouteComponent, ...rest}) => (
-      <div>
-        <Route {...rest} render={(props) => (
-          this.state.isAuth === true
-            ? <RouteComponent {...rest} {...props}/>
-            : <Redirect to={{
-              pathname: '/login',
-              state: {from: props.location}
-            }}
-            />
-        )}/>
-      </div>
+      <Route {...rest} render={(props) => (
+        this.state.isAuth === true
+          ? <RouteComponent {...rest} {...props}/>
+          : <Redirect to={{
+            pathname: '/login',
+            state: {from: props.location}
+          }}
+          />
+      )}/>
     );
 
     const currentUser = this.state.currentUser;
@@ -155,9 +157,11 @@ class App extends Component {
               currentUser={currentUser}
             />
             <Content className={'app-content'}>
-              <AppBreadcrumbs {...this.props} />
+              <AppBreadcrumbs {...this.props} className={'app-breadcrumbs'}/>
               <Switch>
-                {router}
+                <div className={'app-switch'}>
+                  {router}
+                </div>
               </Switch>
             </Content>
           </Layout>
