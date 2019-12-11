@@ -13,10 +13,10 @@ export const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(
 
 export const momentDateTimeLanguage = 'pl';
 
-export const setUpMomentDateTimeLanguage = (lang) => {
+export const initMomentDateTimeLanguage = (lang) => {
   moment.locale(lang);
 };
 
-export function initFontAwesomeIcons() {
+export const initFontAwesomeIcons = () => {
   library.add(faComment, faPencilAlt, faCoffee, faNewspaper)
-}
+};

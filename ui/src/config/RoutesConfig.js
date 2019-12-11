@@ -1,6 +1,7 @@
 import ContactComponent from "../pages/contact/ContactComponent";
 import ForumComponent from "../pages/forum/ForumComponent";
 import TestComponent from "../pages/test/TestComponent";
+import HelloComponent from "../pages/hello/HelloComponent";
 
 const pathsData = {
   forum: {
@@ -28,6 +29,19 @@ const pathsData = {
       headerName: 'Clean',
       headerIcon: 'book',
     }
+  },
+  hello: {
+    key: 3,
+    path: {
+      url: '/hello',
+      component: HelloComponent,
+      exact: true
+    },
+    header: {
+      url: '/hello',
+      headerName: 'Hello',
+      headerIcon: 'book',
+    }
   }
 };
 
@@ -43,10 +57,11 @@ export const routes =
     },
     ROLE_ADMIN: {
       paths: [
+        pathsData.hello,
         pathsData.forum,
         pathsData.clean
       ],
-      redirect: '/forum/categories'
+      redirect: '/hello'
     },
     ROLE_USER: {
       paths: [

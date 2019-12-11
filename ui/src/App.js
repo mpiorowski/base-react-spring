@@ -4,8 +4,8 @@ import {Redirect, Route, Switch, withRouter} from "react-router-dom";
 import {
   ACCESS_TOKEN,
   initFontAwesomeIcons,
-  momentDateTimeLanguage,
-  setUpMomentDateTimeLanguage
+  initMomentDateTimeLanguage,
+  momentDateTimeLanguage
 } from "./config/AppConfig";
 import {routes} from './config/RoutesConfig';
 import AppHeader from "./main/AppHeader";
@@ -16,6 +16,7 @@ import './styles/variables.less';
 import {serviceGetUser} from "./services/auth/AuthService";
 import AuthComponent from "./auth/AuthComponent";
 import AppBreadcrumbs from "./main/AppBreadcrumbs";
+import {initForumBreadcrumbs} from "./config/BreadcrumbsConfig";
 
 const {Content} = Layout;
 export const AuthContext = createContext(null);
@@ -66,8 +67,9 @@ class App extends Component {
   };
 
   loadInitData = () => {
-    setUpMomentDateTimeLanguage(momentDateTimeLanguage);
+    initMomentDateTimeLanguage(momentDateTimeLanguage);
     initFontAwesomeIcons();
+    initForumBreadcrumbs();
   };
 
   logout = () => {
@@ -158,11 +160,11 @@ class App extends Component {
             />
             <Content className={'app-content'}>
               <AppBreadcrumbs {...this.props} className={'app-breadcrumbs'}/>
-              <Switch>
-                <div className={'app-switch'}>
+              <div className={'app-switch'}>
+                <Switch>
                   {router}
-                </div>
-              </Switch>
+                </Switch>
+              </div>
             </Content>
           </Layout>
         </AuthContext.Provider>

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Breadcrumb, Icon} from "antd";
 import {NavLink} from "react-router-dom";
 import "./AppBreadcrumb.less";
