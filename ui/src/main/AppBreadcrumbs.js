@@ -2,42 +2,40 @@ import React from 'react';
 import {Breadcrumb, Icon} from "antd";
 import {NavLink} from "react-router-dom";
 import "./AppBreadcrumb.less";
-import {breadcrumbNameMap} from "../config/BreadcrumbsConfig";
 
 
 const AppBreadcrumbs = (props) => {
 
-  // console.log(props);
-
-  const {location} = props;
+  const {location, breadcrumbs} = props;
   const pathSnippets = location.pathname.split('/').filter(i => i);
+  let extraBreadcrumbItems = [];
 
-  let breadcrumbs = breadcrumbNameMap;
-
-  const extraBreadcrumbItems = pathSnippets.map((_, index, arr) => {
-    const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
-    if (breadcrumbs[url] !== '' && breadcrumbs[url] !== undefined) {
-      if (arr.length - 1 === index) {
-        return (
-          <Breadcrumb.Item key={url}>
+  if (breadcrumbs) {
+    extraBreadcrumbItems = pathSnippets.map((_, index, arr) => {
+      const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+      if (breadcrumbs[url] !== '' && breadcrumbs[url] !== undefined) {
+        if (arr.length - 1 === index) {
+          return (
+            <Breadcrumb.Item key={url}>
                 <span>
                   {breadcrumbs[url]}
                 </span>
-          </Breadcrumb.Item>
-        );
-      } else {
-        return (
-          <Breadcrumb.Item key={url}>
-            <NavLink to={url}>
-              {breadcrumbs[url]}
-            </NavLink>
-          </Breadcrumb.Item>
-        );
+            </Breadcrumb.Item>
+          );
+        } else {
+          return (
+            <Breadcrumb.Item key={url}>
+              <NavLink to={url}>
+                {breadcrumbs[url]}
+              </NavLink>
+            </Breadcrumb.Item>
+          );
+        }
       }
-    }
-    return "";
+      return '';
+    });
+  }
 
-  });
   const breadcrumbItems = [(
     <Breadcrumb.Item key="home">
       <NavLink to="/"><Icon type="home"/> Strona główna</NavLink>

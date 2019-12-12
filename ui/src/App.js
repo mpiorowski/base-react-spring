@@ -69,7 +69,7 @@ class App extends Component {
   loadInitData = () => {
     initMomentDateTimeLanguage(momentDateTimeLanguage);
     initFontAwesomeIcons();
-    initForumBreadcrumbs();
+    initForumBreadcrumbs().then(breadcrumbs => this.setState({breadcrumbs:breadcrumbs}));
   };
 
   logout = () => {
@@ -159,7 +159,7 @@ class App extends Component {
               currentUser={currentUser}
             />
             <Content className={'app-content'}>
-              <AppBreadcrumbs {...this.props} className={'app-breadcrumbs'}/>
+              <AppBreadcrumbs {...this.props} breadcrumbs={this.state.breadcrumbs} className={'app-breadcrumbs'}/>
               <div className={'app-switch'}>
                 <Switch>
                   {router}
