@@ -10,9 +10,9 @@ export const initForumBreadcrumbs = () => {
   return new Promise((resolve, reject) => {
     serviceGetForumBreadcrumbs().then(response => {
       let breadcrumbs = {};
-      response.forEach(response => {
-        breadcrumbs['/forum/categories/' + response.categoryUid + '/topics'] = response.categoryTitle;
-        breadcrumbs['/forum/categories/' + response.categoryUid + '/topics/' + response.topicUid +'/posts'] = response.topicTitle;
+      response.forEach(breadcrumb => {
+        breadcrumbs['/forum/categories/' + breadcrumb.categoryUid + '/topics'] = breadcrumb.categoryTitle;
+        breadcrumbs['/forum/categories/' + breadcrumb.categoryUid + '/topics/' + breadcrumb.topicUid +'/posts'] = breadcrumb.topicTitle;
       });
       let tempBreadcrumbs = {...breadcrumbNameMap, ...breadcrumbs};
       resolve(tempBreadcrumbs);

@@ -13,7 +13,7 @@ import AppHeader from "./main/AppHeader";
 import './App.less';
 import './styles/global.less';
 import './styles/variables.less';
-import {serviceGetUser} from "./services/auth/AuthService";
+import {serviceGetCurrentUser} from "./services/auth/AuthService";
 import AuthComponent from "./auth/AuthComponent";
 import AppBreadcrumbs from "./main/AppBreadcrumbs";
 import {initForumBreadcrumbs} from "./config/BreadcrumbsConfig";
@@ -48,15 +48,20 @@ class App extends Component {
       loading: true,
       isAuth: false,
     });
-    serviceGetUser().then(response => {
-      console.log(response);
-      if (response.userName && response.userRoles) {
-        this.loadInitData();
+
+    const promise1 = serviceGetCurrentUser();
+    const promise2 = initForumBreadcrumbs();
+
+    Promise.all([promise1, promise2]).then(values => {
+      if (values[0].userName && values[0].userRoles && values[1]) {
+        initFontAwesomeIcons();
+        initMomentDateTimeLanguage(momentDateTimeLanguage);
         this.setState({
-          currentUser: response,
+          currentUser: values[0],
+          breadcrumbs: values[1],
           isAuth: true,
           loading: false,
-        });
+        })
       }
     }).catch(error => {
       console.log(error);
@@ -64,12 +69,6 @@ class App extends Component {
         loading: false
       });
     })
-  };
-
-  loadInitData = () => {
-    initMomentDateTimeLanguage(momentDateTimeLanguage);
-    initFontAwesomeIcons();
-    initForumBreadcrumbs().then(breadcrumbs => this.setState({breadcrumbs:breadcrumbs}));
   };
 
   logout = () => {
