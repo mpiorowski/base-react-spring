@@ -1,78 +1,36 @@
-import React, { createContext, useReducer, useContext } from 'react';
+import * as React from "react";
+import {breadcrumbNameMap} from "../config/BreadcrumbsConfig";
 
-// todo - use IT
+const breadcrumbsInitialState = { breadcrumbs: breadcrumbNameMap, setBreadcrumbs: undefined };
+const textInitialState = { text: "foo", setText: undefined };
+const boolInitialState = { bool: false, setBool: undefined };
 
-/* Action Types */
-const SET_DOGGIE = 'SET_DOGGIE';
+const BreadcrumbsStateContext = React.createContext(breadcrumbsInitialState);
+const TextStateContext = React.createContext(textInitialState);
+const BoolStateContext = React.createContext(boolInitialState);
 
-/* Define a context and a reducer for updating the context */
-const GlobalStateContext = createContext();
-
-const initialState = {
-  doggie: {
-    name: null,
-    breed: null,
-    isGoodBoy: true,
-  },
-};
-
-const globalStateReducer = (state, action) => {
-  switch (action.type) {
-    case SET_DOGGIE:
-      return {
-        ...state,
-        doggie: { ...action.payload },
-      };
-
-    default:
-      return state;
-  }
-};
-
-/* Export a component to provide the context to its children. This is used in our _app.js file */
-
+/**
+ * Global State provider & hooks
+ */
 export const GlobalStateProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(
-    globalStateReducer,
-    initialState
-  );
+  const [breadcrumbs, setBreadcrumbs] = React.useState(breadcrumbsInitialState.breadcrumbs);
+  const [text, setText] = React.useState(textInitialState.text);
+  const [bool, setBool] = React.useState(boolInitialState.bool);
+  const breadcrumbsContextValue = React.useMemo(() => ({breadcrumbs, setBreadcrumbs}), [breadcrumbs]);
+  const textContextValue = React.useMemo(() => ({text, setText}), [text]);
+  const boolContextValue = React.useMemo(() => ({bool, setBool}), [bool]);
 
   return (
-    <GlobalStateContext.Provider value={[state, dispatch]}>
-      {children}
-    </GlobalStateContext.Provider>
+    <BreadcrumbsStateContext.Provider value={breadcrumbsContextValue}>
+      <TextStateContext.Provider value={textContextValue}>
+        <BoolStateContext.Provider value={boolContextValue}>
+          {children}
+        </BoolStateContext.Provider>
+      </TextStateContext.Provider>
+    </BreadcrumbsStateContext.Provider>
   );
 };
 
-/*
-Default export is a hook that provides a simple API for updating the global state.
-This also allows us to keep all of this state logic in this one file
-*/
-
-const useGlobalState = () => {
-  const [state, dispatch] = useContext(GlobalStateContext);
-
-  const setDoggie = ({ name, breed, isGoodBoy }) => {
-    dispatch({
-      type: SET_DOGGIE,
-      payload: {
-        name,
-        breed,
-        isGoodBoy
-      }
-    });
-  };
-
-  return {
-    setDoggie,
-    doggie: { ...state.doggie },
-  };
-};
-
-export default useGlobalState;
-
-export const Test = () => {
-  const globalState = useGlobalState();
-  const currentUserName = globalState.userName;
-  return <p>{currentUserName}</p>;
-};
+export const useBreadcrumbsState = () => React.useContext(BreadcrumbsStateContext);
+export const useTextState = () => React.useContext(TextStateContext);
+export const useBoolState = () => React.useContext(BoolStateContext);

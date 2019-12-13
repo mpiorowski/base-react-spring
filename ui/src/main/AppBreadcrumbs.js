@@ -1,18 +1,16 @@
-import React, {useEffect} from 'react';
+import React, {memo} from 'react';
 import {Breadcrumb, Icon} from "antd";
 import {NavLink} from "react-router-dom";
 import "./AppBreadcrumb.less";
+import {useBreadcrumbsState} from "../common/GlobalContext";
 
+const AppBreadcrumbs = memo(props => {
 
-const AppBreadcrumbs = (props) => {
+  const {location} = props;
+  const {breadcrumbs} = useBreadcrumbsState();
 
-  const {location, breadcrumbs} = props;
   const pathSnippets = location.pathname.split('/').filter(i => i);
   let extraBreadcrumbItems = [];
-
-  useEffect(()=>{
-    console.log('breadcrumbs update');
-  });
 
   if (breadcrumbs) {
     extraBreadcrumbItems = pathSnippets.map((_, index, arr) => {
@@ -40,6 +38,7 @@ const AppBreadcrumbs = (props) => {
     });
   }
 
+
   const breadcrumbItems = [(
     <Breadcrumb.Item key="home">
       <NavLink to="/"><Icon type="home"/> Strona główna</NavLink>
@@ -53,6 +52,7 @@ const AppBreadcrumbs = (props) => {
       </Breadcrumb>
     </div>
   );
-};
+
+});
 
 export default AppBreadcrumbs;

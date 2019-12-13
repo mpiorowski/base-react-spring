@@ -5,14 +5,15 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {BrowserRouter} from "react-router-dom";
 import GlobalErrorBoundary from "./main/GlobalErrorBoundary";
+import {GlobalStateProvider} from "./common/GlobalContext";
 
 ReactDOM.render(
   <BrowserRouter>
     <GlobalErrorBoundary>
       {/*todo - dynamic global state with hooks*/}
-      {/*<GlobalStateProvider>*/}
-      <App/>
-      {/*</GlobalStateProvider>*/}
+      <GlobalStateProvider>
+        <App/>
+      </GlobalStateProvider>
     </GlobalErrorBoundary>
   </BrowserRouter>
   , document.getElementById('root'));

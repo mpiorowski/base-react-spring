@@ -16,7 +16,7 @@ import './styles/variables.less';
 import {serviceGetCurrentUser} from "./services/auth/AuthService";
 import AuthComponent from "./auth/AuthComponent";
 import AppBreadcrumbs from "./main/AppBreadcrumbs";
-import {initForumBreadcrumbs} from "./config/BreadcrumbsConfig";
+import {breadcrumbNameMap} from "./config/BreadcrumbsConfig";
 
 const {Content} = Layout;
 export const AuthContext = createContext(null);
@@ -50,15 +50,13 @@ class App extends Component {
     });
 
     const promise1 = serviceGetCurrentUser();
-    const promise2 = initForumBreadcrumbs();
 
-    Promise.all([promise1, promise2]).then(values => {
-      if (values[0].userName && values[0].userRoles && values[1]) {
+    Promise.all([promise1]).then(values => {
+      if (values[0].userName && values[0].userRoles) {
         initFontAwesomeIcons();
         initMomentDateTimeLanguage(momentDateTimeLanguage);
         this.setState({
           currentUser: values[0],
-          breadcrumbs: values[1],
           isAuth: true,
           loading: false,
         })
@@ -158,7 +156,7 @@ class App extends Component {
               currentUser={currentUser}
             />
             <Content className={'app-content'}>
-              <AppBreadcrumbs {...this.props} breadcrumbs={this.state.breadcrumbs} className={'app-breadcrumbs'}/>
+              <AppBreadcrumbs {...this.props} className={'app-breadcrumbs'}/>
               <div className={'app-switch'}>
                 <Switch>
                   {router}
