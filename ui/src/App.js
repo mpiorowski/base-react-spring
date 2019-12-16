@@ -16,7 +16,6 @@ import './styles/variables.less';
 import {serviceGetCurrentUser} from "./services/auth/AuthService";
 import AuthComponent from "./auth/AuthComponent";
 import AppBreadcrumbs from "./main/AppBreadcrumbs";
-import {breadcrumbNameMap} from "./config/BreadcrumbsConfig";
 
 const {Content} = Layout;
 export const AuthContext = createContext(null);

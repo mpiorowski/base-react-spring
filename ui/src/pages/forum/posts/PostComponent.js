@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Dropdown, Icon, List, Menu} from "antd";
 import "./PostComponent.less";
 import "react-quill/dist/quill.snow.css";
@@ -10,100 +10,76 @@ import {scrollToElementId} from "../../../utils/UtilsApp";
 
 const {OrderedMap} = require('immutable');
 
-class PostComponent extends Component {
+const PostComponent = (props) => {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentUser: props.currentUser,
-      loading: true,
+  const [categoryUid, setCategoryUid] = useState(props.match.params.categoryUid);
+  const [topicUid, setTopicUid] = useState(props.match.params.topicUid);
+  const [loading, setLoading] = useState(true);
+  const [drawerData, setDrawerData] = useState({
+    visibility: false,
+    record: {},
+    type: '',
+  });
+  const [topic, setTopic] = useState({topicCreated: null, topicUpdated: null, topicAuthor: {userName: null}});
 
-      categoryUid: props.match.params.categoryUid,
-      topicUid: props.match.params.topicUid,
-      drawerData: {
-        visibility: false,
-        record: {},
-        type: ''
-      },
+  const [mapPosts, setMapPosts] = useState(OrderedMap());
+  const [mapReplies, setMapReplies] = useState(OrderedMap());
+  const [postReplies, setPostReplies] = useState(OrderedMap());
+  const [openReplyArray, setOpenReplyArray] = useState([]);
+  const [hoverCommentId, setHoverCommentId] = useState(null);
 
-      topic: {
-        topicTitle: '',
-        topicDescription: '',
-        topicAuthor: {},
-        createdAt: '',
-        updatedAt: ''
-      },
+  const [pageSize, setPageSize] = useState(3);
+  const [currentPage, setCurrentPage] = useState(1);
 
-      response: {
-        topic: {},
-        posts: [],
-      },
-      openReplyArray: [],
+  //todo - change to authContext
+  const [currentUser, setCurrentUser] = useState(props.currentUser);
 
-      mapPosts: OrderedMap(),
-      mapReplies: OrderedMap(),
-      postReplies: OrderedMap(),
-
-      hoverCommentId: null,
-
-      currentPage: 1,
-      pageSize: 10,
-    }
-  }
-
-  componentDidMount() {
-
-    const {match: {params}} = this.props;
-    const search = new URLSearchParams(this.props.location.search);
+  useEffect(() => {
+    const {match: {params}} = props;
+    const search = new URLSearchParams(props.location.search);
 
     serviceGetPosts(params.topicUid).then(response => {
         console.log('posts get', response);
 
-        let mapPosts = OrderedMap();
-        let postReplies = OrderedMap();
+        let newPostReplies = OrderedMap();
+        let newMapPosts = OrderedMap();
 
         response.posts.forEach(post => {
           if (post.replyUid) {
-            if (!postReplies.get(post.replyUid)) {
-              postReplies = postReplies.set(post.replyUid, []);
+            if (!newPostReplies.get(post.replyUid)) {
+              newPostReplies = newPostReplies.set(post.replyUid, []);
             }
-            postReplies.get(post.replyUid).push(post.uid);
+            newPostReplies.get(post.replyUid).push(post.uid);
           }
-          mapPosts = mapPosts.set(post.uid, post);
-
+          newMapPosts = newMapPosts.set(post.uid, post);
         });
 
-        this.setState({
-          topic: response.topic,
-          mapPosts: mapPosts,
-          postReplies: postReplies,
-          loading: false
-        });
+        setTopic(response.topic);
+        setMapPosts(newMapPosts);
+        setPostReplies(newPostReplies);
+        setLoading(false);
+
+        console.log(newMapPosts.values());
 
         //TODO - open reply
         if (search.get('latest')) {
-          this.goToLast();
+          goToLast();
           scrollToElementId(search.get('latest'));
         }
       }
     );
-  }
+  }, []);
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log('update');
-  }
 
   //TODO - optimize
-  handleSubmitDrawer = (formData, response) => {
+  const handleSubmitDrawer = (formData, response) => {
 
-    let {mapPosts, postReplies} = this.state;
     let newMapPosts, newPostReplies;
+
     switch (formData.type) {
 
       case 'editTopic': {
-        this.setState({
-          topic: response
-        });
+        setTopic(response);
         break;
       }
 
@@ -118,17 +94,17 @@ class PostComponent extends Component {
             formData.replyUid, newPostReplies.get(formData.replyUid).concat([response.uid])
           );
           newMapPosts = mapPosts.set(response.uid, response);
-          this.setState({
-            postReplies: newPostReplies,
-            mapPosts: newMapPosts,
-          });
-          this.openReply(formData.replyUid);
+
+          setPostReplies(newPostReplies);
+          setMapPosts(newMapPosts);
+
+          openReply(formData.replyUid);
         } else {
           newMapPosts = mapPosts.set(response.uid, response);
-          this.setState({
-            mapPosts: newMapPosts,
-          });
-          this.goToLast();
+
+          setMapPosts(newMapPosts);
+
+          goToLast();
         }
         scrollToElementId(response.uid);
         break;
@@ -136,9 +112,9 @@ class PostComponent extends Component {
 
       case 'editPost': {
         newMapPosts = mapPosts.set(response.uid, response);
-        this.setState({
-          mapPosts: newMapPosts,
-        });
+
+        setMapPosts(newMapPosts);
+
         scrollToElementId(response.uid);
         break;
       }
@@ -146,445 +122,147 @@ class PostComponent extends Component {
         throw new Error('Something is wrong with post submit type');
 
     }
-    this.handleDrawerVisible(false, {});
+    handleDrawerVisible(false, {});
 
   };
 
-  openReply = (uid) => {
-    let newOpenReplyArray = this.state.openReplyArray.concat(uid);
-    this.setState({
-      openReplyArray: newOpenReplyArray
-    })
+  const openReply = (uid) => {
+    let newOpenReplyArray = openReplyArray.concat(uid);
+    setOpenReplyArray(newOpenReplyArray);
   };
-  closeReply = (uid) => {
-    let openReplyArray = this.state.openReplyArray;
+
+  const closeReply = (uid) => {
     let filtered = openReplyArray.filter(value => value !== uid);
-    this.setState({
-      openReplyArray: filtered
-    })
-  };
-  handleDrawerVisible = (flag, record, type) => {
-    this.setState({
-      drawerData: {
-        visibility: !!flag,
-        record: record || {},
-        type: type,
-      }
-    });
+    setOpenReplyArray(filtered);
   };
 
-  newPost = (replyUid) => {
-    const data = {uid: null, replyUid: replyUid || null, content: ''};
-    this.handleDrawerVisible(true, data, 'newPost');
-  };
-  editPost = (post) => {
-    const data = {uid: post.uid, content: post.postContent,};
-    this.handleDrawerVisible(true, data, 'editPost');
-  };
-  editTopic = (topic) => {
-    const data = {uid: topic.uid, title: topic.topicTitle, content: topic.topicDescription};
-    this.handleDrawerVisible(true, data, 'editTopic');
-  };
-
-  handleMouseHover = (postId) => {
-    this.setState({
-      hoverCommentId: postId,
-    })
-  };
-  onPaginationChange = (page, pageSize) => {
-    window.scrollTo(0, 0);
-    this.setState({currentPage: page});
-  };
-
-  goToLast = () => {
-    let {pageSize, mapPosts} = this.state;
-    const currentPage = Math.ceil(mapPosts.size / pageSize);
-    this.setState({currentPage: currentPage});
-  };
-
-  render() {
-
-    const {categoryUid, topicUid, drawerData, topic, mapPosts, loading, currentUser} = this.state;
-    const {pageSize, currentPage} = this.state;
-
-    const posts = () => {
-      return [...mapPosts.values()].filter(value => value.replyUid === null);
+  const handleDrawerVisible = (flag, record, type) => {
+    const newDrawerData = {
+      visibility: !!flag,
+      record: record || {},
+      type: type,
     };
+    setDrawerData(newDrawerData);
+  };
 
-    let topicCreated = moment(topic.createdAt);
-    let topicUpdated = moment(topic.updatedAt);
-    const topicDatetime =
-      <div>
-        Autor: {topic.topicAuthor.userName} |
-        Stworzono: {topicCreated.format('YYYY-MM-DD HH:mm:ss')}
-        {topicUpdated.isSame(topicCreated) ? '' :
-          <span> | <span
-            className={'topic-updated'}>Edytowano: {topicUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
-        }
-      </div>;
-    const header =
-      <div>
+  const newPost = (replyUid) => {
+    const data = {uid: null, replyUid: replyUid || null, content: ''};
+    handleDrawerVisible(true, data, 'newPost');
+  };
+  const editPost = (post) => {
+    const data = {uid: post.uid, content: post.postContent,};
+    handleDrawerVisible(true, data, 'editPost');
+  };
+  const editTopic = (topicData) => {
+    const data = {uid: topicData.uid, title: topicData.topicTitle, content: topic.topicDescription};
+    handleDrawerVisible(true, data, 'editTopic');
+  };
 
-        {currentUser.userName === topic.topicAuthor.userName
-          ? <Dropdown placement="bottomRight" trigger={['click']}
-                      overlay={
-                        <Menu><Menu.Item onClick={() => this.editTopic(topic)} key="1">Edytuj</Menu.Item></Menu>
-                      }
-          >
-            <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
-          </Dropdown>
-          : ''}
+  const handleMouseHover = (postId) => {
+    setHoverCommentId(postId);
+  };
+  const onPaginationChange = (page, pageSize) => {
+    window.scrollTo(0, 0);
+    setCurrentPage(page);
+  };
 
-        <div className={"topic-datetime"}>{topicDatetime}</div>
-        <div className={"post-header"}>
-          {topic.topicTitle}
-          <div className={"post-header-description"}>
-            {topic.topicDescription}
-          </div>
-        </div>
-      </div>
-    ;
+  const goToLast = () => {
+    const newCurrentPage = Math.ceil(mapPosts.size / pageSize);
+    setCurrentPage(newCurrentPage);
+  };
 
-    return (
-      <div>
-        <List
-          locale={{emptyText: 'Brak wpisów'}}
-          loading={loading}
-          header={header}
-          dataSource={posts()}
-          pagination={{
-            position: 'both',
-            size: 'small',
-            pageSize: pageSize,
-            total: mapPosts.size,
-            current: currentPage,
-            onChange: this.onPaginationChange
-          }}
-          renderItem={post => (
-            <li>
-              <PostContent
-                post={post}
-                newPost={this.newPost}
-                editPost={this.editPost}
-                editReply={this.editReply}
-                openReply={this.openReply}
-                closeReply={this.closeReply}
-                newReply={this.newReply}
-                handleMouseHover={this.handleMouseHover}
-                {...this.state}
-              />
-            </li>
-          )}
+  const posts = () => {
+    return [...mapPosts.values()].filter(value => value.replyUid === null);
+  };
+
+  let topicCreated = moment(topic.createdAt);
+  let topicUpdated = moment(topic.updatedAt);
+  const topicDatetime =
+    <div>
+      Autor: {topic.topicAuthor.userName} |
+      Stworzono: {topicCreated.format('YYYY-MM-DD HH:mm:ss')}
+      {topicUpdated.isSame(topicCreated) ? '' :
+        <span> | <span
+          className={'topic-updated'}>Edytowano: {topicUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
+      }
+    </div>;
+  const header =
+    <div>
+
+      {(topic.topicAuthor) && currentUser.userName === topic.topicAuthor.userName
+        ? <Dropdown placement="bottomRight" trigger={['click']}
+                    overlay={
+                      <Menu><Menu.Item onClick={() => editTopic(topic)} key="1">Edytuj</Menu.Item></Menu>
+                    }
         >
-        </List>
-        <div>
-          <div className="forum-floating-drawer plus" hidden={drawerData.visibility}
-               onClick={() => this.newPost(null)}
-          >
-            <Icon type="plus"/>
-          </div>
-          <DrawerComponent
-            drawerData={drawerData}
-            categoryUid={categoryUid}
-            topicUid={topicUid}
+          <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
+        </Dropdown>
+        : ''}
 
-            handleDrawerVisible={this.handleDrawerVisible}
-            handleSubmitDrawer={this.handleSubmitDrawer}
-          />
+      <div className={"topic-datetime"}>{topicDatetime}</div>
+      <div className={"post-header"}>
+        {topic.topicTitle}
+        <div className={"post-header-description"}>
+          {topic.topicDescription}
         </div>
       </div>
-    );
-  }
+    </div>
+  ;
+
+  const initialPost = posts();
+
+  return (
+    <div>
+      <List
+        locale={{emptyText: 'Brak wpisów'}}
+        loading={loading}
+        header={header}
+        dataSource={initialPost}
+        pagination={{
+          position: 'both',
+          size: 'small',
+          pageSize: pageSize,
+          total: initialPost.length,
+          current: currentPage,
+          onChange: onPaginationChange
+        }}
+        renderItem={post => (
+          <li>
+            <PostContent
+              post={post}
+              postReplies={postReplies}
+              mapPosts={mapPosts}
+              hoverCommentId={hoverCommentId}
+              currentUser={currentUser}
+              openReplyArray={openReplyArray}
+              newPost={newPost}
+              editPost={editPost}
+              openReply={openReply}
+              closeReply={closeReply}
+              handleMouseHover={handleMouseHover}
+
+            />
+          </li>
+        )}
+      >
+      </List>
+      <div>
+        <div className="forum-floating-drawer plus" hidden={drawerData.visibility}
+             onClick={() => newPost(null)}
+        >
+          <Icon type="plus"/>
+        </div>
+        <DrawerComponent
+          drawerData={drawerData}
+          categoryUid={categoryUid}
+          topicUid={topicUid}
+
+          handleDrawerVisible={handleDrawerVisible}
+          handleSubmitDrawer={handleSubmitDrawer}
+        />
+      </div>
+    </div>
+  );
 }
 
 export default PostComponent;
-
-// class PostComponent extends Component {
-//
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       currentUser: props.currentUser,
-//       loading: true,
-//
-//       categoryUid: props.match.params.categoryUid,
-//       topicUid: props.match.params.topicUid,
-//       drawerData: {
-//         visibility: false,
-//         record: {},
-//         type: ''
-//       },
-//
-//       topic: {
-//         topicTitle: '',
-//         topicDescription: '',
-//         topicAuthor: {},
-//         createdAt: '',
-//         updatedAt: ''
-//       },
-//
-//       response: {
-//         topic: {},
-//         posts: [],
-//       },
-//       openReplyArray: [],
-//
-//       mapPosts: OrderedMap(),
-//       mapReplies: OrderedMap(),
-//       postReplies: OrderedMap(),
-//
-//       hoverCommentId: null,
-//
-//       currentPage: 1,
-//       pageSize: 10,
-//     }
-//   }
-//
-//   componentDidMount() {
-//
-//     const {match: {params}} = this.props;
-//     const search = new URLSearchParams(this.props.location.search);
-//
-//     serviceGetPosts(params.topicUid).then(response => {
-//         console.log('posts get', response);
-//
-//         let mapPosts = OrderedMap();
-//         let postReplies = OrderedMap();
-//
-//         response.posts.forEach(post => {
-//           if (post.replyUid) {
-//             if (!postReplies.get(post.replyUid)) {
-//               postReplies = postReplies.set(post.replyUid, []);
-//             }
-//             postReplies.get(post.replyUid).push(post.uid);
-//           }
-//           mapPosts = mapPosts.set(post.uid, post);
-//
-//         });
-//
-//         this.setState({
-//           topic: response.topic,
-//           mapPosts: mapPosts,
-//           postReplies: postReplies,
-//           loading: false
-//         });
-//
-//         //TODO - open reply
-//         if (search.get('latest')) {
-//           this.goToLast();
-//           scrollToElementId(search.get('latest'));
-//         }
-//       }
-//     );
-//   }
-//
-//   componentDidUpdate(prevProps, prevState, snapshot) {
-//     console.log('update');
-//   }
-//
-//   //TODO - optimize
-//   handleSubmitDrawer = (formData, response) => {
-//
-//     let {mapPosts, postReplies} = this.state;
-//     let newMapPosts, newPostReplies;
-//     switch (formData.type) {
-//
-//       case 'editTopic': {
-//         this.setState({
-//           topic: response
-//         });
-//         break;
-//       }
-//
-//       case 'newPost': {
-//         if (formData.replyUid) {
-//           if (!postReplies.get(formData.replyUid)) {
-//             newPostReplies = postReplies.set(formData.replyUid, []);
-//           } else {
-//             newPostReplies = postReplies;
-//           }
-//           newPostReplies = newPostReplies.set(
-//             formData.replyUid, newPostReplies.get(formData.replyUid).concat([response.uid])
-//           );
-//           newMapPosts = mapPosts.set(response.uid, response);
-//           this.setState({
-//             postReplies: newPostReplies,
-//             mapPosts: newMapPosts,
-//           });
-//           this.openReply(formData.replyUid);
-//         } else {
-//           newMapPosts = mapPosts.set(response.uid, response);
-//           this.setState({
-//             mapPosts: newMapPosts,
-//           });
-//           this.goToLast();
-//         }
-//         scrollToElementId(response.uid);
-//         break;
-//       }
-//
-//       case 'editPost': {
-//         newMapPosts = mapPosts.set(response.uid, response);
-//         this.setState({
-//           mapPosts: newMapPosts,
-//         });
-//         scrollToElementId(response.uid);
-//         break;
-//       }
-//       default:
-//         throw new Error('Something is wrong with post submit type');
-//
-//     }
-//     this.handleDrawerVisible(false, {});
-//
-//   };
-//
-//   openReply = (uid) => {
-//     let newOpenReplyArray = this.state.openReplyArray.concat(uid);
-//     this.setState({
-//       openReplyArray: newOpenReplyArray
-//     })
-//   };
-//   closeReply = (uid) => {
-//     let openReplyArray = this.state.openReplyArray;
-//     let filtered = openReplyArray.filter(value => value !== uid);
-//     this.setState({
-//       openReplyArray: filtered
-//     })
-//   };
-//   handleDrawerVisible = (flag, record, type) => {
-//     this.setState({
-//       drawerData: {
-//         visibility: !!flag,
-//         record: record || {},
-//         type: type,
-//       }
-//     });
-//   };
-//
-//   newPost = (replyUid) => {
-//     const data = {uid: null, replyUid: replyUid || null, content: ''};
-//     this.handleDrawerVisible(true, data, 'newPost');
-//   };
-//   editPost = (post) => {
-//     const data = {uid: post.uid, content: post.postContent,};
-//     this.handleDrawerVisible(true, data, 'editPost');
-//   };
-//   editTopic = (topic) => {
-//     const data = {uid: topic.uid, title: topic.topicTitle, content: topic.topicDescription};
-//     this.handleDrawerVisible(true, data, 'editTopic');
-//   };
-//
-//   handleMouseHover = (postId) => {
-//     this.setState({
-//       hoverCommentId: postId,
-//     })
-//   };
-//   onPaginationChange = (page, pageSize) => {
-//     window.scrollTo(0, 0);
-//     this.setState({currentPage: page});
-//   };
-//
-//   goToLast = () => {
-//     let {pageSize, mapPosts} = this.state;
-//     const currentPage = Math.ceil(mapPosts.size / pageSize);
-//     this.setState({currentPage: currentPage});
-//   };
-//
-//   render() {
-//
-//     const {categoryUid, topicUid, drawerData, topic, mapPosts, loading, currentUser} = this.state;
-//     const {pageSize, currentPage} = this.state;
-//
-//     const posts = () => {
-//       return [...mapPosts.values()].filter(value => value.replyUid === null);
-//     };
-//
-//     let topicCreated = moment(topic.createdAt);
-//     let topicUpdated = moment(topic.updatedAt);
-//     const topicDatetime =
-//       <div>
-//         Autor: {topic.topicAuthor.userName} |
-//         Stworzono: {topicCreated.format('YYYY-MM-DD HH:mm:ss')}
-//         {topicUpdated.isSame(topicCreated) ? '' :
-//           <span> | <span
-//             className={'topic-updated'}>Edytowano: {topicUpdated.format('YYYY-MM-DD HH:mm:ss')}</span></span>
-//         }
-//       </div>;
-//     const header =
-//       <div>
-//
-//         {currentUser.userName === topic.topicAuthor.userName
-//           ? <Dropdown placement="bottomRight" trigger={['click']}
-//                       overlay={
-//                         <Menu><Menu.Item onClick={() => this.editTopic(topic)} key="1">Edytuj</Menu.Item></Menu>
-//                       }
-//           >
-//             <Button className={'post-more-btn'} type={'link'}><Icon type="more"/></Button>
-//           </Dropdown>
-//           : ''}
-//
-//         <div className={"topic-datetime"}>{topicDatetime}</div>
-//         <div className={"post-header"}>
-//           {topic.topicTitle}
-//           <div className={"post-header-description"}>
-//             {topic.topicDescription}
-//           </div>
-//         </div>
-//       </div>
-//     ;
-//
-//     return (
-//       <div>
-//         <List
-//           locale={{emptyText: 'Brak wpisów'}}
-//           loading={loading}
-//           header={header}
-//           dataSource={posts()}
-//           pagination={{
-//             position: 'both',
-//             size: 'small',
-//             pageSize: pageSize,
-//             total: mapPosts.size,
-//             current: currentPage,
-//             onChange: this.onPaginationChange
-//           }}
-//           renderItem={post => (
-//             <li>
-//               <PostContent
-//                 post={post}
-//                 newPost={this.newPost}
-//                 editPost={this.editPost}
-//                 editReply={this.editReply}
-//                 openReply={this.openReply}
-//                 closeReply={this.closeReply}
-//                 newReply={this.newReply}
-//                 handleMouseHover={this.handleMouseHover}
-//                 {...this.state}
-//               />
-//             </li>
-//           )}
-//         >
-//         </List>
-//         <div>
-//           <div className="forum-floating-drawer plus" hidden={drawerData.visibility}
-//                onClick={() => this.newPost(null)}
-//           >
-//             <Icon type="plus"/>
-//           </div>
-//           <DrawerComponent
-//             drawerData={drawerData}
-//             categoryUid={categoryUid}
-//             topicUid={topicUid}
-//
-//             handleDrawerVisible={this.handleDrawerVisible}
-//             handleSubmitDrawer={this.handleSubmitDrawer}
-//           />
-//         </div>
-//       </div>
-//     );
-//   }
-// }
-//
-// export default PostComponent;
-
