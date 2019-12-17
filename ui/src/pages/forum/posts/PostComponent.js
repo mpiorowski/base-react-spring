@@ -7,10 +7,14 @@ import PostContent from "./PostContent";
 import * as moment from "moment";
 import DrawerComponent from "../drawer/DrawerComponent";
 import {scrollToElementId} from "../../../utils/UtilsApp";
+import {breadcrumbNameMap} from "../../../config/BreadcrumbsConfig";
+import {useBreadcrumbsState} from "../../../context/GlobalContext";
 
 const {OrderedMap} = require('immutable');
 
 const PostComponent = (props) => {
+
+  const {setBreadcrumbs} = useBreadcrumbsState();
 
   const [categoryUid, setCategoryUid] = useState(props.match.params.categoryUid);
   const [topicUid, setTopicUid] = useState(props.match.params.topicUid);
@@ -69,6 +73,13 @@ const PostComponent = (props) => {
       }
     );
   }, []);
+
+  // const addBreadcrumbs = (categoryData, topicData) => {
+  //   let newBreadcrumbs = {};
+  //   newBreadcrumbs['/forum/categories/' + categoryData.uid + '/topics/'] = data.category.categoryTitle;
+  //   newBreadcrumbs = {...breadcrumbNameMap, ...newBreadcrumbs};
+  //   setBreadcrumbs(newBreadcrumbs);
+  // };
 
 
   //TODO - optimize

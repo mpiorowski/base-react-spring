@@ -35,7 +35,11 @@ class CategoriesComponent extends Component {
       console.log('categories get', response);
       let categoriesMap = OrderedMap();
       response.forEach(category => {
-        categoriesMap = categoriesMap.set(category.uid, category);
+        let data = {
+          ...category.categoryDataDto,
+          ...category.categoryAdditionalDto
+        };
+        categoriesMap = categoriesMap.set(category.categoryDataDto.uid, data);
       });
       this.setState({
         categories: categoriesMap,

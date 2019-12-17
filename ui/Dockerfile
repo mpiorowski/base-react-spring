@@ -8,8 +8,6 @@ COPY public $APP_HOME/public
 COPY craco.config.js $APP_HOME/craco.config.js.js
 COPY package.json $APP_HOME/package.json
 COPY package-lock.json $APP_HOME/package-lock.json
-RUN npm install
-CMD ["npm", "start"]
 
 FROM dev as builder
 RUN npm run build

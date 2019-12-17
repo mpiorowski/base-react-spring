@@ -29,7 +29,11 @@ services:
       - "SPRING_PROFILES_ACTIVE=dev, swagger"
     depends_on:
       - database
-    command: ["./gradlew", "bootRun"]
+#    command: sh -c  "./gradlew --stop && ./gradlew bootRun"
+#    command: ["./gradlew", "clean", "bootRun"]
+    command: ["gradle", "bootRun", "--info"]
+    ports:
+      - "9000:9000"
 
   ui:
     container_name: dev-ui-app
@@ -41,5 +45,6 @@ services:
       - ../ui/:/usr/src/app/
     environment:
       - "APIPROXY=api"
+    command: ["npm", "start"]
     ports:
       - "3000:3000"

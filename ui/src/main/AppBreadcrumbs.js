@@ -2,7 +2,7 @@ import React, {memo} from 'react';
 import {Breadcrumb, Icon} from "antd";
 import {NavLink} from "react-router-dom";
 import "./AppBreadcrumb.less";
-import {useBreadcrumbsState} from "../common/GlobalContext";
+import {useBreadcrumbsState} from "../context/GlobalContext";
 
 const AppBreadcrumbs = memo(props => {
 

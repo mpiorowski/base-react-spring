@@ -7,8 +7,8 @@ import {NavLink} from "react-router-dom";
 import DrawerComponent from "../drawer/DrawerComponent";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {AuthContext} from "../../../App";
-import {useBreadcrumbsState} from "../../../common/GlobalContext";
 import {breadcrumbNameMap} from "../../../config/BreadcrumbsConfig";
+import {useBreadcrumbsState} from "../../../context/GlobalContext";
 
 const TopicsComponent = (props) => {
 
