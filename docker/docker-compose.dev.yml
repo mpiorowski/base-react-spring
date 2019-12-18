@@ -31,7 +31,7 @@ services:
       - database
 #    command: sh -c  "./gradlew --stop && ./gradlew bootRun"
 #    command: ["./gradlew", "clean", "bootRun"]
-    command: ["gradle", "bootRun", "--info"]
+    command: ["gradle", "bootRun"]
     ports:
       - "9000:9000"
 

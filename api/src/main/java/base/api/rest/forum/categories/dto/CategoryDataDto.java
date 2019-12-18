@@ -11,5 +11,6 @@ public class CategoryDataDto extends GenericResponseDto {
   private String categoryTitle;
   private String categoryDescription;
   private String categoryIcon;
-  private int categoryAuthor;
+  private String categoryAuthor;
+  private String categoryAuthorUid;
 }

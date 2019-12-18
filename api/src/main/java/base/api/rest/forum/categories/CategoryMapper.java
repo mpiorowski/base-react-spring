@@ -8,13 +8,12 @@ import base.api.rest.forum.categories.dto.CategoryDataDto;
 import base.api.rest.forum.categories.dto.CategoryRequestDto;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 
 @Mapper(config = MappersConfig.class)
 @Service
 public interface CategoryMapper {
-
-//  CategoryRespondDto entityToRespondDto(CategoryEntity categoryEntity);
 
   CategoryEntity dtoToEntity(CategoryRequestDto categoryRequestDto);
 
@@ -22,6 +21,11 @@ public interface CategoryMapper {
 
   CategoryAdditionalDto latestEntityDoAdditionalDto(CategoryLatestEntity categoryLatestEntity);
 
-//  CategoryAdditionalDto entityWithLatestToDto(
-//      CategoryEntity categoryEntity, CategoryLatestEntity categoryLatestEntity);
+  @Mapping(source = "categoryEntity.uid", target = "uid")
+  @Mapping(source = "categoryEntity.categoryTitle", target = "categoryTitle")
+  @Mapping(source = "categoryEntity.categoryDescription", target = "categoryDescription")
+  @Mapping(source = "categoryEntity.categoryIcon", target = "categoryIcon")
+  @Mapping(source = "userEntity.userName", target = "categoryAuthor")
+  @Mapping(source = "userEntity.uid", target = "categoryAuthorUid")
+  CategoryDataDto entityWithUserToDataDto(CategoryEntity.UserRelation userRelation);
 }

@@ -58,6 +58,8 @@ const PostComponent = (props) => {
           newMapPosts = newMapPosts.set(post.uid, post);
         });
 
+        addBreadcrumbs(response.category, response.topic);
+
         setTopic(response.topic);
         setMapPosts(newMapPosts);
         setPostReplies(newPostReplies);
@@ -74,12 +76,14 @@ const PostComponent = (props) => {
     );
   }, []);
 
-  // const addBreadcrumbs = (categoryData, topicData) => {
-  //   let newBreadcrumbs = {};
-  //   newBreadcrumbs['/forum/categories/' + categoryData.uid + '/topics/'] = data.category.categoryTitle;
-  //   newBreadcrumbs = {...breadcrumbNameMap, ...newBreadcrumbs};
-  //   setBreadcrumbs(newBreadcrumbs);
-  // };
+  const addBreadcrumbs = (categoryData, topicData) => {
+    let newBreadcrumbs = {};
+    newBreadcrumbs['/forum/categories/' + categoryData.uid + '/topics'] = categoryData.categoryTitle;
+    newBreadcrumbs['/forum/categories/' + categoryData.uid + '/topics/' + topicData.uid + '/posts'] = topicData.topicTitle;
+    console.log(newBreadcrumbs);
+    newBreadcrumbs = {...breadcrumbNameMap, ...newBreadcrumbs};
+    setBreadcrumbs(newBreadcrumbs);
+  };
 
 
   //TODO - optimize

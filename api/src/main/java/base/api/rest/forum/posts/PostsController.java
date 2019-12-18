@@ -4,6 +4,8 @@ import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.posts.PostEntity;
 import base.api.domain.forum.topics.TopicEntity;
 import base.api.logging.LogExecutionTime;
+import base.api.rest.forum.categories.CategoryMapper;
+import base.api.rest.forum.categories.dto.CategoryDataDto;
 import base.api.rest.forum.posts.dto.PostDataDto;
 import base.api.rest.forum.posts.dto.PostRequestDto;
 import base.api.rest.forum.posts.dto.PostsResponseDto;
@@ -35,6 +37,7 @@ public class PostsController {
   private final PostService postService;
   private PostMapper postMapper = Mappers.getMapper(PostMapper.class);
   private TopicMapper topicMapper = Mappers.getMapper(TopicMapper.class);
+  private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
 
   public PostsController(PostService postService, TopicService topicService, CategoryService categoryService) {
     this.postService = postService;
@@ -56,9 +59,11 @@ public class PostsController {
 
     if (topic.isPresent()) {
 
-//      Optional<CategoryEntity> categoryEntity = categoryService.findById(topic.get().getTopicCategory());
+      Optional<CategoryEntity.UserRelation> categoryEntity = categoryService.findById(topic.get().getTopicCategory());
 
+      CategoryDataDto categoryDataDto = categoryMapper.entityWithUserToDataDto(categoryEntity.get());
       TopicDataDto topicDataDto = topicMapper.entityToDataDto(topic.get());
+
       List<PostEntity> postsEntity = postService.findPostsByTopicId(topic.get().getId());
       List<PostDataDto> postsList = new ArrayList<>();
       postsEntity.forEach(
@@ -67,6 +72,8 @@ public class PostsController {
             postsList.add(postDataDto);
           });
       PostsResponseDto response = new PostsResponseDto();
+
+      response.setCategory(categoryDataDto);
       response.setTopic(topicDataDto);
       response.setPosts(postsList);
 

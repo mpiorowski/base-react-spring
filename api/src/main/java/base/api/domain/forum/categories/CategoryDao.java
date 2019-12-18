@@ -21,18 +21,20 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
   Optional<CategoryEntity> findByUid(UUID uid);
 
   @Select({
-    "select * from",
+    "select *, fc.uid as categoryUid, su.uid as authorUid from",
     Table.NAME,
     "fc",
     "join sys_users su on fk_user_id = su.id",
     "where fc.is_deleted is false and fc.id = #{id}"
   })
   @Results({
-    @Result(property = "userEntity.userName", column = "user_name"),
-    @Result(property = "userEntity.userEmail", column = "user_email"),
+    @Result(property = "categoryEntity.uid", column = "categoryUid"),
     @Result(property = "categoryEntity.categoryTitle", column = "category_title"),
     @Result(property = "categoryEntity.categoryDescription", column = "category_description"),
     @Result(property = "categoryEntity.categoryIcon", column = "category_icon"),
+    @Result(property = "userEntity.uid", column = "authorUid"),
+    @Result(property = "userEntity.userName", column = "user_name"),
+    @Result(property = "userEntity.userEmail", column = "user_email"),
   })
   Optional<CategoryEntity.UserRelation> findById(int id);
 

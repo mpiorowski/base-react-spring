@@ -15,7 +15,7 @@ public class CategoryEntity extends GenericEntity {
   private int categoryAuthor;
 
   @Data
-  static class UserRelation {
+  public static class UserRelation {
     private CategoryEntity categoryEntity;
     private UserEntity userEntity;
   }
