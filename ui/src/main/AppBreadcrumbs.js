@@ -38,17 +38,24 @@ const AppBreadcrumbs = memo(props => {
     });
   }
 
-
-  const breadcrumbItems = [(
-    <Breadcrumb.Item key="home">
-      <NavLink to="/"><Icon type="home"/> Strona główna</NavLink>
-    </Breadcrumb.Item>
-  )].concat(extraBreadcrumbItems);
+  const breadcrumbItems = () => {
+      if (extraBreadcrumbItems.length > 0) {
+        return[(
+          <Breadcrumb.Item key="home">
+            <NavLink to="/"><Icon type="home"/> Strona główna</NavLink>
+          </Breadcrumb.Item>
+        )].concat(extraBreadcrumbItems);
+    } else {
+        return <Breadcrumb.Item key="home">
+          <Icon type="home"/> Strona główna
+        </Breadcrumb.Item>
+    }
+  };
 
   return (
     <div className={'header-breadcrumb'}>
       <Breadcrumb>
-        {breadcrumbItems}
+        {breadcrumbItems()}
       </Breadcrumb>
     </div>
   );

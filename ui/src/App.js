@@ -119,7 +119,7 @@ class App extends Component {
     const router = [
       routes.main.paths.map(path => {
         return (
-          <PrivateRoute exact={path.exact || true}
+          <PrivateRoute exact={path.exact}
                         path={path.url}
                         component={path.component}
                         currentUser={this.state.currentUser}
@@ -133,10 +133,12 @@ class App extends Component {
           }
           addedRoutes.push(route.key);
           return (
-            <PrivateRoute path={route.path.url}
-                          component={route.path.component}
-                          currentUser={this.state.currentUser}
-                          key={routerKey++}/>
+            <PrivateRoute
+              exact={route.path.exact}
+              path={route.path.url}
+              component={route.path.component}
+              currentUser={this.state.currentUser}
+              key={routerKey++}/>
           )
         })
       ),
