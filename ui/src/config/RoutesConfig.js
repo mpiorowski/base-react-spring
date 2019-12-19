@@ -1,6 +1,7 @@
-import ContactComponent from "../pages/header/ContactComponent";
+import ContactComponent from "../pages/contact/ContactComponent";
 import ForumComponent from "../pages/forum/ForumComponent";
 import TestComponent from "../pages/test/TestComponent";
+import HomeComponent from "../pages/home/HomeComponent";
 
 const pathsData = {
   forum: {
@@ -26,7 +27,20 @@ const pathsData = {
     header: {
       url: '/test/clean',
       headerName: 'Clean',
-      headerIcon: 'book',
+      headerIcon: 'reload',
+    }
+  },
+  home: {
+    key: 3,
+    path: {
+      url: '/',
+      component: HomeComponent,
+      exact: true
+    },
+    header: {
+      url: '/',
+      headerName: '',
+      headerIcon: 'home',
     }
   }
 };
@@ -43,10 +57,11 @@ export const routes =
     },
     ROLE_ADMIN: {
       paths: [
+        pathsData.home,
         pathsData.forum,
-        pathsData.clean
+        pathsData.clean,
       ],
-      redirect: '/forum/categories'
+      redirect: '/'
     },
     ROLE_USER: {
       paths: [

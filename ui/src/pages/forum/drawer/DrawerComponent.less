@@ -1,3 +1,5 @@
+@import '../../../styles/global';
+
 .forum-floating-drawer {
   right: 20%;
   z-index: 6;
@@ -33,6 +35,29 @@
   text-align: right;
   right: 0;
   border-radius: 0 0 4px 4px;
+}
+
+.forum-drawer-radio {
+  font-size: 20px !important;
+  display: inline-flex !important;
+  align-items: center;
+
+  height: 30px;
+  line-height: 30px;
+
+  .svg-inline--fa {
+    color: @primary-color;
+  }
+
+  .ant-radio-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &::after {
+      position: initial;
+    }
+  }
 }
 
 

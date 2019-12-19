@@ -50,7 +50,7 @@ class AppHeader extends Component {
     ];
 
     return (
-      <Header className={'header-menu'} style={{zIndex: "2"}}>
+      <Header className={'header-menu'}>
 
         <div className={"header-menu-left"}>
           {routeHeader}

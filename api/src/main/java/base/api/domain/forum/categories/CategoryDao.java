@@ -1,10 +1,7 @@
 package base.api.domain.forum.categories;
 
 import base.api.domain.generic.GenericDao;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,6 +19,24 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
   @Override
   @Select({"select * from", Table.NAME, "where is_deleted is false and uid = #{uid}"})
   Optional<CategoryEntity> findByUid(UUID uid);
+
+  @Select({
+    "select *, fc.uid as categoryUid, su.uid as authorUid from",
+    Table.NAME,
+    "fc",
+    "join sys_users su on fk_user_id = su.id",
+    "where fc.is_deleted is false and fc.id = #{id}"
+  })
+  @Results({
+    @Result(property = "categoryEntity.uid", column = "categoryUid"),
+    @Result(property = "categoryEntity.categoryTitle", column = "category_title"),
+    @Result(property = "categoryEntity.categoryDescription", column = "category_description"),
+    @Result(property = "categoryEntity.categoryIcon", column = "category_icon"),
+    @Result(property = "userEntity.uid", column = "authorUid"),
+    @Result(property = "userEntity.userName", column = "user_name"),
+    @Result(property = "userEntity.userEmail", column = "user_email"),
+  })
+  Optional<CategoryEntity.UserRelation> findById(int id);
 
   @Override
   @Select({"insert into", Table.NAME, Table.INSERT, "returning *"})
@@ -78,10 +93,31 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
     private static final String COL2 = "category_description";
     private static final String VAL2 = "#{categoryDescription}";
     private static final String COL3 = "fk_user_id";
-    private static final String VAL3 = "#{categoryAuthor.id}";
+    private static final String VAL3 = "#{categoryAuthor}";
+    private static final String COL4 = "category_icon";
+    private static final String VAL4 = "#{categoryIcon}";
+
     private static final String INSERT =
-        "(" + COL1 + "," + COL2 + "," + COL3 + ") values (" + VAL1 + "," + VAL2 + "," + VAL3 + ")";
-    private static final String UPDATE = "set " + COL1 + "=" + VAL1 + "," + COL2 + "=" + VAL2;
+        "("
+            + COL1
+            + ","
+            + COL2
+            + ","
+            + COL3
+            + ","
+            + COL4
+            + ") values ("
+            + VAL1
+            + ","
+            + VAL2
+            + ","
+            + VAL3
+            + ","
+            + VAL4
+            + ")";
+
+    private static final String UPDATE =
+        "set " + COL1 + "=" + VAL1 + "," + COL2 + "=" + VAL2 + "," + COL4 + "=" + VAL4;
 
     private Table() {}
   }

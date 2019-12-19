@@ -1,6 +1,6 @@
 import {apiRequest} from "../ApiRequest";
 
-export function serviceGetUser() {
+export function serviceGetCurrentUser() {
   return apiRequest({
     url: "/api/auth/user",
     method: "GET"

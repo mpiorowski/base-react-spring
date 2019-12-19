@@ -28,6 +28,7 @@ public interface TopicDao extends GenericDao<TopicEntity> {
     "where ft.is_deleted is false and ft.uid = #{uid}"
   })
   @Results({
+    @Result(property = "topicCategory", column = "fk_category_id"),
     @Result(property = "topicAuthor.uid", column = "userUid"),
     @Result(property = "topicAuthor.userName", column = "userName"),
     @Result(property = "topicAuthor.userEmail", column = "userEmail"),

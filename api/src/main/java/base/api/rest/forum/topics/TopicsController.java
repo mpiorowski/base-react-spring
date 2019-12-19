@@ -5,6 +5,7 @@ import base.api.domain.forum.topics.TopicEntity;
 import base.api.domain.forum.topics.TopicWithPostsEntity;
 import base.api.logging.LogExecutionTime;
 import base.api.rest.forum.categories.CategoryMapper;
+import base.api.rest.forum.categories.dto.CategoryDataDto;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import base.api.rest.forum.topics.dto.TopicDataDto;
 import base.api.rest.forum.topics.dto.TopicRequestDto;
@@ -55,7 +56,7 @@ public class TopicsController {
     Optional<CategoryEntity> category = categoryService.findByUid(categoryUid);
 
     if (category.isPresent()) {
-      CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(category.get());
+      CategoryDataDto categoryDataDto = categoryMapper.entityToDataDto(category.get());
       List<TopicWithPostsEntity> topics =
           topicService.findTopicsWithPostsByCategoryId(category.get().getId());
 
@@ -71,7 +72,7 @@ public class TopicsController {
                   })
               .collect(Collectors.toList());
 
-      TopicsResponseDto topicsResponseDto = new TopicsResponseDto(categoryRespondDto, topicsDto);
+      TopicsResponseDto topicsResponseDto = new TopicsResponseDto(categoryDataDto, topicsDto);
       return ResponseEntity.ok(topicsResponseDto);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);

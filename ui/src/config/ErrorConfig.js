@@ -6,7 +6,7 @@ export const validationErrorMsg = {
   userName: 'Ta nazwa jest już zajęta. Spróbuj inną.',
   userEmail: 'Ten email jest już zajęty. Spróbuj inny.',
   diffPass: 'Hasła nie zgadzają się. Proszę sprawdzić ponownie.',
-  maxSize10000: 'Treść nie może przekraczać 10000 znaków.'
+  maxSize10000: 'Treść nie może przekraczać 10000 znaków.',
 };
 
 

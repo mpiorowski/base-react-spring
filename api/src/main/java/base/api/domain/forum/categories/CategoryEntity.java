@@ -11,5 +11,12 @@ public class CategoryEntity extends GenericEntity {
 
   private String categoryTitle;
   private String categoryDescription;
-  private UserEntity categoryAuthor;
+  private String categoryIcon;
+  private int categoryAuthor;
+
+  @Data
+  public static class UserRelation {
+    private CategoryEntity categoryEntity;
+    private UserEntity userEntity;
+  }
 }

@@ -3,7 +3,7 @@ create table forum_categories
 (
     category_title       varchar(40)  not null,
     category_description varchar(200) not null,
-    category_icon        varchar(40),
+    category_icon        varchar(40)  not null,
     fk_user_id           integer      not null REFERENCES sys_users (id) ON delete RESTRICT,
 
     id                   serial primary key unique,

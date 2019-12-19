@@ -1,20 +1,26 @@
-import React, {Component} from 'react';
+import React, {Component, createContext} from 'react';
 import {Icon, Layout, Spin} from "antd";
 import {Redirect, Route, Switch, withRouter} from "react-router-dom";
-import {ACCESS_TOKEN} from "./config/AppConfig";
-import {momentDateTimeLanguage, setUpMomentDateTimeLanguage} from "./config/DateTimeConfig";
+import {
+  ACCESS_TOKEN,
+  initFontAwesomeIcons,
+  initMomentDateTimeLanguage,
+  momentDateTimeLanguage
+} from "./config/AppConfig";
 import {routes} from './config/RoutesConfig';
 import AppHeader from "./main/AppHeader";
 
 import './App.less';
 import './styles/global.less';
 import './styles/variables.less';
-import {serviceGetUser} from "./services/auth/AuthService";
+import {serviceGetCurrentUser} from "./services/auth/AuthService";
 import AuthComponent from "./auth/AuthComponent";
+import AppBreadcrumbs from "./main/AppBreadcrumbs";
 
 const {Content} = Layout;
+export const AuthContext = createContext(null);
 
-// TODO - use or deletes
+// TODO - use or delete
 // const isMobile = window.innerWidth <= 576;
 
 class App extends Component {
@@ -41,15 +47,18 @@ class App extends Component {
       loading: true,
       isAuth: false,
     });
-    serviceGetUser().then(response => {
-      console.log(response);
-      if (response.userName && response.userRoles) {
-        this.loadInitData();
+
+    const promise1 = serviceGetCurrentUser();
+
+    Promise.all([promise1]).then(values => {
+      if (values[0].userName && values[0].userRoles) {
+        initFontAwesomeIcons();
+        initMomentDateTimeLanguage(momentDateTimeLanguage);
         this.setState({
-          currentUser: response,
+          currentUser: values[0],
           isAuth: true,
           loading: false,
-        });
+        })
       }
     }).catch(error => {
       console.log(error);
@@ -57,11 +66,6 @@ class App extends Component {
         loading: false
       });
     })
-  };
-
-  loadInitData = () => {
-    setUpMomentDateTimeLanguage(momentDateTimeLanguage);
-    // return initForumBreadcrumbs(this.state.breadcrumbs);
   };
 
   logout = () => {
@@ -96,17 +100,15 @@ class App extends Component {
       )
     }
     const PrivateRoute = ({component: RouteComponent, ...rest}) => (
-      <div>
-        <Route {...rest} render={(props) => (
-          this.state.isAuth === true
-            ? <RouteComponent {...rest} {...props}/>
-            : <Redirect to={{
-              pathname: '/login',
-              state: {from: props.location}
-            }}
-            />
-        )}/>
-      </div>
+      <Route {...rest} render={(props) => (
+        this.state.isAuth === true
+          ? <RouteComponent {...rest} {...props}/>
+          : <Redirect to={{
+            pathname: '/login',
+            state: {from: props.location}
+          }}
+          />
+      )}/>
     );
 
     const currentUser = this.state.currentUser;
@@ -117,7 +119,7 @@ class App extends Component {
     const router = [
       routes.main.paths.map(path => {
         return (
-          <PrivateRoute exact={path.exact || true}
+          <PrivateRoute exact={path.exact}
                         path={path.url}
                         component={path.component}
                         currentUser={this.state.currentUser}
@@ -126,13 +128,17 @@ class App extends Component {
       }),
       currentUser.userRoles.map(role =>
         routes[role].paths.map(route => {
-          if (addedRoutes.includes(route.key)) {return '';}
+          if (addedRoutes.includes(route.key)) {
+            return '';
+          }
           addedRoutes.push(route.key);
           return (
-            <PrivateRoute path={route.path.url}
-                          component={route.path.component}
-                          currentUser={this.state.currentUser}
-                          key={routerKey++}/>
+            <PrivateRoute
+              exact={route.path.exact}
+              path={route.path.url}
+              component={route.path.component}
+              currentUser={this.state.currentUser}
+              key={routerKey++}/>
           )
         })
       ),
@@ -142,19 +148,24 @@ class App extends Component {
 
     return (
       <div>
-        <Layout className={'app-layout'}>
-          <AppHeader
-            toggle={this.headerToggle}
-            logout={this.logout}
-            collapsed={this.state.collapsed}
-            currentUser={currentUser}
-          />
-          <Content className={'app-content'}>
-            <Switch>
-              {router}
-            </Switch>
-          </Content>
-        </Layout>
+        <AuthContext.Provider value={{...currentUser}}>
+          <Layout className={'app-layout'}>
+            <AppHeader
+              toggle={this.headerToggle}
+              logout={this.logout}
+              collapsed={this.state.collapsed}
+              currentUser={currentUser}
+            />
+            <Content className={'app-content'}>
+              <AppBreadcrumbs {...this.props} className={'app-breadcrumbs'}/>
+              <div className={'app-switch'}>
+                <Switch>
+                  {router}
+                </Switch>
+              </div>
+            </Content>
+          </Layout>
+        </AuthContext.Provider>
       </div>
     );
   }

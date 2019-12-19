@@ -1,4 +1,29 @@
-@import '../../../styles/variables';
+@import '../../../styles/global';
+
+.topic-header {
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: @light-border;
+}
+
+.topic-header-text {
+  font-size: 20px;
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.topic-header-description {
+  font-size: 14px;
+}
+
+.topic-header-more {
+  display: inline-flex;
+  font-size: 20px;
+  background: none !important;
+  z-index: 1;
+  padding: 0 3px 0 3px;
+}
 
 .topic-table {
   tbody:hover {

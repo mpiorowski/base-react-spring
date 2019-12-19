@@ -53,7 +53,6 @@ public class DataSourcesConfig {
             .dataSource(dataSource)
             .cleanOnValidationError(migration.cleanOnValidationError)
             .locations(migration.getLocations());
-    //            .locations(migration.getLocations());
     //            .baselineOnMigrate(true)
     //            .ignoreMissingMigrations(true);
 
