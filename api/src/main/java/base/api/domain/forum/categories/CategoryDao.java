@@ -93,7 +93,7 @@ public interface CategoryDao extends GenericDao<CategoryEntity> {
     private static final String COL2 = "category_description";
     private static final String VAL2 = "#{categoryDescription}";
     private static final String COL3 = "fk_user_id";
-    private static final String VAL3 = "#{categoryAuthor.id}";
+    private static final String VAL3 = "#{categoryAuthor}";
     private static final String COL4 = "category_icon";
     private static final String VAL4 = "#{categoryIcon}";
 

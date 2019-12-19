@@ -46,8 +46,9 @@ const TopicsComponent = (props) => {
   };
 
   const handleSubmitDrawer = (formData, response) => {
+    console.log(response);
     if (formData.type === 'editCategory') {
-      setCategory(response);
+      setCategory(response.categoryDataDto);
     } else if (formData.type === 'newTopic') {
       response['postsCount'] = 0;
       const newTopics = [response].concat(topics);
