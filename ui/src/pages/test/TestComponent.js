@@ -8,13 +8,6 @@ function serviceCleanDatabase() {
   })
 }
 
-function serviceTestData() {
-  return apiRequest({
-    url: `/api/test/clean`,
-    method: "GET"
-  })
-}
-
 class TestComponent extends Component {
 
 

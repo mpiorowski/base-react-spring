@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Button, Dropdown, Icon, List, Menu} from "antd";
 import "./PostComponent.less";
 import "react-quill/dist/quill.snow.css";
@@ -16,33 +16,41 @@ const PostComponent = (props) => {
 
   const {setBreadcrumbs} = useBreadcrumbsState();
 
-  const [categoryUid, setCategoryUid] = useState(props.match.params.categoryUid);
-  const [topicUid, setTopicUid] = useState(props.match.params.topicUid);
+  const [categoryUid] = useState(props.match.params.categoryUid);
+  const [topicUid] = useState(props.match.params.topicUid);
   const [loading, setLoading] = useState(true);
   const [drawerData, setDrawerData] = useState({
     visibility: false,
     record: {},
     type: '',
   });
+  const [category, setCategory] = useState({});
   const [topic, setTopic] = useState({topicCreated: null, topicUpdated: null, topicAuthor: {userName: null}});
 
   const [mapPosts, setMapPosts] = useState(OrderedMap());
-  const [mapReplies, setMapReplies] = useState(OrderedMap());
   const [postReplies, setPostReplies] = useState(OrderedMap());
   const [openReplyArray, setOpenReplyArray] = useState([]);
   const [hoverCommentId, setHoverCommentId] = useState(null);
 
-  const [pageSize, setPageSize] = useState(3);
+  const [pageSize] = useState(3);
   const [currentPage, setCurrentPage] = useState(1);
 
   //todo - change to authContext
-  const [currentUser, setCurrentUser] = useState(props.currentUser);
+  const [currentUser] = useState(props.currentUser);
+  const addBreadcrumbs = useCallback(
+    (categoryData, topicData) => {
+      let newBreadcrumbs = {};
+      newBreadcrumbs['/forum/categories/' + categoryData.uid + '/topics'] = categoryData.categoryTitle;
+      newBreadcrumbs['/forum/categories/' + categoryData.uid + '/topics/' + topicData.uid + '/posts'] = topicData.topicTitle;
+      console.log(newBreadcrumbs);
+      newBreadcrumbs = {...breadcrumbNameMap, ...newBreadcrumbs};
+      setBreadcrumbs(newBreadcrumbs);
+    }, [setBreadcrumbs],
+  );
 
   useEffect(() => {
-    const {match: {params}} = props;
-    const search = new URLSearchParams(props.location.search);
 
-    serviceGetPosts(params.topicUid).then(response => {
+    serviceGetPosts(topicUid).then(response => {
         console.log('posts get', response);
 
         let newPostReplies = OrderedMap();
@@ -60,30 +68,31 @@ const PostComponent = (props) => {
 
         addBreadcrumbs(response.category, response.topic);
 
+        setCategory(response.category);
         setTopic(response.topic);
         setMapPosts(newMapPosts);
         setPostReplies(newPostReplies);
         setLoading(false);
 
-        console.log(newMapPosts.values());
-
-        //TODO - open reply
-        if (search.get('latest')) {
-          goToLast();
-          scrollToElementId(search.get('latest'));
-        }
       }
     );
-  }, []);
+  }, [addBreadcrumbs, topicUid]);
 
-  const addBreadcrumbs = (categoryData, topicData) => {
-    let newBreadcrumbs = {};
-    newBreadcrumbs['/forum/categories/' + categoryData.uid + '/topics'] = categoryData.categoryTitle;
-    newBreadcrumbs['/forum/categories/' + categoryData.uid + '/topics/' + topicData.uid + '/posts'] = topicData.topicTitle;
-    console.log(newBreadcrumbs);
-    newBreadcrumbs = {...breadcrumbNameMap, ...newBreadcrumbs};
-    setBreadcrumbs(newBreadcrumbs);
-  };
+  const goToLast = useCallback(() => {
+    const newCurrentPage = Math.ceil(mapPosts.size / pageSize);
+    setCurrentPage(newCurrentPage);
+  }, [mapPosts.size, pageSize]);
+
+  // todo - optimze, now it is called 2x times
+  useEffect(() => {
+    const search = new URLSearchParams(props.location.search);
+    console.log('goToLast');
+    //TODO - open reply
+    if (search.get('latest')) {
+      goToLast();
+      scrollToElementId(search.get('latest'));
+    }
+  }, [goToLast, props.location.search]);
 
 
   //TODO - optimize
@@ -95,6 +104,7 @@ const PostComponent = (props) => {
 
       case 'editTopic': {
         setTopic(response);
+        addBreadcrumbs(category, response);
         break;
       }
 
@@ -179,11 +189,6 @@ const PostComponent = (props) => {
   const onPaginationChange = (page, pageSize) => {
     window.scrollTo(0, 0);
     setCurrentPage(page);
-  };
-
-  const goToLast = () => {
-    const newCurrentPage = Math.ceil(mapPosts.size / pageSize);
-    setCurrentPage(newCurrentPage);
   };
 
   const posts = () => {

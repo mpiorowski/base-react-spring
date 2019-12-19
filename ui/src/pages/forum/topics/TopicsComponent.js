@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Button, Dropdown, Icon, Menu, Table} from "antd";
 import "./TopicsComponent.less";
 import {serviceGetTopics} from "../../../services/forum/ForumService";
@@ -25,6 +25,13 @@ const TopicsComponent = (props) => {
   });
   const [paginationSize, setPaginationSize] = useState(0);
 
+  const addBreadcrumbs = useCallback((data) => {
+    let newBreadcrumbs = {};
+    newBreadcrumbs['/forum/categories/' + data.uid + '/topics'] = data.categoryTitle;
+    newBreadcrumbs = {...breadcrumbNameMap, ...newBreadcrumbs};
+    setBreadcrumbs(newBreadcrumbs);
+  }, [setBreadcrumbs]);
+
   useEffect(() => {
     serviceGetTopics(categoryUid).then(response => {
       console.log('topics get', response);
@@ -34,21 +41,16 @@ const TopicsComponent = (props) => {
       setLoading(false);
       setPaginationSize(newPaginationSize);
 
-      addBreadcrumbs(response);
+      addBreadcrumbs(response.category);
     });
-  }, []);
+  }, [addBreadcrumbs, categoryUid]);
 
-  const addBreadcrumbs = (data) => {
-    let newBreadcrumbs = {};
-    newBreadcrumbs['/forum/categories/' + data.category.uid + '/topics'] = data.category.categoryTitle;
-    newBreadcrumbs = {...breadcrumbNameMap, ...newBreadcrumbs};
-    setBreadcrumbs(newBreadcrumbs);
-  };
 
   const handleSubmitDrawer = (formData, response) => {
     console.log(response);
     if (formData.type === 'editCategory') {
       setCategory(response.categoryDataDto);
+      addBreadcrumbs(response.categoryDataDto);
     } else if (formData.type === 'newTopic') {
       response['postsCount'] = 0;
       const newTopics = [response].concat(topics);
