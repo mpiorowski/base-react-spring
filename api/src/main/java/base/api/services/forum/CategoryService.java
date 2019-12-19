@@ -4,7 +4,7 @@ import base.api.domain.forum.categories.CategoryDao;
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.domain.forum.categories.CategoryLatestEntity;
 import base.api.rest.forum.categories.CategoryMapper;
-import base.api.rest.forum.categories.dto.CategoryRespondDto;
+import base.api.rest.forum.categories.dto.CategoryAdditionalDto;
 import base.api.services.generic.GenericService;
 import base.api.utils.UtilsUid;
 import org.mapstruct.factory.Mappers;
@@ -34,9 +34,13 @@ public class CategoryService extends GenericService<CategoryEntity> {
     return dao.findByUid(UtilsUid.uidDecode(uid));
   }
 
+  public Optional<CategoryEntity.UserRelation> findById(int id) {
+    return dao.findById(id);
+  }
+
   @Override
   public Optional<CategoryEntity> add(CategoryEntity entity) {
-    entity.setCategoryAuthor(currentUserEntity());
+    entity.setCategoryAuthor(currentUser().getUserId());
     return dao.add(entity);
   }
 
@@ -51,21 +55,20 @@ public class CategoryService extends GenericService<CategoryEntity> {
     return dao.delete(uuid) == 1;
   }
 
-  public CategoryRespondDto setAdditionalData(CategoryEntity categoryEntity) {
+  public CategoryAdditionalDto setAdditionalData(CategoryEntity categoryEntity) {
 
     var id = categoryEntity.getId();
     var categoryLatestEntity = findLatestById(id);
 
-    CategoryRespondDto categoryRespondDto;
+    CategoryAdditionalDto categoryAdditionalDto = new CategoryAdditionalDto();
     if (categoryLatestEntity.isPresent()) {
-      categoryRespondDto =
-          categoryMapper.entityWithLatestToDto(categoryEntity, categoryLatestEntity.get());
-    } else {
-      categoryRespondDto = categoryMapper.entityToRespondDto(categoryEntity);
+      categoryAdditionalDto =
+          categoryMapper.latestEntityDoAdditionalDto(categoryLatestEntity.get());
     }
-    categoryRespondDto.setCategoryTopicsNumber(countTopicsById(id));
-    categoryRespondDto.setCategoryPostsNumber(countPostsById(id));
-    return categoryRespondDto;
+    categoryAdditionalDto.setCategoryTopicsNumber(countTopicsById(id));
+    categoryAdditionalDto.setCategoryPostsNumber(countPostsById(id));
+
+    return categoryAdditionalDto;
   }
 
   private Integer countPostsById(Integer id) {

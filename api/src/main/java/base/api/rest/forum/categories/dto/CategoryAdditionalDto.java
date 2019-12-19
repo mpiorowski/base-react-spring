@@ -8,8 +8,11 @@ public class CategoryAdditionalDto {
   private Integer categoryTopicsNumber;
   private Integer categoryPostsNumber;
 
-  private String categoryNewestPost;
-  private String categoryNewestTopic;
-  private String categoryNewestPostAuthor;
-  private String categoryNewestPostDate;
+  private String categoryLatestTopic;
+  private String categoryLatestTopicUid;
+
+  private String categoryLatestPostUid;
+  private String categoryLatestPost;
+  private String categoryLatestPostAuthor;
+  private String categoryLatestPostDate;
 }

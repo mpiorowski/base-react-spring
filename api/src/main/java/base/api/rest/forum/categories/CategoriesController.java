@@ -2,6 +2,8 @@ package base.api.rest.forum.categories;
 
 import base.api.domain.forum.categories.CategoryEntity;
 import base.api.logging.LogExecutionTime;
+import base.api.rest.forum.categories.dto.CategoryAdditionalDto;
+import base.api.rest.forum.categories.dto.CategoryDataDto;
 import base.api.rest.forum.categories.dto.CategoryRequestDto;
 import base.api.rest.forum.categories.dto.CategoryRespondDto;
 import base.api.services.forum.CategoryService;
@@ -40,9 +42,9 @@ public class CategoriesController {
         categoryEntities.stream()
             .map(
                 categoryEntity -> {
-                  CategoryRespondDto categoryRespondDto;
-                  categoryRespondDto = categoryService.setAdditionalData(categoryEntity);
-                  return categoryRespondDto;
+                  CategoryDataDto categoryDataDto = categoryMapper.entityToDataDto(categoryEntity);
+                  CategoryAdditionalDto categoryAdditionalDto = categoryService.setAdditionalData(categoryEntity);
+                  return new CategoryRespondDto(categoryDataDto, categoryAdditionalDto);
                 })
             .collect(Collectors.toList());
 
@@ -56,15 +58,15 @@ public class CategoriesController {
    */
   @LogExecutionTime
   @GetMapping("/{categoryUid}")
-  public ResponseEntity<CategoryRespondDto> findCategoryByUid(
+  public ResponseEntity<CategoryDataDto> findCategoryByUid(
       @PathVariable("categoryUid") String categoryUid) {
 
     Optional<CategoryEntity> categoryEntity = categoryService.findByUid(categoryUid);
 
     if (categoryEntity.isPresent()) {
-      CategoryRespondDto categoryRespondDto =
-          categoryMapper.entityToRespondDto(categoryEntity.get());
-      return ResponseEntity.ok(categoryRespondDto);
+      CategoryDataDto categoryDataDto =
+          categoryMapper.entityToDataDto(categoryEntity.get());
+      return ResponseEntity.ok(categoryDataDto);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -77,15 +79,15 @@ public class CategoriesController {
    */
   @LogExecutionTime
   @PostMapping
-  public ResponseEntity<CategoryRespondDto> addCategory(
+  public ResponseEntity<CategoryDataDto> addCategory(
       @RequestBody CategoryRequestDto categoryRequestDto) {
 
     CategoryEntity categoryEntity = categoryMapper.dtoToEntity(categoryRequestDto);
     Optional<CategoryEntity> category = categoryService.add(categoryEntity);
 
     if (category.isPresent()) {
-      CategoryRespondDto categoryRespondDto = categoryMapper.entityToRespondDto(category.get());
-      return new ResponseEntity<>(categoryRespondDto, HttpStatus.CREATED);
+      CategoryDataDto categoryDataDto = categoryMapper.entityToDataDto(category.get());
+      return new ResponseEntity<>(categoryDataDto, HttpStatus.CREATED);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -106,7 +108,9 @@ public class CategoriesController {
     categoryEntity.setUid(UtilsUid.uidDecode(categoryUid));
     Optional<CategoryEntity> editCategory = categoryService.edit(categoryEntity);
     if (editCategory.isPresent()) {
-      CategoryRespondDto categoryRespondDto = categoryService.setAdditionalData(editCategory.get());
+      CategoryDataDto categoryDataDto = categoryMapper.entityToDataDto(editCategory.get());
+      CategoryAdditionalDto categoryAdditionalDto = categoryService.setAdditionalData(editCategory.get());
+      CategoryRespondDto categoryRespondDto =  new CategoryRespondDto(categoryDataDto, categoryAdditionalDto);
       return new ResponseEntity<>(categoryRespondDto, HttpStatus.OK);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
