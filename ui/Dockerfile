@@ -10,6 +10,7 @@ COPY package.json $APP_HOME/package.json
 COPY package-lock.json $APP_HOME/package-lock.json
 
 FROM dev as builder
+RUN npm install
 RUN npm run build
 
 # Stage 2 - Create a downsized production container
