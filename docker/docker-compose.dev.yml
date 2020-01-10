@@ -2,7 +2,7 @@ version: '3.4'
 services:
 
   database:
-    container_name: dev-database-app
+    container_name: db
     build: ../database
     command: postgres -c shared_preload_libraries=pgaudit -c config_file=/etc/postgresql.conf
     environment:
@@ -17,7 +17,7 @@ services:
       - "5444:5432"
 
   api:
-    container_name: dev-api-app
+    container_name: api
     build:
       context: ../api
       dockerfile: ./Dockerfile
@@ -36,7 +36,7 @@ services:
       - "9000:9000"
 
   ui:
-    container_name: dev-ui-app
+    container_name: ui
     build:
       context: ../ui
       dockerfile: ./Dockerfile
