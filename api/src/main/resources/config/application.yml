@@ -9,6 +9,9 @@ spring:
     name: base-app
   profiles:
     active: dev
+  output:
+    ansi:
+      enabled: always
   datasource:
     initialization-mode: always
   flyway:
