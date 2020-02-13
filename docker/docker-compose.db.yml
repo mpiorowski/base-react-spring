@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   database:
-    container_name: db
+    container_name: base-db
     build: ../database
     command: postgres -c shared_preload_libraries=pgaudit -c config_file=/etc/postgresql.conf
     environment:

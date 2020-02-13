@@ -2,7 +2,7 @@ version: '3.4'
 services:
 
   database:
-    container_name: prod-database-app
+    container_name: base-db
     build: ../database
     command: postgres -c shared_preload_libraries=pgaudit -c config_file=/etc/postgresql.conf
     environment:
@@ -16,7 +16,7 @@ services:
     restart: on-failure
 
   api:
-    container_name: prod-api-app
+    container_name: base-api
     build:
       context: ../api
       dockerfile: ./Dockerfile
@@ -30,7 +30,7 @@ services:
       - database
 
   ui:
-    container_name: prod-ui-app
+    container_name: base-ui
     build:
       context: ../ui
       dockerfile: ./Dockerfile
