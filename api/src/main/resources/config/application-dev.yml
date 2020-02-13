@@ -1,6 +1,7 @@
 # ===================================================================
 # Spring Boot configuration for the "dev" profile.
 # ===================================================================
+# ===================================================================
 logging:
   level:
     ROOT: INFO
@@ -12,13 +13,11 @@ logging:
 
 datasources:
   database:
+    host: localhost
+    port: 5444
     username: admin
     password: zaqwsx
     schema: app
-#    port: 5432
-#    host: database
-    port: 5444
-    host: localhost
   migration:
     locations: ["classpath:/db/migration", "classpath:/db/mock"]
     cleanOnValidationError: true

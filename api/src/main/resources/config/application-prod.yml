@@ -13,11 +13,11 @@ logging:
 
 datasources:
   database:
+    host: database
+    port: 5432
     username: admin
     password: cderfv
-    port: 5432
     schema: app
-    host: database
   migration:
     locations: ["classpath:/db/migration"]
     cleanOnValidationError: false

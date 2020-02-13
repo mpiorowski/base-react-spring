@@ -1,6 +1,7 @@
 # ===================================================================
 # Spring Boot configuration for the "test" profile.
 # ===================================================================
+#TODO - set test logging
 logging:
   level:
     ROOT: INFO
@@ -12,9 +13,10 @@ logging:
 
 datasources:
   database:
+    host: database
+    port: 5432
     username: admin
     password: cderfv
-    port: 5432
     schema: app
   migration:
     locations: ["classpath:/db/migration", "classpath:/db/mock"]
