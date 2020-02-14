@@ -13,7 +13,7 @@ services:
     volumes:
       - ../database/pgdata:/var/lib/postgresql/pgdata
       - ../database/postgresql.conf:/etc/postgresql.conf
-    restart: on-failure
+#    restart: on-failure
 
   api:
     container_name: base-api
@@ -22,10 +22,10 @@ services:
       dockerfile: ./Dockerfile
       target: deploy
     volumes:
-      - ../files:/home/app/files
+      - ./files:/home/app/files
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
-    restart: on-failure
+#    restart: on-failure
     depends_on:
       - database
 
@@ -41,4 +41,4 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    restart: on-failure
+#    restart: on-failure
