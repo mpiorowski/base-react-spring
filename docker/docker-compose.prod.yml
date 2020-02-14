@@ -22,7 +22,7 @@ services:
       dockerfile: ./Dockerfile
       target: deploy
     volumes:
-      - ./files:/home/app/files
+      - ../files:/home/app/files
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
 #    restart: on-failure
