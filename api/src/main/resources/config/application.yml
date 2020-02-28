@@ -43,4 +43,4 @@ mybatis:
   type-handlers-package: base.api.config.mybatis
 
 storage:
-  location: "files/"
+  location: "./files/"

@@ -22,3 +22,5 @@ datasources:
     locations: ["classpath:/db/migration"]
     cleanOnValidationError: false
     cleanOnStart: false
+storage:
+  location: "/home/app/files"
