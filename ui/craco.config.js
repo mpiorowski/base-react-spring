@@ -4,6 +4,8 @@ const CracoAntDesignPlugin = require("craco-antd");
 const path = require("path");
 const cspHtmlWebpackPlugin = require("csp-html-webpack-plugin");
 
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
 // Don't open the browser during development
 process.env.BROWSER = "none";
 
