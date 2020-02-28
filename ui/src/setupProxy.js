@@ -1,6 +1,6 @@
-const proxy = require('http-proxy-middleware');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const apiproxy = process.env.APIPROXY || 'localhost';
 
 module.exports = function (app) {
-  app.use(proxy('/api', {target: 'http://' + apiproxy + ':9000/'}));
+  app.use(createProxyMiddleware('/api', {target: 'http://' + apiproxy + ':9000/'}));
 };
