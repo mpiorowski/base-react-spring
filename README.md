@@ -1,11 +1,8 @@
-# Base app with react and spring ready for further development.
+# React with Spring application with fully working auth and logging components.
 
-This application is still in progress.
-
-Frontend  -> react + antd + (react redux...in progress) <br />
+Frontend  -> react + antd
 Backend   -> spring boot + flyway + mybatis + postgres
 
-- Ready to develop application with basic functionalities
 - Authorization via jwt tokens
 - Multi role support
 - Register functionality with authorization code
