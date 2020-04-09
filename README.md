@@ -1,4 +1,4 @@
-# React with Spring application with fully working auth and logging components.
+# React and Spring application with fully working auth and logging components. 
 
 Frontend  -> react + antd
 Backend   -> spring boot + flyway + mybatis + postgres
